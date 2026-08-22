@@ -1,11 +1,167 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Reserva de Citas - Hospital Regional Cusco</title>
 </head>
 <body>
-    
+    <header>
+        <img src="" alt="Logo">
+        <h1>Hospital Regional Cusco</h1>
+        <nav>
+            <a href="#">Inicio</a>
+            <button>Iniciar Sesión</button>
+        </nav>
+    </header>
+
+    <main>
+        <h2>Reserva tu Cita Médica</h2>
+        
+        <nav aria-label="Progreso de la reserva">
+            <ol class="barra-pasos">
+                <li class="activo">1. Paciente</li>
+                <li>2. Especialidad</li>
+                <li>3. Fecha/Hora</li>
+                <li>4. Confirmación</li>
+            </ol>
+        </nav>
+
+        <form action="/procesar-cita" method="POST">
+            <section id="paso-1">
+                <h3>Paso 1: Identificación del Paciente</h3>
+                
+                <div>
+                    <label for="tipo_documento">Tipo de Documento:</label>
+                    <select name="tipo_documento" id="tipo_documento" required>
+                        <option value="" disabled selected>Seleccione una opción</option>
+                        <option value="DNI">DNI</option>
+                        <option value="CE">Carnet de Extranjería</option>
+                        <option value="PAS">Pasaporte</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="numero_documento">Número de Documento:</label>
+                    <input type="text" name="numero_documento" id="numero_documento" placeholder="Ingrese su número" required>
+                    <button type="button">Validar</button>
+                </div>
+
+                <hr>
+
+                <div>
+                    <label for="nombres">Nombres:</label>
+                    <input type="text" name="nombres" id="nombres" value="" placeholder="Se autocompletará..." readonly>
+                </div>
+
+                <div>
+                    <label for="apellidos">Apellidos:</label>
+                    <input type="text" name="apellidos" id="apellidos" value="" placeholder="Se autocompletará..." readonly>
+                </div>
+
+                <div>
+                    <button type="button">Siguiente Paso</button>
+                </div>
+            </section>
+
+            <section id="paso-2">
+                <h3>Paso 2: Selección de Especialidad</h3>
+                
+                <div>
+                    <label for="especialidad">Especialidad Requerida:</label>
+                    <select name="especialidad" id="especialidad" required>
+                        <option value="" disabled selected>Seleccione una especialidad</option>
+                        <option value="1">Medicina General</option>
+                        <option value="2">Pediatría</option>
+                        <option value="3">Cardiología</option>
+                        <option value="4">Traumatología</option>
+                        <option value="5">Ginecología</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="medico">Médico (Opcional):</label>
+                    <select name="medico" id="medico">
+                        <option value="" selected>Cualquier médico disponible</option>
+                        <option value="101">Dr. Carlos Mendoza</option>
+                        <option value="102">Dra. Ana Silva</option>
+                    </select>
+                </div>
+
+                <div>
+                    <button type="button">Volver al Paso 1</button>
+                    <button type="button">Siguiente Paso</button>
+                </div>
+            </section>
+
+            <section id="paso-3">
+                <h3>Paso 3: Fecha y Hora de la Cita</h3>
+                
+                <div>
+                    <label for="fecha_cita">Seleccione la Fecha:</label>
+                    <input type="date" name="fecha_cita" id="fecha_cita" required>
+                </div>
+
+                <div>
+                    <label for="hora_cita">Horarios Disponibles:</label>
+                    <select name="hora_cita" id="hora_cita" required>
+                        <option value="" disabled selected>Elija un turno</option>
+                        <option value="08:00">08:00 AM</option>
+                        <option value="08:30">08:30 AM</option>
+                        <option value="09:00">09:00 AM</option>
+                        <option value="09:30">09:30 AM</option>
+                        <option value="10:00">10:00 AM</option>
+                    </select>
+                </div>
+
+                <div>
+                    <button type="button">Volver al Paso 2</button>
+                    <button type="button">Siguiente Paso</button>
+                </div>
+            </section>
+
+            <section id="paso-4">
+                <h3>Paso 4: Resumen y Confirmación</h3>
+                
+                <p>Por favor, revise que los datos de su cita en el Hospital Regional sean correctos:</p>
+
+                <dl>
+                    <dt><strong>Paciente:</strong></dt>
+                    <dd id="resumen-paciente">[Nombres y Apellidos del Paciente]</dd>
+
+                    <dt><strong>Documento:</strong></dt>
+                    <dd id="resumen-documento">[DNI o CE]</dd>
+
+                    <dt><strong>Especialidad:</strong></dt>
+                    <dd id="resumen-especialidad">[Especialidad Seleccionada]</dd>
+
+                    <dt><strong>Médico:</strong></dt>
+                    <dd id="resumen-medico">[Nombre del Médico o "Cualquier médico disponible"]</dd>
+
+                    <dt><strong>Fecha:</strong></dt>
+                    <dd id="resumen-fecha">[DD/MM/AAAA]</dd>
+
+                    <dt><strong>Hora:</strong></dt>
+                    <dd id="resumen-hora">[HH:MM AM/PM]</dd>
+                </dl>
+
+                <div>
+                    <button type="button">Modificar Datos (Volver)</button>
+                    <button type="submit">Confirmar Cita Médica</button>
+                </div>
+            </section>
+        </form>
+    </main>
+
+    <footer>
+        <div>
+            <a href="https://facebook.com">Facebook</a>
+            <a href="https://instragram.com">Instragram</a>
+            <a href="https://whatsapp.com">Whatsapp</a>
+        </div>
+        <p>Contacto: (084) 222222 | Av. de la Cultura, Cusco</p>
+        <p>Horario de atención: Lunes a Domingo 24hrs (Emergencias)</p>
+        <a href="#">Políticas de Privacidad</a>
+    </footer>
 </body>
 </html>
