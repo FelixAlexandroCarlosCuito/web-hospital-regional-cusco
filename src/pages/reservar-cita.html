@@ -3,170 +3,208 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reserva de Citas - Hospital Cusco</title>
-    <link rel="stylesheet" href="../css/estilos-reservar-cita.css">
+    <title>Reserva de Citas - Hospital Regional del Cusco</title>
+    <link rel="stylesheet" href="../css/general.css">
+    <link rel="stylesheet" href="../css/reservar-cita.css">
 </head>
 <body>
     <header class="encabezado-principal">
-        <div class="logo-container">
-            <img class="logo-img" src="" alt="Logo">
+        <div class="header-contenido">
+            <img class="logo-container" src="../assets/logo-hospital.png">
+            <h1 class="titulo-sitio">Hospital Regional del Cusco</h1>
+            <nav class="navegacion-superior">
+                <a href="../../index.html">Inicio</a>
+                <a href="reservar-cita.html">Reservar cita</a>
+                <a href="inicio-sesion.html" class="btn-login">Iniciar Sesión</a>
+            </nav>
         </div>
-        <h1 class="titulo-sitio">Hospital Cusco</h1>
-        <nav class="navegacion-superior">
-            <a href="../../index.html">Inicio</a>
-            <a href="InicioSesion.html" class="btn-secundario">Iniciar Sesión</a>
-        </nav>
     </header>
 
     <main class="contenedor-principal">
-        <h2 class="titulo-seccion">Reserva tu Cita Médica</h2>
+        <div class="cabecera-seccion">
+            <h2 class="titulo-seccion">Reserva tu Cita Médica</h2>
+            <p class="subtitulo-seccion">Completa los pasos para agendar tu atención presencial</p>
+        </div>
         
         <nav aria-label="Progreso de la reserva">
             <ol class="barra-pasos">
-                <li class="activo">1. Paciente</li>
-                <li>2. Especialidad</li>
-                <li>3. Fecha/Hora</li>
-                <li>4. Confirmación</li>
+                <li class="activo"><span>1</span> Paciente</li>
+                <li><span>2</span> Especialidad</li>
+                <li><span>3</span> Fecha y Hora</li>
+                <li><span>4</span> Confirmación</li>
             </ol>
         </nav>
 
         <form action="/procesar-cita" method="POST" class="formulario-citas">
+            
             <section id="paso-1" class="tarjeta-paso">
-                <h3 class="titulo-paso">Paso 1: Identificación del Paciente</h3>
+                <h3 class="titulo-paso">Identificación del Paciente</h3>
                 
-                <div class="form-group">
-                    <label for="tipo_documento">Tipo de Documento:</label>
-                    <select name="tipo_documento" id="tipo_documento" required>
-                        <option value="" disabled selected>Seleccione una opción</option>
-                        <option value="DNI">DNI</option>
-                        <option value="CE">Carnet de Extranjería</option>
-                        <option value="PAS">Pasaporte</option>
-                    </select>
-                </div>
-
-                <div class="form-group form-group-inline">
-                    <div class="input-wrapper">
-                        <label for="numero_documento">Número de Documento:</label>
-                        <input type="text" name="numero_documento" id="numero_documento" placeholder="Ingrese su número" required>
+                <div class="fila-formulario">
+                    <div class="form-group">
+                        <label for="tipo_documento">Tipo de Documento</label>
+                        <select name="tipo_documento" id="tipo_documento" required>
+                            <option value="" disabled selected>Seleccione una opción</option>
+                            <option value="DNI">DNI</option>
+                            <option value="CE">Carnet de Extranjería</option>
+                            <option value="PAS">Pasaporte</option>
+                        </select>
                     </div>
-                    <button type="button" class="btn-secundario">Validar</button>
+
+                    <div class="form-group form-group-btn">
+                        <div class="input-wrapper">
+                            <label for="numero_documento">Número de Documento</label>
+                            <input type="text" name="numero_documento" id="numero_documento" placeholder="Ingrese su documento" required>
+                        </div>
+                        <button type="button" class="btn-secundario btn-validar">Validar</button>
+                    </div>
                 </div>
 
                 <hr class="separador">
 
-                <div class="form-group">
-                    <label for="nombres">Nombres:</label>
-                    <input type="text" name="nombres" id="nombres" value="" placeholder="Se autocompletará..." readonly>
-                </div>
+                <div class="fila-formulario">
+                    <div class="form-group">
+                        <label for="nombres">Nombres</label>
+                        <input type="text" name="nombres" id="nombres" placeholder="Se autocompletará..." readonly>
+                    </div>
 
-                <div class="form-group">
-                    <label for="apellidos">Apellidos:</label>
-                    <input type="text" name="apellidos" id="apellidos" value="" placeholder="Se autocompletará..." readonly>
+                    <div class="form-group">
+                        <label for="apellidos">Apellidos</label>
+                        <input type="text" name="apellidos" id="apellidos" placeholder="Se autocompletará..." readonly>
+                    </div>
                 </div>
 
                 <div class="acciones-formulario alineacion-derecha">
-                    <button type="button" class="btn-primario">Siguiente Paso</button>
+                    <button type="button" class="btn-primario">Continuar</button>
                 </div>
             </section>
 
             <section id="paso-2" class="tarjeta-paso">
-                <h3 class="titulo-paso">Paso 2: Selección de Especialidad</h3>
+                <h3 class="titulo-paso">Selección de Especialidad</h3>
                 
-                <div class="form-group">
-                    <label for="especialidad">Especialidad Requerida:</label>
-                    <select name="especialidad" id="especialidad" required>
-                        <option value="" disabled selected>Seleccione una especialidad</option>
-                        <option value="1">Medicina General</option>
-                        <option value="2">Pediatría</option>
-                        <option value="3">Cardiología</option>
-                        <option value="4">Traumatología</option>
-                        <option value="5">Ginecología</option>
-                    </select>
-                </div>
+                <div class="fila-formulario">
+                    <div class="form-group">
+                        <label for="especialidad">Especialidad Requerida</label>
+                        <select name="especialidad" id="especialidad" required>
+                            <option value="" disabled selected>Seleccione una especialidad</option>
+                            <option value="1">Medicina General</option>
+                            <option value="2">Pediatría</option>
+                            <option value="3">Cardiología</option>
+                            <option value="4">Traumatología</option>
+                            <option value="5">Ginecología</option>
+                        </select>
+                    </div>
 
-                <div class="form-group">
-                    <label for="medico">Médico (Opcional):</label>
-                    <select name="medico" id="medico">
-                        <option value="" selected>Cualquier médico disponible</option>
-                        <option value="101">Dr. Carlos Mendoza</option>
-                        <option value="102">Dra. Ana Silva</option>
-                    </select>
+                    <div class="form-group">
+                        <label for="medico">Médico (Opcional)</label>
+                        <select name="medico" id="medico">
+                            <option value="" selected>Cualquier médico disponible</option>
+                            <option value="101">Dr. Carlos Mendoza</option>
+                            <option value="102">Dra. Ana Silva</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="acciones-formulario">
-                    <button type="button" class="btn-secundario">Volver al Paso 1</button>
-                    <button type="button" class="btn-primario">Siguiente Paso</button>
+                    <button type="button" class="btn-outline">Atrás</button>
+                    <button type="button" class="btn-primario">Continuar</button>
                 </div>
             </section>
 
             <section id="paso-3" class="tarjeta-paso">
-                <h3 class="titulo-paso">Paso 3: Fecha y Hora de la Cita</h3>
+                <h3 class="titulo-paso">Fecha y Hora de la Cita</h3>
                 
-                <div class="form-group">
-                    <label for="fecha_cita">Seleccione la Fecha:</label>
-                    <input type="date" name="fecha_cita" id="fecha_cita" required>
-                </div>
+                <div class="fila-formulario">
+                    <div class="form-group">
+                        <label for="fecha_cita">Seleccione la Fecha</label>
+                        <input type="date" name="fecha_cita" id="fecha_cita" required>
+                    </div>
 
-                <div class="form-group">
-                    <label for="hora_cita">Horarios Disponibles:</label>
-                    <select name="hora_cita" id="hora_cita" required>
-                        <option value="" disabled selected>Elija un turno</option>
-                        <option value="08:00">08:00 AM</option>
-                        <option value="08:30">08:30 AM</option>
-                        <option value="09:00">09:00 AM</option>
-                        <option value="09:30">09:30 AM</option>
-                        <option value="10:00">10:00 AM</option>
-                    </select>
+                    <div class="form-group">
+                        <label for="hora_cita">Horarios Disponibles</label>
+                        <select name="hora_cita" id="hora_cita" required>
+                            <option value="" disabled selected>Elija un turno</option>
+                            <option value="08:00">08:00 AM</option>
+                            <option value="08:30">08:30 AM</option>
+                            <option value="09:00">09:00 AM</option>
+                            <option value="09:30">09:30 AM</option>
+                            <option value="10:00">10:00 AM</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="acciones-formulario">
-                    <button type="button" class="btn-secundario">Volver al Paso 2</button>
-                    <button type="button" class="btn-primario">Siguiente Paso</button>
+                    <button type="button" class="btn-outline">Atrás</button>
+                    <button type="button" class="btn-primario">Continuar</button>
                 </div>
             </section>
 
             <section id="paso-4" class="tarjeta-paso">
-                <h3 class="titulo-paso">Paso 4: Resumen y Confirmación</h3>
+                <h3 class="titulo-paso">Resumen y Confirmación</h3>
                 
-                <p class="texto-instruccion">Por favor, revise que los datos de su cita en el Hospital Regional sean correctos:</p>
+                <div class="alerta-info">
+                    Por favor, verifique cuidadosamente que los datos de su cita sean los correctos antes de confirmar.
+                </div>
 
-                <dl class="lista-resumen">
-                    <dt><strong>Paciente:</strong></dt>
-                    <dd id="resumen-paciente">[Nombres y Apellidos del Paciente]</dd>
-
-                    <dt><strong>Documento:</strong></dt>
-                    <dd id="resumen-documento">[DNI o CE]</dd>
-
-                    <dt><strong>Especialidad:</strong></dt>
-                    <dd id="resumen-especialidad">[Especialidad Seleccionada]</dd>
-
-                    <dt><strong>Médico:</strong></dt>
-                    <dd id="resumen-medico">[Nombre del Médico o "Cualquier médico disponible"]</dd>
-
-                    <dt><strong>Fecha:</strong></dt>
-                    <dd id="resumen-fecha">[DD/MM/AAAA]</dd>
-
-                    <dt><strong>Hora:</strong></dt>
-                    <dd id="resumen-hora">[HH:MM AM/PM]</dd>
-                </dl>
+                <div class="caja-resumen">
+                    <dl class="lista-resumen">
+                        <div class="item-resumen">
+                            <dt>Paciente</dt>
+                            <dd id="resumen-paciente">Juan Pérez Gonzales</dd>
+                        </div>
+                        <div class="item-resumen">
+                            <dt>Documento</dt>
+                            <dd id="resumen-documento">DNI - 76543210</dd>
+                        </div>
+                        <div class="item-resumen">
+                            <dt>Especialidad</dt>
+                            <dd id="resumen-especialidad">Cardiología</dd>
+                        </div>
+                        <div class="item-resumen">
+                            <dt>Médico</dt>
+                            <dd id="resumen-medico">Dr. Carlos Mendoza</dd>
+                        </div>
+                        <div class="item-resumen">
+                            <dt>Fecha</dt>
+                            <dd id="resumen-fecha">15/10/2026</dd>
+                        </div>
+                        <div class="item-resumen">
+                            <dt>Hora</dt>
+                            <dd id="resumen-hora">09:30 AM</dd>
+                        </div>
+                    </dl>
+                </div>
 
                 <div class="acciones-formulario">
-                    <button type="button" class="btn-secundario">Modificar Datos (Volver)</button>
-                    <button type="submit" class="btn-primario">Confirmar Cita Médica</button>
+                    <button type="button" class="btn-outline">Modificar Datos</button>
+                    <button type="submit" class="btn-exito">Confirmar Cita Médica</button>
                 </div>
             </section>
         </form>
     </main>
 
     <footer class="pie-pagina">
-        <div class="redes-sociales">
-            <a href="https://facebook.com">Facebook</a>
-            <a href="https://instragram.com">Instragram</a>
-            <a href="https://whatsapp.com">Whatsapp</a>
+        <div class="footer-contenido">
+            <div class="footer-info">
+                <h3>Hospital Regional del Cusco</h3>
+                <p>Avenida de La Cultura S/N, Cusco 08000</p>
+                <p>Central Telefónica: +51 84 231131</p>
+                <p>Emergencias: 24 horas, Lunes a Domingo</p>
+            </div>
+            <div class="footer-enlaces">
+                <a href="#">Términos y Condiciones</a>
+                <a href="#">Políticas de Privacidad</a>
+                <a href="#">Libro de Reclamaciones</a>
+            </div>
+            <div class="redes-sociales">
+                <a href="#">Facebook</a>
+                <a href="#">Instagram</a>
+                <a href="#">WhatsApp</a>
+            </div>
         </div>
-        <p>Contacto: (084) 222222 | Av. de la Cultura, Cusco</p>
-        <p>Horario de atención: Lunes a Domingo 24hrs (Emergencias)</p>
-        <a href="#">Políticas de Privacidad</a>
+        <div class="footer-copyright">
+            <p>&copy; 2026 Hospital Regional del Cusco. Todos los derechos reservados.</p>
+        </div>
     </footer>
 </body>
 </html>
