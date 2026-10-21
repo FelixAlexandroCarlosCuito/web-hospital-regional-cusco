@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inicio de sesión</title>
+    <title>Inicio de sesión - Hospital Regional del Cusco</title>
     <link rel="stylesheet" href="../css/general.css">
     <link rel="stylesheet" href="../css/inicio-sesion.css">
 </head>
 <body>
     <header class="encabezado-principal">
         <div class="header-contenido">
-            <img class="logo-container" src="../assets/logo-hospital.png">
+            <img class="logo-container" src="../assets/logo-hospital.png" alt="Logo">
             <h1 class="titulo-sitio">Hospital Regional del Cusco</h1>
             <nav class="navegacion-superior">
                 <a href="../../index.html">Inicio</a>
@@ -19,6 +19,7 @@
             </nav>
         </div>
     </header>
+
     <div class="contenedor-login">
         <main class="login-main">
             <div class="login-header">
@@ -27,29 +28,30 @@
             </div>
 
             <div class="tarjeta-login">
-                <form class="formulario-login">
+                <form id="formulario-login" class="formulario-login" novalidate>
                     <div class="form-group">
-                        <label for="username">Nombre de usuario</label>
-                        <input type="text" id="username" name="username" required>
+                        <label for="documento">Número de Documento (DNI / CE)</label>
+                        <input type="text" id="documento" name="documento">
+                        <span class="mensaje-error" id="error-documento"></span>
                     </div>
                     
                     <div class="form-group">
                         <label for="password">Contraseña</label>
-                        <input type="password" id="password" name="password" required>
+                        <input type="password" id="password" name="password">
+                        <span class="mensaje-error" id="error-password"></span>
                     </div>
 
-                    <button type="button" class="btn-primario btn-acceso">Acceso</button>
+                    <button type="submit" class="btn-primario btn-acceso">Acceso</button>
                 </form>
 
                 <div class="login-enlaces">
-                    <p><a href="#">¿Olvidaste tu nombre de usuario o contraseña?</a></p>
-                    <p>¿No tienes una cuenta? <a href="#">Crea una ahora.</a></p>
+                    <p><a href="#">¿Olvidaste tu contraseña?</a></p>
+                    <p>¿No tienes una cuenta? <a href="registro.html">Crea una ahora.</a></p>
                 </div>
             </div>
 
             <p class="login-ayuda">Puede encontrar asistencia en línea en la sección <a href="#">Ayuda de la cuenta.</a></p>
         </main>
-
     </div>
 
     <footer class="pie-pagina">
@@ -75,6 +77,6 @@
             <p>&copy; 2026 Hospital Regional del Cusco. Todos los derechos reservados.</p>
         </div>
     </footer>
-
+    <script src="../js/inicio-sesion.js"></script>
 </body>
 </html>

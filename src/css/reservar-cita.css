@@ -242,6 +242,23 @@ button {
     font-weight: 500;
 }
 
+.mensaje-error {
+    color: #dc2626;
+    font-size: 13px;
+    margin-top: 5px;
+    display: block;
+    min-height: 18px;
+}
+
+.input-error {
+    border-color: #dc2626 !important;
+    background-color: #fef2f2 !important;
+}
+
+.input-error:focus {
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1) !important;
+}
+
 @media (max-width: 768px) {
     .fila-formulario, .lista-resumen, .footer-contenido {
         grid-template-columns: 1fr;

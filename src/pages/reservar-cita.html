@@ -10,7 +10,7 @@
 <body>
     <header class="encabezado-principal">
         <div class="header-contenido">
-            <img class="logo-container" src="../assets/logo-hospital.png">
+            <img class="logo-container" src="../assets/logo-hospital.png" alt="Logo">
             <h1 class="titulo-sitio">Hospital Regional del Cusco</h1>
             <nav class="navegacion-superior">
                 <a href="../../index.html">Inicio</a>
@@ -35,7 +35,7 @@
             </ol>
         </nav>
 
-        <form class="formulario-citas">
+        <form id="formulario-reserva" class="formulario-citas" novalidate>
             
             <section id="paso-1" class="tarjeta-paso">
                 <h3 class="titulo-paso">Identificación del Paciente</h3>
@@ -43,18 +43,20 @@
                 <div class="fila-formulario">
                     <div class="form-group">
                         <label for="tipo_documento">Tipo de Documento</label>
-                        <select name="tipo_documento" id="tipo_documento" required>
+                        <select name="tipo_documento" id="tipo_documento">
                             <option value="" disabled selected>Seleccione una opción</option>
                             <option value="DNI">DNI</option>
                             <option value="CE">Carnet de Extranjería</option>
                             <option value="PAS">Pasaporte</option>
                         </select>
+                        <span class="mensaje-error" id="error-tipo_documento"></span>
                     </div>
 
                     <div class="form-group form-group-btn">
                         <div class="input-wrapper">
                             <label for="numero_documento">Número de Documento</label>
-                            <input type="text" name="numero_documento" id="numero_documento" placeholder="Ingrese su documento" required>
+                            <input type="text" name="numero_documento" id="numero_documento" placeholder="Ingrese su documento">
+                            <span class="mensaje-error" id="error-numero_documento"></span>
                         </div>
                         <button type="button" class="btn-secundario btn-validar">Validar</button>
                     </div>
@@ -73,9 +75,10 @@
                         <input type="text" name="apellidos" id="apellidos" placeholder="Se autocompletará..." readonly>
                     </div>
                 </div>
+                <span class="mensaje-error" id="error-validacion-general"></span>
 
                 <div class="acciones-formulario alineacion-derecha">
-                    <button type="button" class="btn-primario">Continuar</button>
+                    <button type="button" class="btn-primario btn-siguiente-1">Continuar</button>
                 </div>
             </section>
 
@@ -85,7 +88,7 @@
                 <div class="fila-formulario">
                     <div class="form-group">
                         <label for="especialidad">Especialidad Requerida</label>
-                        <select name="especialidad" id="especialidad" required>
+                        <select name="especialidad" id="especialidad">
                             <option value="" disabled selected>Seleccione una especialidad</option>
                             <option value="1">Medicina General</option>
                             <option value="2">Pediatría</option>
@@ -93,21 +96,20 @@
                             <option value="4">Traumatología</option>
                             <option value="5">Ginecología</option>
                         </select>
+                        <span class="mensaje-error" id="error-especialidad"></span>
                     </div>
 
                     <div class="form-group">
                         <label for="medico">Médico (Opcional)</label>
-                        <select name="medico" id="medico">
-                            <option value="" selected>Cualquier médico disponible</option>
-                            <option value="101">Dr. Carlos Mendoza</option>
-                            <option value="102">Dra. Ana Silva</option>
+                        <select name="medico" id="medico" disabled>
+                            <option value="" selected>Seleccione especialidad primero</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="acciones-formulario">
-                    <button type="button" class="btn-outline">Atrás</button>
-                    <button type="button" class="btn-primario">Continuar</button>
+                    <button type="button" class="btn-outline btn-atras-2">Atrás</button>
+                    <button type="button" class="btn-primario btn-siguiente-2">Continuar</button>
                 </div>
             </section>
 
@@ -117,12 +119,13 @@
                 <div class="fila-formulario">
                     <div class="form-group">
                         <label for="fecha_cita">Seleccione la Fecha</label>
-                        <input type="date" name="fecha_cita" id="fecha_cita" required>
+                        <input type="date" name="fecha_cita" id="fecha_cita">
+                        <span class="mensaje-error" id="error-fecha_cita"></span>
                     </div>
 
                     <div class="form-group">
                         <label for="hora_cita">Horarios Disponibles</label>
-                        <select name="hora_cita" id="hora_cita" required>
+                        <select name="hora_cita" id="hora_cita">
                             <option value="" disabled selected>Elija un turno</option>
                             <option value="08:00">08:00 AM</option>
                             <option value="08:30">08:30 AM</option>
@@ -130,12 +133,13 @@
                             <option value="09:30">09:30 AM</option>
                             <option value="10:00">10:00 AM</option>
                         </select>
+                        <span class="mensaje-error" id="error-hora_cita"></span>
                     </div>
                 </div>
 
                 <div class="acciones-formulario">
-                    <button type="button" class="btn-outline">Atrás</button>
-                    <button type="button" class="btn-primario">Continuar</button>
+                    <button type="button" class="btn-outline btn-atras-3">Atrás</button>
+                    <button type="button" class="btn-primario btn-siguiente-3">Continuar</button>
                 </div>
             </section>
 
@@ -150,33 +154,33 @@
                     <dl class="lista-resumen">
                         <div class="item-resumen">
                             <dt>Paciente</dt>
-                            <dd id="resumen-paciente">Juan Pérez Gonzales</dd>
+                            <dd id="resumen-paciente"></dd>
                         </div>
                         <div class="item-resumen">
                             <dt>Documento</dt>
-                            <dd id="resumen-documento">DNI - 76543210</dd>
+                            <dd id="resumen-documento"></dd>
                         </div>
                         <div class="item-resumen">
                             <dt>Especialidad</dt>
-                            <dd id="resumen-especialidad">Cardiología</dd>
+                            <dd id="resumen-especialidad"></dd>
                         </div>
                         <div class="item-resumen">
                             <dt>Médico</dt>
-                            <dd id="resumen-medico">Dr. Carlos Mendoza</dd>
+                            <dd id="resumen-medico"></dd>
                         </div>
                         <div class="item-resumen">
                             <dt>Fecha</dt>
-                            <dd id="resumen-fecha">15/10/2026</dd>
+                            <dd id="resumen-fecha"></dd>
                         </div>
                         <div class="item-resumen">
                             <dt>Hora</dt>
-                            <dd id="resumen-hora">09:30 AM</dd>
+                            <dd id="resumen-hora"></dd>
                         </div>
                     </dl>
                 </div>
 
                 <div class="acciones-formulario">
-                    <button type="button" class="btn-outline">Modificar Datos</button>
+                    <button type="button" class="btn-outline btn-atras-4">Modificar Datos</button>
                     <button type="submit" class="btn-exito">Confirmar Cita Médica</button>
                 </div>
             </section>
