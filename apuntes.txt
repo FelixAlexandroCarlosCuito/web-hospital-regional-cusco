@@ -1,1 +1,1 @@
-xsmano fino empieso com el curd
+composer create proyect laravel/laravel sistema-crud
