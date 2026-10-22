@@ -83,20 +83,15 @@
 
             <section id="paso-2" class="tarjeta-paso">
                 <h3 class="titulo-paso">Selección de Especialidad</h3>
-                
                 <div class="fila-formulario">
                     <div class="form-group">
                         <label for="especialidad">Especialidad Requerida</label>
                         <select name="especialidad" id="especialidad">
-                            <option value="" disabled selected>Seleccione una especialidad</option>
-                            <option value="1">Medicina General</option>
-                            <option value="2">Pediatría</option>
-                            <option value="3">Cardiología</option>
-                            <option value="4">Traumatología</option>
-                            <option value="5">Ginecología</option>
-                        </select>
-                        <span class="mensaje-error" id="error-especialidad"></span>
-                    </div>
+                            <option value="" disabled selected>Cargando especialidades...</option>
+                            <!-- El JS llenará esto automáticamente desde Laravel -->
+                            </select>
+                            <span class="mensaje-error" id="error-especialidad"></span>
+                        </div>
 
                     <div class="form-group">
                         <label for="medico">Médico (Opcional)</label>

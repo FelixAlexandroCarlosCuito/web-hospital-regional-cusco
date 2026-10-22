@@ -8,13 +8,26 @@ document.addEventListener('DOMContentLoaded', function() {
     const barraPasos = document.querySelectorAll('.barra-pasos li');
     let pasoActual = 0;
 
-    const bdMedicos = {
-        "1": [{id: "101", nombre: "Dr. Carlos Mendoza"}, {id: "102", nombre: "Dra. Ana Silva"}],
-        "2": [{id: "201", nombre: "Dr. Luis Paredes"}],
-        "3": [{id: "301", nombre: "Dra. Carmen Rosa"}],
-        "4": [{id: "401", nombre: "Dr. Jorge Torres"}, {id: "402", nombre: "Dr. Marcos Ruiz"}],
-        "5": [{id: "501", nombre: "Dra. María Elena"}]
-    };
+    // 1. Cargar las especialidades desde Laravel al iniciar la página
+    async function cargarEspecialidades() {
+        try {
+            const respuesta = await fetch('http://127.0.0.1:8000/api/especialidades');
+            const especialidades = await respuesta.json();
+            const selectEspecialidad = document.getElementById('especialidad');
+            
+            selectEspecialidad.innerHTML = '<option value="" disabled selected>Seleccione una especialidad</option>';
+            
+            especialidades.forEach(esp => {
+                const option = document.createElement('option');
+                option.value = esp.id;
+                option.textContent = esp.nombre;
+                selectEspecialidad.appendChild(option);
+            });
+        } catch (error) {
+            console.error("Error cargando especialidades:", error);
+        }
+    }
+    cargarEspecialidades(); // Ejecutar al cargar la página
 
     configurarFechaMinima();
 
@@ -61,13 +74,13 @@ document.addEventListener('DOMContentLoaded', function() {
         inputFecha.min = `${anio}-${mes}-${dia}`;
     }
 
-       document.querySelector('.btn-validar').addEventListener('click', async function() {
+    // --- VALIDAR PACIENTE (Paso 1) ---
+    document.querySelector('.btn-validar').addEventListener('click', async function() {
         limpiarErrores('paso-1');
         const tipoDoc = document.getElementById('tipo_documento').value;
         const numDoc = document.getElementById('numero_documento').value.trim();
         let esValido = true;
 
-        // Validaciones básicas
         if (!tipoDoc) {
             mostrarError('tipo_documento', 'Seleccione un tipo de documento.');
             esValido = false;
@@ -85,7 +98,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         if (esValido) {
-            // Consultamos a Laravel
             try {
                 const respuesta = await fetch(`http://127.0.0.1:8000/api/paciente/${numDoc}`);
                 const data = await respuesta.json();
@@ -94,8 +106,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 const inputApellidos = document.getElementById('apellidos');
 
                 if (data.encontrado) {
-                    // SI EXISTE: Autocompletar y bloquear
-                    // (Como guardamos el nombre completo, lo separamos o lo ponemos en el primer campo)
                     const partesNombre = data.nombre_completo.split(' ');
                     inputNombres.value = partesNombre[0] || data.nombre_completo;
                     inputApellidos.value = partesNombre.slice(1).join(' ') || '';
@@ -105,14 +115,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     alert("Paciente encontrado. Datos autocompletados.");
                 } else {
-                    // NO EXISTE: Limpiar y permitir escribir
                     inputNombres.value = "";
                     inputApellidos.value = "";
                     
                     inputNombres.readOnly = false;
                     inputApellidos.readOnly = false;
                     
-                    inputNombres.focus(); // Ponemos el cursor en Nombres
+                    inputNombres.focus();
                     alert("Paciente nuevo. Por favor, ingrese sus nombres y apellidos.");
                 }
             } catch (error) {
@@ -121,6 +130,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
+
     document.querySelector('.btn-siguiente-1').addEventListener('click', function() {
         limpiarErrores('paso-1');
         const nombres = document.getElementById('nombres').value.trim();
@@ -132,22 +142,34 @@ document.addEventListener('DOMContentLoaded', function() {
         mostrarPaso(1);
     });
 
-    document.getElementById('especialidad').addEventListener('change', function() {
+    // --- CARGAR MÉDICOS SEGÚN ESPECIALIDAD (Paso 2) ---
+    document.getElementById('especialidad').addEventListener('change', async function() {
         const especialidadId = this.value;
         const selectMedico = document.getElementById('medico');
         
-        selectMedico.innerHTML = '<option value="" selected>Cualquier médico disponible</option>';
-        
-        if (especialidadId && bdMedicos[especialidadId]) {
+        selectMedico.innerHTML = '<option value="">Cargando médicos...</option>';
+        selectMedico.disabled = true;
+
+        try {
+            const respuesta = await fetch(`http://127.0.0.1:8000/api/especialidades/${especialidadId}/medicos`);
+            const medicos = await respuesta.json();
+
+            selectMedico.innerHTML = '<option value="" selected>Cualquier médico disponible</option>';
             selectMedico.disabled = false;
-            bdMedicos[especialidadId].forEach(medico => {
-                const option = document.createElement('option');
-                option.value = medico.id;
-                option.textContent = medico.nombre;
-                selectMedico.appendChild(option);
-            });
-        } else {
-            selectMedico.disabled = true;
+
+            if (medicos.length === 0) {
+                selectMedico.innerHTML = '<option value="">No hay médicos disponibles</option>';
+            } else {
+                medicos.forEach(medico => {
+                    const option = document.createElement('option');
+                    option.value = medico.id;
+                    option.textContent = medico.nombre;
+                    selectMedico.appendChild(option);
+                });
+            }
+        } catch (error) {
+            console.error("Error cargando médicos:", error);
+            selectMedico.innerHTML = '<option value="">Error al cargar</option>';
         }
     });
 
@@ -162,6 +184,7 @@ document.addEventListener('DOMContentLoaded', function() {
         mostrarPaso(2);
     });
 
+    // --- FECHA Y HORA (Paso 3) ---
     document.getElementById('fecha_cita').addEventListener('change', function() {
         limpiarErrores('paso-3');
         const fechaIngresada = this.value;
@@ -198,6 +221,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('.btn-atras-3').addEventListener('click', () => mostrarPaso(1));
     document.querySelector('.btn-atras-4').addEventListener('click', () => mostrarPaso(2));
 
+    // --- RESUMEN (Paso 4) ---
     function generarResumen() {
         const selEspecialidad = document.getElementById('especialidad');
         const txtEspecialidad = selEspecialidad.options[selEspecialidad.selectedIndex].text;
@@ -225,8 +249,53 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('resumen-hora').textContent = txtHora;
     }
 
-    document.getElementById('formulario-reserva').addEventListener('submit', function(e) {
+    // --- GUARDAR EN LARAVEL Y REDIRIGIR AL TICKET ---
+    document.getElementById('formulario-reserva').addEventListener('submit', async function(e) {
         e.preventDefault();
-        window.location.href = 'ticket.html';
+        
+        // Recolectar datos reales
+        const numDoc = document.getElementById('numero_documento').value;
+        const nombres = document.getElementById('nombres').value;
+        const apellidos = document.getElementById('apellidos').value;
+        const especialidadTexto = document.getElementById('especialidad').options[document.getElementById('especialidad').selectedIndex].text;
+        const medicoId = document.getElementById('medico').value; 
+        const fecha = document.getElementById('fecha_cita').value;
+        const hora = document.getElementById('hora_cita').value;
+        const monto = 6.00; 
+
+        const datosCita = {
+            paciente_nombre: nombres + ' ' + apellidos,
+            paciente_documento: numDoc,
+            especialidad: especialidadTexto,
+            medico_id: medicoId || null, 
+            fecha: fecha,
+            hora: hora,
+            monto_pagar: monto
+        };
+
+        try {
+            // Enviar a Laravel
+            const respuesta = await fetch('http://127.0.0.1:8000/api/citas', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json' 
+                },
+                body: JSON.stringify(datosCita)
+            });
+
+            const resultado = await respuesta.json();
+
+            if (respuesta.ok) {
+                // Guardamos el ID de la cita para que el ticket.html sepa cuál mostrar
+                localStorage.setItem('cita_id', resultado.cita.id);
+                window.location.href = 'ticket.html';
+            } else {
+                alert('Error al guardar la cita: ' + JSON.stringify(resultado.errors));
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Error de conexión con el servidor Laravel. Asegúrate de que php artisan serve esté encendido.');
+        }
     });
 });
