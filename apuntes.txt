@@ -1,1 +1,5 @@
+//comando para crear el laravel jsjs
 composer create proyect laravel/laravel sistema-crud
+
+
+// entorno de desarrolo para la pararela de pagos jsjs
