@@ -2,4 +2,24 @@
 composer create proyect laravel/laravel sistema-crud
 
 
-// entorno de desarrolo para la pararela de pagos jsjs
+// entorno de desarrolo para la pararela de pagos jsjs YA CREADAS POR REVISAR
+
+php artisan make:model Cita -m
+
+php artisan make:command CancelarCitasExpiradas
+
+
+// comaNDO DE  PRUEVA DEL A PARALERA DE PAGOS CANCELACION DE CITA POR EXPIRACION DE TIEMP O  ACTIVACION DE  LA BASE DE DATOS
+php artisan tinker
+// PRIUEBA DE TIKET 
+App\Models\Cita::create(['paciente_nombre' => 'Paciente Prueba', 'paciente_documento' => '12345678', 'especialidad' => 'Cardiología', 'fecha' => '2026-10-25', 'hora' => '09:00', 'monto_pagar' => 6.00, 'created_at' => now()->subMinutes(21)]);
+
+// VERIFICACION DE ACTIVIDAD EN BD
+
+
+
+//arranckar robot 
++php artisan schedule:work
+
+//crear puente entre api d3 laravel 
+php artisan make:controller CitaController

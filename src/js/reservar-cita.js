@@ -61,12 +61,13 @@ document.addEventListener('DOMContentLoaded', function() {
         inputFecha.min = `${anio}-${mes}-${dia}`;
     }
 
-    document.querySelector('.btn-validar').addEventListener('click', function() {
+       document.querySelector('.btn-validar').addEventListener('click', async function() {
         limpiarErrores('paso-1');
         const tipoDoc = document.getElementById('tipo_documento').value;
         const numDoc = document.getElementById('numero_documento').value.trim();
         let esValido = true;
 
+        // Validaciones básicas
         if (!tipoDoc) {
             mostrarError('tipo_documento', 'Seleccione un tipo de documento.');
             esValido = false;
@@ -84,15 +85,42 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         if (esValido) {
-            document.getElementById('nombres').value = "Juan Carlos";
-            document.getElementById('apellidos').value = "Pérez Gonzales";
-            mostrarError('validacion-general', '');
-        } else {
-            document.getElementById('nombres').value = "";
-            document.getElementById('apellidos').value = "";
+            // Consultamos a Laravel
+            try {
+                const respuesta = await fetch(`http://127.0.0.1:8000/api/paciente/${numDoc}`);
+                const data = await respuesta.json();
+
+                const inputNombres = document.getElementById('nombres');
+                const inputApellidos = document.getElementById('apellidos');
+
+                if (data.encontrado) {
+                    // SI EXISTE: Autocompletar y bloquear
+                    // (Como guardamos el nombre completo, lo separamos o lo ponemos en el primer campo)
+                    const partesNombre = data.nombre_completo.split(' ');
+                    inputNombres.value = partesNombre[0] || data.nombre_completo;
+                    inputApellidos.value = partesNombre.slice(1).join(' ') || '';
+                    
+                    inputNombres.readOnly = true;
+                    inputApellidos.readOnly = true;
+                    
+                    alert("Paciente encontrado. Datos autocompletados.");
+                } else {
+                    // NO EXISTE: Limpiar y permitir escribir
+                    inputNombres.value = "";
+                    inputApellidos.value = "";
+                    
+                    inputNombres.readOnly = false;
+                    inputApellidos.readOnly = false;
+                    
+                    inputNombres.focus(); // Ponemos el cursor en Nombres
+                    alert("Paciente nuevo. Por favor, ingrese sus nombres y apellidos.");
+                }
+            } catch (error) {
+                console.error("Error al conectar con Laravel:", error);
+                mostrarError('validacion-general', 'Error de conexión. Asegúrese de que el servidor esté encendido.');
+            }
         }
     });
-
     document.querySelector('.btn-siguiente-1').addEventListener('click', function() {
         limpiarErrores('paso-1');
         const nombres = document.getElementById('nombres').value.trim();
