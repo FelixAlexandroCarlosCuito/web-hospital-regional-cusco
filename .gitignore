@@ -18,6 +18,7 @@
 /public/storage
 /storage/*.key
 /storage/pail
+# Descomprimir la carpeta vendor ubicado en la raíz del proyecto
 /vendor
 Homestead.json
 Homestead.yaml
