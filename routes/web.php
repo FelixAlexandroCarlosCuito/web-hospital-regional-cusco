@@ -19,3 +19,22 @@ use App\Http\Controllers\MedicoController;
 Route::get('/medico/{id}', [MedicoController::class, 'dashboard'])->name('medico.dashboard');
 Route::get('/medico/atender/{idCita}', [MedicoController::class, 'atenderCita'])->name('medico.atender');
 Route::post('/medico/atender/{idCita}', [MedicoController::class, 'guardarHistorial'])->name('medico.guardar');
+
+// === Rutas Generales de la página ===
+Route::get('/inicio', function () {
+    return view('inicio');
+});
+
+// Rutas para el módulo de citas
+Route::get('/reservar-cita', function () {
+    return view('citas.reservar-cita'); 
+});
+
+// Rutas para el módulo de autenticación
+Route::get('/inicio-sesion', function () {
+    return view('auth.inicio-sesion');
+});
+
+Route::get('/registro', function () {
+    return view('auth.registro');
+});

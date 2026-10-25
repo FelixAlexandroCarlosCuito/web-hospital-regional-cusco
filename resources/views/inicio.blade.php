@@ -12,7 +12,7 @@
             <div>
                 <h1 class="hero-titulo">Cuidando la salud de toda la región</h1>
                 <p>Accede a nuestros servicios médicos y reserva tu cita presencial de manera rápida, segura y sin hacer filas.</p>
-                <a href="src/pages/reservar-cita.html" class="btn-primario-lg">Reservar Cita Ahora</a>
+                <a href="{{url('/reservar-cita')}}" class="btn-primario-lg">Reservar Cita Ahora</a>
             </div>
         </section>
 
@@ -20,22 +20,22 @@
             <h2 class="seccion-titulo">Nuestras Especialidades</h2>
             <div class="grid-especialidades">
                 <div class="tarjeta-especialidad">
-                    <img class="imagenes-circulares" src="src/assets/medicina-general.png">
+                    <img class="imagenes-circulares" src="{{asset('assets/medicina-general.png')}}">
                     <h3>Medicina General</h3>
                     <p>Atención integral para el diagnóstico temprano y tratamiento de enfermedades comunes.</p>
                 </div>
                 <div class="tarjeta-especialidad">
-                    <img class="imagenes-circulares" src="src/assets/pediatria.png">
+                    <img class="imagenes-circulares" src="{{asset('assets/pediatria.png')}}">
                     <h3>Pediatría</h3>
                     <p>Cuidado especializado, control y seguimiento para el desarrollo saludable de los más pequeños.</p>
                 </div>
                 <div class="tarjeta-especialidad">
-                    <img class="imagenes-circulares" src="src/assets/cardiologia.png">
+                    <img class="imagenes-circulares" src="{{asset('assets/cardiologia.png')}}">
                     <h3>Cardiología</h3>
                     <p>Prevención, diagnóstico y tratamiento de enfermedades del corazón y el sistema circulatorio.</p>
                 </div>
                 <div class="tarjeta-especialidad">
-                    <img class="imagenes-circulares" src="src/assets/emergencia.png">
+                    <img class="imagenes-circulares" src="{{asset('assets/emergencia.png')}}">
                     <h3>Emergencias</h3>
                     <p>Atención prioritaria e inmediata de casos críticos con soporte vital avanzado.</p>
                 </div>
@@ -68,5 +68,5 @@
 @endsection
 
 @section('js')
-    
+
 @endsection
