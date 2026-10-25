@@ -60,4 +60,8 @@ class CitaController extends Controller
 
         return response()->json(['encontrado' => false]);
     }
+
+    public function ticket(){
+        return view('citas.ticket');
+    }
 }
