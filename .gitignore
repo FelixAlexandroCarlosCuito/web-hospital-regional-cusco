@@ -1,6 +1,6 @@
 *.log
 .DS_Store
-.env
+# Dependecia .env necesaria en el repositorio
 .env.backup
 .env.production
 .phpactor.json
