@@ -1,25 +1,12 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inicio</title>
-    <link rel="stylesheet" href="src/css/general.css">
-    <link rel="stylesheet" href="src/css/index.css">
-</head>
-<body>
-    <header class="encabezado-principal">
-        <div class="header-contenido">
-            <img class="logo-container" src="src/assets/logo-hospital.png">
-            <h1 class="titulo-sitio">Hospital Regional del Cusco</h1>
-            <nav class="navegacion-superior">
-                <a href="index.html">Inicio</a>
-                <a href="src/pages/reservar-cita.html">Reservar cita</a>
-                <a href="src/pages/inicio-sesion.html" class="btn-login">Iniciar Sesión</a>
-            </nav>
-        </div>
-    </header>
+@extends('layouts.main')
 
+@section('titulo', 'Inicio')
+
+@section('css')
+    <link rel="stylesheet" href="{{ asset('css/inicio.css') }}">
+@endsection
+
+@section('contenido')
     <main class="index-main">
         <section class="hero-index">            
             <div>
@@ -78,29 +65,8 @@
             </div>
         </section>
     </main>
+@endsection
 
-    <footer class="pie-pagina">
-        <div class="footer-contenido">
-            <div class="footer-info">
-                <h3>Hospital Regional del Cusco</h3>
-                <p>Avenida de La Cultura S/N, Cusco 08000</p>
-                <p>Central Telefónica: +51 84 231131</p>
-                <p>Emergencias: 24 horas, Lunes a Domingo</p>
-            </div>
-            <div class="footer-enlaces">
-                <a href="#">Términos y Condiciones</a>
-                <a href="#">Políticas de Privacidad</a>
-                <a href="#">Libro de Reclamaciones</a>
-            </div>
-            <div class="redes-sociales">
-                <a href="#">Facebook</a>
-                <a href="#">Instagram</a>
-                <a href="#">WhatsApp</a>
-            </div>
-        </div>
-        <div class="footer-copyright">
-            <p>Proyecto académico - Uso simulado con fines educativos. No es una página oficial</p>
-        </div>
-    </footer>
-</body>
-</html>
+@section('js')
+    
+@endsection

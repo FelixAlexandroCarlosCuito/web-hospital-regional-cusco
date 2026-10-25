@@ -5,7 +5,7 @@ use App\Http\Controllers\AdminController; // <-- El use va arriba, junto al otro
 
 // Ruta de inicio por defecto de Laravel
 Route::get('/', function () {
-    return view('welcome');
+    return view('inicio'); 
 });
 
 // Rutas de nuestro Panel del Director
