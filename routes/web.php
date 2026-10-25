@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController; // <-- El use va arriba, junto al otro
+use App\Http\Controllers\PaginasController;
 
 // Ruta de inicio por defecto de Laravel
 Route::get('/', function () {
@@ -20,21 +21,11 @@ Route::get('/medico/{id}', [MedicoController::class, 'dashboard'])->name('medico
 Route::get('/medico/atender/{idCita}', [MedicoController::class, 'atenderCita'])->name('medico.atender');
 Route::post('/medico/atender/{idCita}', [MedicoController::class, 'guardarHistorial'])->name('medico.guardar');
 
-// === Rutas Generales de la página ===
-Route::get('/inicio', function () {
-    return view('inicio');
-});
+// Rutas de autenticación de la página
+Route::get('/inicio-sesion', [AuthController::class, 'index'])->name('login');
+Route::get('/registro', [AuthController::class, 'registro'])->name('registro');
+Route::post('/registrar', [AuthController::class, 'registrar'])->name('registrar');
 
-// Rutas para el módulo de citas
-Route::get('/reservar-cita', function () {
-    return view('citas.reservar-cita'); 
-});
-
-// Rutas para el módulo de autenticación
-Route::get('/inicio-sesion', function () {
-    return view('auth.inicio-sesion');
-});
-
-Route::get('/registro', function () {
-    return view('auth.registro');
-});
+// Rutas de pestañas de la página
+Route::get('/inicio', [PaginasController::class, 'inicio'])->name('inicio');
+Route::get('/reservar_cita', [PaginasController::class, 'reservar_cita'])->name('reservar_cita');

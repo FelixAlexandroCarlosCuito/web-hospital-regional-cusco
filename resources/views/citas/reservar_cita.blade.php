@@ -1,4 +1,13 @@
-<main class="contenedor-principal">
+@extends('layouts.main')
+
+@section('titulo', 'Inicio')
+
+@section('css')
+    <link rel="stylesheet" href="{{asset('css/reservar_cita.css')}}">
+@endsection
+
+@section('contenido')
+    <main class="contenedor-principal">
         <div class="cabecera-seccion">
             <h2 class="titulo-seccion">Reserva tu Cita Médica</h2>
             <p class="subtitulo-seccion">Completa los pasos para agendar tu atención presencial</p>
@@ -158,3 +167,8 @@
             </section>
         </form>
     </main>
+@endsection
+
+@section('js')
+    <script src="{{asset('js/reservar_cita.js')}}"></script>
+@endsection
