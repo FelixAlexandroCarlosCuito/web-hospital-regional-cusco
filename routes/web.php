@@ -4,7 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController; // <-- El use va arriba, junto al otro
 use App\Http\Controllers\PaginasController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\CitasController;
+use App\Http\Controllers\CitaController;
+use App\Http\Controllers\PacienteController;
 
 // Ruta de inicio por defecto de Laravel
 Route::get('/', function () {
@@ -33,4 +34,7 @@ Route::get('/inicio', [PaginasController::class, 'inicio'])->name('inicio');
 Route::get('/reservar_cita', [PaginasController::class, 'reservar_cita'])->name('reservar_cita');
 
 // Rutas de citas
-Route::get('/ticket', [CitasController::class, 'ticket'])->name('ticket');
+Route::get('/ticket', [CitaController::class, 'ticket'])->name('ticket');
+
+// Rutas de paciente
+Route::get('/dashboard', [PacienteController::class, 'dashboard'])->name('paciente.dashboard');
