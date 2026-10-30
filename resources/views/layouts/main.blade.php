@@ -15,8 +15,18 @@
             <h1 class="titulo-sitio">Hospital Regional del Cusco</h1>
             <nav class="navegacion-superior">
                 <a href="{{ url('/inicio') }}">Inicio</a>
-                <a href="{{ url('/reservar_cita') }}">Reservar cita</a>
-                <a href="{{ url('/inicio_sesion') }}" class="btn-login">Iniciar Sesión</a>
+                <a href="{{ url('/reservar-cita') }}">Reservar cita</a>
+                @guest
+                    <a href="{{ route('login') }}" class="btn-login">Iniciar Sesión</a>
+                    <a href="{{ route('registro') }}" class="btn-registro">Registrarse</a>
+                @endguest
+                @auth
+                    <a href="{{ route('paciente.dashboard') }}" class="btn-dashboard">Mi perfil</a>
+                    <form action="#" method="POST" style="display: inline;">
+                        @csrf
+                        <button type="submit" class="btn-logout">Cerrar Sesión</button>
+                    </form>
+                @endauth
             </nav>
         </div>
     </header>

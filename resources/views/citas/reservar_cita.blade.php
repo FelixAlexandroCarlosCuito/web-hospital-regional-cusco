@@ -3,7 +3,7 @@
 @section('titulo', 'Inicio')
 
 @section('css')
-    <link rel="stylesheet" href="{{asset('css/reservar_cita.css')}}">
+    <link rel="stylesheet" href="{{asset('css/reservar-cita.css')}}">
 @endsection
 
 @section('contenido')
@@ -170,5 +170,5 @@
 @endsection
 
 @section('js')
-    <script src="{{asset('js/reservar_cita.js')}}"></script>
+    <script src="{{asset('js/reservar-cita.js')}}"></script>
 @endsection

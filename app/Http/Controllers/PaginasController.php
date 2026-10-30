@@ -11,7 +11,5 @@ class PaginasController extends Controller
         return view('inicio');
     }
 
-    public function reservar_cita(){
-        return view('citas.reservar_cita');
-    }
+    
 }

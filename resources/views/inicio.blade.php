@@ -12,7 +12,7 @@
             <div>
                 <h1 class="hero-titulo">Cuidando la salud de toda la región</h1>
                 <p>Accede a nuestros servicios médicos y reserva tu cita presencial de manera rápida, segura y sin hacer filas.</p>
-                <a href="{{url('/reservar_cita')}}" class="btn-primario-lg">Reservar Cita Ahora</a>
+                <a href="{{url('/reservar-cita')}}" class="btn-primario-lg">Reservar Cita Ahora</a>
             </div>
         </section>
 

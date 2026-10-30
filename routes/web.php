@@ -24,17 +24,26 @@ Route::get('/medico/{id}', [MedicoController::class, 'dashboard'])->name('medico
 Route::get('/medico/atender/{idCita}', [MedicoController::class, 'atenderCita'])->name('medico.atender');
 Route::post('/medico/atender/{idCita}', [MedicoController::class, 'guardarHistorial'])->name('medico.guardar');
 
-// Rutas de autenticación de la página
-Route::get('/inicio_sesion', [AuthController::class, 'index'])->name('login');
-Route::get('/registro', [AuthController::class, 'registro'])->name('registro');
-Route::post('/registrar', [AuthController::class, 'registrar'])->name('registrar');
+//=== RUTAS DE ACCESO EXCLUSIVAS ===
+Route::middleware("guest")->group(function () {
+    // Rutas de autenticación de la página
+    Route::get('/inicio_sesion', [AuthController::class, 'index'])->name('login');
+    Route::get('/registro', [AuthController::class, 'registro'])->name('registro');
+    Route::post('/registrar', [AuthController::class, 'registrar'])->name('registrar');
+});
 
-// Rutas de pestañas de la página
+Route::middleware("auth")->group(function () {
+    // Rutas de paciente
+    Route::get('/dashboard', [PacienteController::class, 'dashboard'])->name('dashboard');
+    // Rutas de citas
+    Route::get('/reservar-cita', [PaginasController::class, 'reservar_cita'])->name('reservar_cita');
+    Route::get('/ticket', [CitaController::class, 'ticket'])->name('ticket');
+});
+
+//=== RUTAS DE ACCESO GLOBAL ===
+// Rutas de pestañas
 Route::get('/inicio', [PaginasController::class, 'inicio'])->name('inicio');
-Route::get('/reservar_cita', [PaginasController::class, 'reservar_cita'])->name('reservar_cita');
 
 // Rutas de citas
-Route::get('/ticket', [CitaController::class, 'ticket'])->name('ticket');
 
 // Rutas de paciente
-Route::get('/dashboard', [PacienteController::class, 'dashboard'])->name('paciente.dashboard');

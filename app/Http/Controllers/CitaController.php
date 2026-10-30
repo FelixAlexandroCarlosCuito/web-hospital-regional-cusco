@@ -64,4 +64,8 @@ class CitaController extends Controller
     public function ticket(){
         return view('citas.ticket');
     }
+
+    public function reservar_cita(){
+        return view('citas.reservar-cita');
+    }
 }
