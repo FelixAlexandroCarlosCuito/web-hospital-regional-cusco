@@ -12,6 +12,8 @@ class ReniecSimulacion extends Model
         'fecha_emision', 
         'nombres', 
         'apellido_paterno', 
-        'apellido_materno'
+        'apellido_materno',
+        'fecha_nacimiento',
+        'direccion'
     ];
 }

@@ -16,9 +16,11 @@ return new class extends Migration
             $table->string('tipo_documento', 20);
             $table->string('numero_documento', 20)->unique();
             $table->string('nombres');            
-            // Apellidos atomizados según estándar gubernamental
             $table->string('apellido_paterno');
             $table->string('apellido_materno');            
+            $table->date('fecha_nacimiento');
+            $table->string('direccion');
+            $table->string('telefono', 15)->nullable(); // Se pide o actualiza verbalmente
             $table->string('correo')->nullable();
             $table->string('password');
             $table->rememberToken();

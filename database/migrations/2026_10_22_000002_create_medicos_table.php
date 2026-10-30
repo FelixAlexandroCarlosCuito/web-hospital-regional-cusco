@@ -10,10 +10,11 @@ return new class extends Migration
     {
         Schema::create('medicos', function (Blueprint $table) {
             $table->id();
+            // Llave foránea: Un médico pertenece estrictamente a una especialidad
             $table->foreignId('especialidad_id')->constrained('especialidades')->onDelete('cascade');
-            $table->string('nombre');
-            $table->string('horario_inicio')->default('08:00');
-            $table->string('horario_fin')->default('14:00');
+            $table->string('nombres');
+            $table->string('apellidos');
+            $table->string('consultorio');
             $table->timestamps();
         });
     }

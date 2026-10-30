@@ -10,165 +10,117 @@
     <main class="contenedor-principal">
         <div class="cabecera-seccion">
             <h2 class="titulo-seccion">Reserva tu Cita Médica</h2>
-            <p class="subtitulo-seccion">Completa los pasos para agendar tu atención presencial</p>
+            <p class="subtitulo-seccion">Complete los pasos para agendar su atención presencial</p>
         </div>
         
         <nav aria-label="Progreso de la reserva">
             <ol class="barra-pasos">
-                <li class="activo"><span>1</span> Paciente</li>
-                <li><span>2</span> Especialidad</li>
-                <li><span>3</span> Fecha y Hora</li>
-                <li><span>4</span> Confirmación</li>
+                <li class="activo"><span>1</span> Especialidad</li>
+                <li><span>2</span> Fecha y Datos</li>
+                <li><span>3</span> Confirmación</li>
             </ol>
         </nav>
 
-        <form id="formulario-reserva" class="formulario-citas" novalidate>
+        <form id="formulario-reserva" class="formulario-reserva" action="{{ route('citas.store') }}" method="POST">
+            @csrf
             
-            <section id="paso-1" class="tarjeta-paso">
-                <h3 class="titulo-paso">Identificación del Paciente</h3>
-                
+            <!-- PASO 1: Especialidad y Médico -->
+            <div id="paso-1" class="fase-reserva">
                 <div class="fila-formulario">
                     <div class="form-group">
-                        <label for="tipo_documento">Tipo de Documento</label>
-                        <select name="tipo_documento" id="tipo_documento">
-                            <option value="" disabled selected>Seleccione una opción</option>
-                            <option value="DNI">DNI</option>
-                            <option value="CE">Carnet de Extranjería</option>
-                            <option value="PAS">Pasaporte</option>
+                        <label for="especialidad">Especialidad</label>
+                        <select id="especialidad" name="especialidad_id" required>
+                            <option value="" disabled selected>Seleccione Especialidad</option>
+                            @foreach($especialidades as $especialidad)
+                                <option value="{{ $especialidad->id }}">{{ $especialidad->nombre }}</option>
+                            @endforeach
                         </select>
-                        <span class="mensaje-error" id="error-tipo_documento"></span>
+                        <span class="mensaje-error" id="error-especialidad"></span>
                     </div>
-
-                    <div class="form-group form-group-btn">
-                        <div class="input-wrapper">
-                            <label for="numero_documento">Número de Documento</label>
-                            <input type="text" name="numero_documento" id="numero_documento" placeholder="Ingrese su documento">
-                            <span class="mensaje-error" id="error-numero_documento"></span>
-                        </div>
-                        <button type="button" class="btn-secundario btn-validar">Validar</button>
-                    </div>
-                </div>
-
-                <hr class="separador">
-
-                <div class="fila-formulario">
+                    
                     <div class="form-group">
-                        <label for="nombres">Nombres</label>
-                        <input type="text" name="nombres" id="nombres" placeholder="Ingrese sus nombres">
-                    </div>
-                    <div class="form-group">
-                        <label for="apellidos">Apellidos</label>
-                        <input type="text" name="apellidos" id="apellidos" placeholder="Ingrese sus apellidos">
-                    </div>
-                </div>
-                <span class="mensaje-error" id="error-validacion-general"></span>
-
-                <div class="acciones-formulario alineacion-derecha">
-                    <button type="button" class="btn-primario btn-siguiente-1">Continuar</button>
-                </div>
-            </section>
-
-            <section id="paso-2" class="tarjeta-paso">
-                <h3 class="titulo-paso">Selección de Especialidad</h3>
-                <div class="fila-formulario">
-                    <div class="form-group">
-                        <label for="especialidad">Especialidad Requerida</label>
-                        <select name="especialidad" id="especialidad">
-                            <option value="" disabled selected>Cargando especialidades...</option>
-                            <!-- El JS llenará esto automáticamente desde Laravel -->
-                            </select>
-                            <span class="mensaje-error" id="error-especialidad"></span>
-                        </div>
-
-                    <div class="form-group">
-                        <label for="medico">Médico (Opcional)</label>
-                        <select name="medico" id="medico" disabled>
-                            <option value="" selected>Seleccione especialidad primero</option>
+                        <label for="medico">Médico Tratante</label>
+                        <select id="medico" name="medico_id" required disabled>
+                            <option value="" disabled selected>Primero seleccione una especialidad</option>
                         </select>
+                        <span class="mensaje-error" id="error-medico"></span>
                     </div>
                 </div>
-
-                <div class="acciones-formulario">
-                    <button type="button" class="btn-outline btn-atras-2">Atrás</button>
-                    <button type="button" class="btn-primario btn-siguiente-2">Continuar</button>
+                <div class="acciones-pasos">
+                    <button type="button" class="btn-primario btn-siguiente-1">Siguiente Paso</button>
                 </div>
-            </section>
+            </div>
 
-            <section id="paso-3" class="tarjeta-paso">
-                <h3 class="titulo-paso">Fecha y Hora de la Cita</h3>
-                
+            <!-- PASO 2: Fecha, Hora y Datos Adicionales (Requisitos del Hospital) -->
+            <div id="paso-2" class="fase-reserva" style="display: none;">
                 <div class="fila-formulario">
                     <div class="form-group">
-                        <label for="fecha_cita">Seleccione la Fecha</label>
-                        <input type="date" name="fecha_cita" id="fecha_cita">
+                        <label for="fecha_cita">Fecha de la Cita</label>
+                        <input type="date" id="fecha_cita" name="fecha" required>
                         <span class="mensaje-error" id="error-fecha_cita"></span>
                     </div>
-
+                    
                     <div class="form-group">
-                        <label for="hora_cita">Horarios Disponibles</label>
-                        <select name="hora_cita" id="hora_cita">
-                            <option value="" disabled selected>Elija un turno</option>
-                            <option value="08:00">08:00 AM</option>
-                            <option value="08:30">08:30 AM</option>
-                            <option value="09:00">09:00 AM</option>
-                            <option value="09:30">09:30 AM</option>
-                            <option value="10:00">10:00 AM</option>
-                        </select>
+                        <label for="hora_cita">Hora</label>
+                        <input type="time" id="hora_cita" name="hora" required>
                         <span class="mensaje-error" id="error-hora_cita"></span>
                     </div>
                 </div>
 
-                <div class="acciones-formulario">
-                    <button type="button" class="btn-outline btn-atras-3">Atrás</button>
-                    <button type="button" class="btn-primario btn-siguiente-3">Continuar</button>
-                </div>
-            </section>
-
-            <section id="paso-4" class="tarjeta-paso">
-                <h3 class="titulo-paso">Resumen y Confirmación</h3>
-                
-                <div class="alerta-info">
-                    Por favor, verifique cuidadosamente que los datos de su cita sean los correctos antes de confirmar.
-                </div>
-
-                <div class="caja-resumen">
-                    <dl class="lista-resumen">
-                        <div class="item-resumen">
-                            <dt>Paciente</dt>
-                            <dd id="resumen-paciente"></dd>
-                        </div>
-                        <div class="item-resumen">
-                            <dt>Documento</dt>
-                            <dd id="resumen-documento"></dd>
-                        </div>
-                        <div class="item-resumen">
-                            <dt>Especialidad</dt>
-                            <dd id="resumen-especialidad"></dd>
-                        </div>
-                        <div class="item-resumen">
-                            <dt>Médico</dt>
-                            <dd id="resumen-medico"></dd>
-                        </div>
-                        <div class="item-resumen">
-                            <dt>Fecha</dt>
-                            <dd id="resumen-fecha"></dd>
-                        </div>
-                        <div class="item-resumen">
-                            <dt>Hora</dt>
-                            <dd id="resumen-hora"></dd>
-                        </div>
-                    </dl>
+                <div class="fila-formulario" style="margin-top: 20px;">
+                    <div class="form-group">
+                        <label for="telefono">Teléfono de Contacto Actual</label>
+                        <input type="tel" id="telefono" name="telefono" value="{{ Auth::user()->telefono }}" required placeholder="Ej: 987654321">
+                        <span class="mensaje-error" id="error-telefono"></span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="referencia_sis">Hoja de Referencia (Solo SIS)</label>
+                        <input type="text" id="referencia_sis" name="codigo_referencia_sis" placeholder="Opcional: Código del centro de salud">
+                    </div>
                 </div>
 
-                <div class="acciones-formulario">
-                    <button type="button" class="btn-outline btn-atras-4">Modificar Datos</button>
-                    <button type="submit" class="btn-exito">Confirmar Cita Médica</button>
+                <div class="acciones-pasos">
+                    <button type="button" class="btn-secundario btn-atras-2">Atrás</button>
+                    <button type="button" class="btn-primario btn-siguiente-2">Revisar Resumen</button>
                 </div>
-            </section>
+            </div>
+
+            <!-- PASO 3: Resumen Final -->
+            <div id="paso-3" class="fase-reserva" style="display: none;">
+                <div class="tarjeta-resumen">
+                    <h3>Resumen de su Cita</h3>
+                    <ul class="lista-resumen">
+                        <li><strong>Paciente:</strong> <span id="resumen-paciente"></span></li>
+                        <li><strong>Documento:</strong> <span id="resumen-documento"></span></li>
+                        <li><strong>Especialidad:</strong> <span id="resumen-especialidad"></span></li>
+                        <li><strong>Médico:</strong> <span id="resumen-medico"></span></li>
+                        <li><strong>Fecha:</strong> <span id="resumen-fecha"></span></li>
+                        <li><strong>Hora:</strong> <span id="resumen-hora"></span></li>
+                        <li><strong>Teléfono de contacto:</strong> <span id="resumen-telefono"></span></li>
+                        <li><strong>Referencia SIS:</strong> <span id="resumen-sis"></span></li>
+                    </ul>
+                </div>
+                <div class="acciones-pasos">
+                    <button type="button" class="btn-secundario btn-atras-3">Atrás</button>
+                    <button type="submit" class="btn-primario btn-registro">Confirmar y Generar Ticket</button>
+                </div>
+            </div>
         </form>
     </main>
 @endsection
 
 @section('js')
-    <script src="{{asset('js/reservar-cita.js')}}"></script>
+    <!-- PUENTE BLADE -> JAVASCRIPT -->
+    <script>
+        window.CatalogoHospital = @json($especialidades);
+        window.PacienteActual = {
+            nombres: "{{ Auth::user()->nombres }}",
+            apellidos: "{{ Auth::user()->apellido_paterno }} {{ Auth::user()->apellido_materno }}",
+            documento: "{{ Auth::user()->tipo_documento }} {{ Auth::user()->numero_documento }}"
+        };
+    </script>
+    
+    <!-- Cargamos el script con la lógica del Wizard -->
+    <script src="{{ asset('js/reservar-cita.js') }}"></script>
 @endsection

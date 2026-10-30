@@ -10,56 +10,85 @@
     <main class="contenedor-ticket">
         <div class="tarjeta-ticket" id="tarjeta-ticket">
             
-            <!-- Cabecera Dinámica -->
-            <div class="ticket-cabecera" id="ticket-cabecera" style="background-color: #d97706;">
-                <div class="icono-exito" id="icono-estado" style="color: #d97706;">!</div>
-                <h2 id="titulo-estado">Cita Reservada</h2>
-                <p id="mensaje-estado">Pendiente de pago en Caja</p>
+            <div class="ticket-cabecera" style="background-color: #059669;">
+                <div class="icono-exito" style="color: #059669;">✓</div>
+                <h2>Cita Confirmada</h2>
+                <p>Hospital Regional del Cusco</p>
             </div>
 
             <div class="ticket-cuerpo">
-                <div class="ticket-id">
-                    <span>N° de Ticket:</span>
-                    <strong>HRC-2026-8472</strong>
+                <div class="ticket-id" style="border-bottom: 2px dashed #cbd5e1; padding-bottom: 15px; margin-bottom: 15px;">
+                    <span>AUTOGENERADO (N° TICKET):</span>
+                    <strong>HRC-{{ date('Y', strtotime($cita->created_at)) }}-{{ str_pad($cita->id, 5, '0', STR_PAD_LEFT) }}</strong>
                 </div>
 
-                <!-- Temporizador -->
-                <div id="contenedor-temporizador" style="text-align: center; margin-bottom: 20px; padding: 15px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px;">
-                    <p style="color: #b45309; font-size: 14px; margin-bottom: 5px;">Tiempo restante para pagar:</p>
-                    <h3 id="reloj" style="color: #dc2626; font-size: 28px; margin: 0; font-family: monospace;">20:00</h3>
+                <div class="ticket-detalles" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    
+                    <div class="detalle-grupo" style="grid-column: 1 / -1;">
+                        <span class="detalle-etiqueta">PACIENTE</span>
+                        <span class="detalle-valor" style="text-transform: uppercase;">{{ Auth::user()->apellido_paterno }} {{ Auth::user()->apellido_materno }} {{ Auth::user()->nombres }}</span>
+                    </div>
+
+                    <div class="detalle-grupo">
+                        <span class="detalle-etiqueta">DNI / CE</span>
+                        <span class="detalle-valor">{{ Auth::user()->numero_documento }}</span>
+                    </div>
+
+                    <div class="detalle-grupo">
+                        <span class="detalle-etiqueta">TIPO PACIENTE</span>
+                        <span class="detalle-valor">
+                            {{ $cita->codigo_referencia_sis ? 'SIS - REFERIDO' : 'PARTICULAR' }}
+                        </span>
+                    </div>
+
+                    <div class="detalle-grupo">
+                        <span class="detalle-etiqueta">ESPECIALIDAD</span>
+                        <span class="detalle-valor" style="font-weight: bold;">{{ $cita->medico->especialidad->nombre }}</span>
+                    </div>
+
+                    <div class="detalle-grupo">
+                        <span class="detalle-etiqueta">MÉDICO TRATANTE</span>
+                        <span class="detalle-valor">{{ $cita->medico->nombres }} {{ $cita->medico->apellidos }}</span>
+                    </div>
+
+                    <div class="detalle-grupo">
+                        <span class="detalle-etiqueta">CONSULTORIO</span>
+                        <span class="detalle-valor">{{ $cita->medico->consultorio }}</span>
+                    </div>
+
+                    <div class="detalle-grupo">
+                        <span class="detalle-etiqueta">ORDEN / TOTAL</span>
+                        <span class="detalle-valor" style="font-size: 1.1em; font-weight: bold;">{{ $ordenAtencion }} / {{ $totalCitasDia }}</span>
+                    </div>
+
+                    <div class="detalle-grupo" style="grid-column: 1 / -1; background: #f8fafc; padding: 10px; border-radius: 6px;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <div>
+                                <span class="detalle-etiqueta">FECHA DE LA CITA</span>
+                                <span class="detalle-valor" style="color: #0f172a; font-weight: bold;">{{ date('d/m/Y', strtotime($cita->fecha)) }}</span>
+                            </div>
+                            <div style="text-align: right;">
+                                <span class="detalle-etiqueta">HORA DE LA CITA</span>
+                                <span class="detalle-valor" style="color: #0f172a; font-weight: bold;">{{ date('H:i', strtotime($cita->hora)) }}</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="ticket-detalles">
-                    <!-- Aquí van tus detalles del paciente, especialidad, etc... (los dejo igual) -->
-                    <div class="detalle-grupo">
-                        <span class="detalle-etiqueta">Paciente</span>
-                        <span class="detalle-valor">Juan Carlos Pérez Gonzales</span>
-                    </div>
-                    <div class="detalle-grupo">
-                        <span class="detalle-etiqueta">Especialidad</span>
-                        <span class="detalle-valor">Cardiología</span>
-                    </div>
-                    <div class="detalle-grupo">
-                        <span class="detalle-etiqueta">Monto a Pagar</span>
-                        <span class="detalle-valor" id="ticket-monto" style="color: #dc2626;">S/ 6.00</span>
-                    </div>
-                </div>
-
-                <div class="ticket-advertencia" id="ticket-advertencia">
-                    Debe acercarse a Caja antes de que termine el tiempo. Si no realiza el pago, la cita se cancelará automáticamente para liberar el cupo.
+                <div class="ticket-advertencia" style="margin-top: 20px; font-size: 0.9em;">
+                    <strong>Importante:</strong> Presente este ticket impreso o digital en Admisión 15 minutos antes de su cita. 
+                    @if(!$cita->codigo_referencia_sis)
+                        Por favor, acérquese a caja para realizar el pago correspondiente antes de su atención.
+                    @else
+                        Traer copia de DNI y Hoja de Referencia ({{ $cita->codigo_referencia_sis }}).
+                    @endif
                 </div>
             </div>
 
             <div class="ticket-pie">
-                <img src="../img/qr-placeholder.png" alt="Código QR" class="codigo-qr">
-                
                 <div class="acciones-ticket oculta-impresion" style="margin-top: 20px;">
-                    <!-- Este botón simula que el cajero cobró -->
-                    <button type="button" id="btn-simular-pago" class="btn-exito" style="background-color: #059669; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: bold;">
-                        💳 Simular Pago en Caja
-                    </button>
-                    <button type="button" id="btn-imprimir" class="btn-primario">Imprimir Constancia</button>
-                    <a href="{{route('inicio')}}" class="btn-outline">Volver al Inicio</a>
+                    <button type="button" onclick="window.print()" class="btn-primario" style="margin-right: 10px;">Imprimir Constancia</button>
+                    <a href="{{ route('dashboard') }}" class="btn-outline">Ir a mi Panel</a>
                 </div>
             </div>
         </div>

@@ -60,6 +60,8 @@ class AuthController extends Controller
             'nombres'          => $ciudadano->nombres,
             'apellido_paterno' => $ciudadano->apellido_paterno,
             'apellido_materno' => $ciudadano->apellido_materno,
+            'fecha_nacimiento' => $ciudadano->fecha_nacimiento,
+            'direccion'        => $ciudadano->direccion,
             'correo'           => $request->correo,
             'password'         => Hash::make($request->password),
         ]);

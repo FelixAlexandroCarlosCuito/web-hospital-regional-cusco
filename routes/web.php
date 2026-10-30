@@ -42,7 +42,10 @@ Route::middleware("auth")->group(function () {
     Route::get('/dashboard', [PacienteController::class, 'dashboard'])->name('dashboard');
     // Rutas de citas
     Route::get('/reservar-cita', [CitaController::class, 'reservar_cita'])->name('reservar_cita');
-    Route::get('/ticket', [CitaController::class, 'ticket'])->name('ticket');
+    Route::get('/ticket/{id}', [CitaController::class, 'showTicket'])->name('ticket');
+    // Rutas protegidas para Citas
+    Route::get('/reservar-cita', [CitaController::class, 'create'])->name('reservar_cita');
+    Route::post('/reservar-cita', [CitaController::class, 'store'])->name('citas.store');
 });
 
 //=== RUTAS DE ACCESO GLOBAL ===

@@ -10,15 +10,13 @@ return new class extends Migration
     {
         Schema::create('citas', function (Blueprint $table) {
             $table->id();
-            $table->string('paciente_nombre');
-            $table->string('paciente_documento');
-            $table->string('especialidad'); 
-            $table->foreignId('medico_id')->nullable()->constrained('medicos')->onDelete('set null');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('medico_id')->constrained('medicos')->onDelete('cascade');
             $table->date('fecha');
             $table->time('hora');
-            $table->decimal('monto_pagar', 8, 2);
-            $table->string('estado')->default('pendiente_pago'); 
-            $table->timestamps(); 
+            $table->string('codigo_referencia_sis')->nullable()->comment('Para pacientes referidos de postas médicas');
+            $table->enum('estado', ['Pendiente', 'Atendido', 'Cancelado'])->default('Pendiente');
+            $table->timestamps();
         });
     }
 
