@@ -73,7 +73,7 @@
                 </form>
 
                 <div class="registro-enlaces">
-                    <p>¿Ya tienes una cuenta? <a href="{{url('/inicio-sesion')}}">Inicia sesión aquí.</a></p>
+                    <p>¿Ya tienes una cuenta? <a href="{{route('login')}}">Inicia sesión aquí.</a></p>
                 </div>
             </div>
         </main>

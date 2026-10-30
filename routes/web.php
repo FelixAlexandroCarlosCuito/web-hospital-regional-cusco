@@ -36,7 +36,7 @@ Route::middleware("auth")->group(function () {
     // Rutas de paciente
     Route::get('/dashboard', [PacienteController::class, 'dashboard'])->name('dashboard');
     // Rutas de citas
-    Route::get('/reservar-cita', [PaginasController::class, 'reservar_cita'])->name('reservar_cita');
+    Route::get('/reservar-cita', [CitaController::class, 'reservar_cita'])->name('reservar_cita');
     Route::get('/ticket', [CitaController::class, 'ticket'])->name('ticket');
 });
 

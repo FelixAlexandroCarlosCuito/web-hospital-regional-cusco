@@ -287,9 +287,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const resultado = await respuesta.json();
 
             if (respuesta.ok) {
-                // Guardamos el ID de la cita para que el ticket.html sepa cuál mostrar
+                // Guardamos el ID de la cita para que el ticket.blade sepa cuál mostrar
                 localStorage.setItem('cita_id', resultado.cita.id);
-                window.location.href = 'ticket.html';
+                window.location.href = "{{route('ticket')}}";
             } else {
                 alert('Error al guardar la cita: ' + JSON.stringify(resultado.errors));
             }

@@ -15,7 +15,9 @@
             </div>
 
             <div class="tarjeta-login">
-                <form id="formulario-login" class="formulario-login" novalidate>
+                <form id="formulario-login" class="formulario-login" action="{{ route('login') }}" method="POST" novalidate>
+                    @csrf
+                    
                     <div class="form-group">
                         <label for="documento">Número de Documento (DNI / CE)</label>
                         <input type="text" id="documento" name="documento">
@@ -33,7 +35,7 @@
 
                 <div class="login-enlaces">
                     <p><a href="#">¿Olvidaste tu contraseña?</a></p>
-                    <p>¿No tienes una cuenta? <a href="{{url('/registro')}}">Crea una ahora.</a></p>
+                    <p>¿No tienes una cuenta? <a href="{{ route('registro') }}">Crea una ahora.</a></p>
                 </div>
             </div>
 

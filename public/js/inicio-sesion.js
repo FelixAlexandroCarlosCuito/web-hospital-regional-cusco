@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     formularioLogin.addEventListener('submit', function(e) {
+        // Interceptamos el envío solo para auditar los datos localmente primero
         e.preventDefault();
         limpiarErrores();
 
@@ -35,8 +36,9 @@ document.addEventListener('DOMContentLoaded', function() {
             esValido = false;
         }
 
+        // Si los datos tienen un formato válido, entregamos el control a Laravel
         if (esValido) {
-            window.location.href = 'dashboard-paciente.html';
+            formularioLogin.submit(); // Esto dispara el POST hacia tu AuthController
         }
     });
 });

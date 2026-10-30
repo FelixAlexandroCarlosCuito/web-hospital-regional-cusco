@@ -14,8 +14,8 @@
             <img class="logo-container" src="{{ asset('img/logo-hospital.png') }}" alt="Logo">
             <h1 class="titulo-sitio">Hospital Regional del Cusco</h1>
             <nav class="navegacion-superior">
-                <a href="{{ url('/inicio') }}">Inicio</a>
-                <a href="{{ url('/reservar-cita') }}">Reservar cita</a>
+                <a href="{{ route('inicio') }}">Inicio</a>
+                <a href="{{ route('reservar_cita') }}">Reservar cita</a>
                 @guest
                     <a href="{{ route('login') }}" class="btn-login">Iniciar Sesión</a>
                     <a href="{{ route('registro') }}" class="btn-registro">Registrarse</a>

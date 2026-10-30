@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         if (esValido) {
-            window.location.href = 'inicio-sesion.html';
+            window.location.href = "{{route('login')}}";
         }
     });
 });

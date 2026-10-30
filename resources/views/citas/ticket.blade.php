@@ -59,7 +59,7 @@
                         💳 Simular Pago en Caja
                     </button>
                     <button type="button" id="btn-imprimir" class="btn-primario">Imprimir Constancia</button>
-                    <a href="{{url('/inicio')}}" class="btn-outline">Volver al Inicio</a>
+                    <a href="{{route('inicio')}}" class="btn-outline">Volver al Inicio</a>
                 </div>
             </div>
         </div>

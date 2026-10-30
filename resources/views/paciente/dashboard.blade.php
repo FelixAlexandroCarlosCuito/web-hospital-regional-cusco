@@ -43,7 +43,7 @@
                         <p><strong>Lugar:</strong> Consultorio 12 - Piso 2</p>
                     </div>
                     <div class="cita-acciones">
-                        <a href="{{url('/ticket')}}" class="btn-secundario">Ver Ticket</a>
+                        <a href="{{route('ticket')}}" class="btn-secundario">Ver Ticket</a>
                         <button type="button" class="btn-peligro btn-cancelar-cita" data-id="1">Cancelar Cita</button>
                     </div>
                 </div>
