@@ -20,22 +20,22 @@
             <h2 class="seccion-titulo">Nuestras Especialidades</h2>
             <div class="grid-especialidades">
                 <div class="tarjeta-especialidad">
-                    <img class="imagenes-circulares" src="{{asset('assets/medicina-general.png')}}">
+                    <img class="imagenes-circulares" src="{{asset('img/medicina-general.png')}}">
                     <h3>Medicina General</h3>
                     <p>Atención integral para el diagnóstico temprano y tratamiento de enfermedades comunes.</p>
                 </div>
                 <div class="tarjeta-especialidad">
-                    <img class="imagenes-circulares" src="{{asset('assets/pediatria.png')}}">
+                    <img class="imagenes-circulares" src="{{asset('img/pediatria.png')}}">
                     <h3>Pediatría</h3>
                     <p>Cuidado especializado, control y seguimiento para el desarrollo saludable de los más pequeños.</p>
                 </div>
                 <div class="tarjeta-especialidad">
-                    <img class="imagenes-circulares" src="{{asset('assets/cardiologia.png')}}">
+                    <img class="imagenes-circulares" src="{{asset('img/cardiologia.png')}}">
                     <h3>Cardiología</h3>
                     <p>Prevención, diagnóstico y tratamiento de enfermedades del corazón y el sistema circulatorio.</p>
                 </div>
                 <div class="tarjeta-especialidad">
-                    <img class="imagenes-circulares" src="{{asset('assets/emergencia.png')}}">
+                    <img class="imagenes-circulares" src="{{asset('img/emergencia.png')}}">
                     <h3>Emergencias</h3>
                     <p>Atención prioritaria e inmediata de casos críticos con soporte vital avanzado.</p>
                 </div>

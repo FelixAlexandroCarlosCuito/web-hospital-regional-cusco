@@ -3,7 +3,7 @@
 @section('titulo','Inicio de sesión')
 
 @section('css')
-    <link rel="stylesheet" href="{{asset('css/inicio_sesion.css')}}">
+    <link rel="stylesheet" href="{{asset('css/inicio-sesion.css')}}">
 @endsection
 
 @section('contenido')
@@ -43,5 +43,5 @@
 @endsection
 
 @section('js')
-    <script src="{{asset('js/inicio_sesion.js')}}"></script>
+    <script src="{{asset('js/inicio-sesion.js')}}"></script>
 @endsection

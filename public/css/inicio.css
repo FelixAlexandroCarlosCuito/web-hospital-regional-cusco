@@ -7,7 +7,7 @@
 }
 
 .hero-index {
-    background-image: url('../assets/hospital-regional-foto.png');
+    background-image: url('../img/hospital-regional-foto.png');
     background-size: cover;
     background-position: center;
     padding: 130px 20px;
@@ -156,7 +156,7 @@
 .info-imagen {
     width: 100%;
     height: 450px;
-    background-image: url('../assets/hospital-regional-foto.png');
+    background-image: url('../img/hospital-regional-foto.png');
     border-radius: 16px;
     background-size: cover;
     background-position: center;

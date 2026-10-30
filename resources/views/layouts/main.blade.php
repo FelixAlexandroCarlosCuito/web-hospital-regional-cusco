@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('titulo') - HRC</title>
-    <link rel="icon" type="image" href="{{asset('assets/logo_hospital.png')}}">
+    <link rel="icon" type="image" href="{{asset('img/logo-hospital.png')}}">
     <link rel="stylesheet" href="{{ asset('css/general.css') }}">
     @yield('css')
 </head>
 <body>
     <header class="encabezado-principal oculta-impresion">
         <div class="header-contenido">
-            <img class="logo-container" src="{{ asset('assets/logo_hospital.png') }}" alt="Logo">
+            <img class="logo-container" src="{{ asset('img/logo-hospital.png') }}" alt="Logo">
             <h1 class="titulo-sitio">Hospital Regional del Cusco</h1>
             <nav class="navegacion-superior">
                 <a href="{{ url('/inicio') }}">Inicio</a>

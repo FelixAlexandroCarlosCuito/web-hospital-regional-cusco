@@ -27,7 +27,7 @@ Route::post('/medico/atender/{idCita}', [MedicoController::class, 'guardarHistor
 //=== RUTAS DE ACCESO EXCLUSIVAS ===
 Route::middleware("guest")->group(function () {
     // Rutas de autenticación de la página
-    Route::get('/inicio_sesion', [AuthController::class, 'index'])->name('login');
+    Route::get('/inicio-sesion', [AuthController::class, 'index'])->name('login');
     Route::get('/registro', [AuthController::class, 'registro'])->name('registro');
     Route::post('/registrar', [AuthController::class, 'registrar'])->name('registrar');
 });

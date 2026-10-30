@@ -51,7 +51,7 @@
             </div>
 
             <div class="ticket-pie">
-                <img src="../assets/qr-placeholder.png" alt="Código QR" class="codigo-qr">
+                <img src="../img/qr-placeholder.png" alt="Código QR" class="codigo-qr">
                 
                 <div class="acciones-ticket oculta-impresion" style="margin-top: 20px;">
                     <!-- Este botón simula que el cajero cobró -->

@@ -9,7 +9,7 @@ class AuthController extends Controller
     // Método que renderiza la vista para iniciar sesión
     public function index()
     {
-        return view('auth.inicio_sesion');
+        return view('auth.inicio-sesion');
     }
 
     // Método que renderiza la vista para registrarse
