@@ -1,29 +1,17 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const botonesCancelar = document.querySelectorAll('.btn-cancelar-cita');
+    const formulariosCancelar = document.querySelectorAll('.formulario-cancelar');
 
-    botonesCancelar.forEach(boton => {
-        boton.addEventListener('click', function() {
-            const idCita = this.getAttribute('data-id');
-            const tarjetaCita = document.getElementById(`cita-${idCita}`);
+    formulariosCancelar.forEach(formulario => {
+        formulario.addEventListener('submit', function(e) {
+            // Detenemos el envío inmediato
+            e.preventDefault();
             
-            if (tarjetaCita) {
-                tarjetaCita.style.opacity = '0';
-                
-                setTimeout(() => {
-                    const contenedor = document.getElementById('contenedor-citas-activas');
-                    tarjetaCita.remove();
-                    
-                    const mensaje = document.createElement('div');
-                    mensaje.className = 'mensaje-exito-cancelacion';
-                    mensaje.textContent = 'La cita ha sido cancelada exitosamente. El cupo ha sido liberado.';
-                    
-                    contenedor.appendChild(mensaje);
-                    
-                    const statCitasActivas = document.querySelector('.stat-numero');
-                    if (statCitasActivas) {
-                        statCitasActivas.textContent = '0';
-                    }
-                }, 300);
+            // Pedimos confirmación al paciente
+            const confirmacion = confirm('¿Está seguro de que desea cancelar esta cita? Esta acción liberará el cupo y no se puede deshacer.');
+            
+            // Si el paciente acepta, liberamos el formulario para que Laravel haga la eliminación real en MySQL
+            if (confirmacion) {
+                this.submit();
             }
         });
     });

@@ -15,7 +15,8 @@
             </div>
 
             <div class="tarjeta-registro">
-                <form id="formulario-registro" class="formulario-registro" novalidate>
+                <form id="formulario-registro" class="formulario-registro" action="{{ route('registrar') }}" method="POST" novalidate>
+                    @csrf
                     
                     <div class="fila-formulario">
                         <div class="form-group">
@@ -30,6 +31,7 @@
                         
                         <div class="form-group">
                             <label for="numero_documento">Número de Documento</label>
+                            <!-- El atributo name="..." es vital; es la llave con la que el Controlador leerá este dato -->
                             <input type="text" id="numero_documento" name="numero_documento">
                             <span class="mensaje-error" id="error-numero_documento"></span>
                         </div>
@@ -64,7 +66,12 @@
                         
                         <div class="form-group">
                             <label for="confirm_password">Confirmar Contraseña</label>
-                            <input type="password" id="confirm_password" name="confirm_password">
+                            <!-- 
+                               Nota: Laravel puede validar la confirmación automáticamente en el backend 
+                               si este input se llama exactamente password_confirmation. 
+                               Cambiamos el name de 'confirm_password' a 'password_confirmation' por estándar del framework. 
+                            -->
+                            <input type="password" id="confirm_password" name="password_confirmation">
                             <span class="mensaje-error" id="error-confirm_password"></span>
                         </div>
                     </div>
@@ -73,7 +80,8 @@
                 </form>
 
                 <div class="registro-enlaces">
-                    <p>¿Ya tienes una cuenta? <a href="{{route('login')}}">Inicia sesión aquí.</a></p>
+                    <!-- Uso correcto del helper route() para evitar URLs estáticas propensas a romperse -->
+                    <p>¿Ya tienes una cuenta? <a href="{{ route('login') }}">Inicia sesión aquí.</a></p>
                 </div>
             </div>
         </main>

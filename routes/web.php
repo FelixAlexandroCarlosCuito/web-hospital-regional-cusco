@@ -28,11 +28,14 @@ Route::post('/medico/atender/{idCita}', [MedicoController::class, 'guardarHistor
 Route::middleware("guest")->group(function () {
     // Rutas de autenticación de la página
     Route::get('/inicio-sesion', [AuthController::class, 'index'])->name('login');
+    Route::post('/inicio-sesion', [AuthController::class, 'autenticar']);
     Route::get('/registro', [AuthController::class, 'registro'])->name('registro');
     Route::post('/registrar', [AuthController::class, 'registrar'])->name('registrar');
 });
 
 Route::middleware("auth")->group(function () {
+    // Rutas de autenticación de la página
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     // Rutas de paciente
     Route::get('/dashboard', [PacienteController::class, 'dashboard'])->name('dashboard');
     // Rutas de citas

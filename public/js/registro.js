@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     formularioRegistro.addEventListener('submit', function(e) {
+        // Interceptamos el envío por defecto para realizar la auditoría visual en el cliente
         e.preventDefault();
         limpiarErrores();
 
@@ -67,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         if (esValido) {
-            window.location.href = "{{route('login')}}";
+            formularioRegistro.submit(); 
         }
     });
 });

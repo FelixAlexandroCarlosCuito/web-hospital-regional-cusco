@@ -21,8 +21,9 @@
                     <a href="{{ route('registro') }}" class="btn-registro">Registrarse</a>
                 @endguest
                 @auth
-                    <a href="{{ route('paciente.dashboard') }}" class="btn-dashboard">Mi perfil</a>
-                    <form action="#" method="POST" style="display: inline;">
+                    <span class="nav-usuario">Hola, {{ Auth::user()->nombres }}</span>
+                    <a href="{{ route('dashboard') }}" class="btn-dashboard">Mis citas</a>
+                    <form action="{{ route('logout') }}" method="POST" style="display: inline;">
                         @csrf
                         <button type="submit" class="btn-logout">Cerrar Sesión</button>
                     </form>

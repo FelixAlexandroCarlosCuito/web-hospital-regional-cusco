@@ -20,14 +20,18 @@
                     
                     <div class="form-group">
                         <label for="documento">Número de Documento (DNI / CE)</label>
-                        <input type="text" id="documento" name="documento">
-                        <span class="mensaje-error" id="error-documento"></span>
+                        <input type="text" id="documento" name="numero_documento" value="{{ old('numero_documento') }}">                        
+                        <span class="mensaje-error" id="error-documento">
+                            @error('numero_documento') {{ $message }} @enderror
+                        </span>
                     </div>
                     
                     <div class="form-group">
                         <label for="password">Contraseña</label>
                         <input type="password" id="password" name="password">
-                        <span class="mensaje-error" id="error-password"></span>
+                        <span class="mensaje-error" id="error-password">
+                            @error('password') {{ $message }} @enderror
+                        </span>
                     </div>
 
                     <button type="submit" class="btn-primario btn-acceso">Acceso</button>
