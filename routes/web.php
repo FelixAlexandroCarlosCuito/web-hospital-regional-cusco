@@ -6,6 +6,7 @@ use App\Http\Controllers\PaginasController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CitaController;
 use App\Http\Controllers\PacienteController;
+use App\Http\Controllers\MedicoController;
 
 // Ruta de inicio por defecto de Laravel
 Route::get('/', function () {
@@ -18,7 +19,6 @@ Route::post('/admin/especialidades', [AdminController::class, 'guardarEspecialid
 Route::post('/admin/medicos', [AdminController::class, 'guardarMedico'])->name('admin.medicos.store');
 Route::get('/caja', [AdminController::class, 'indexCaja'])->name('caja.dashboard');
 Route::post('/caja/pagar/{id}', [AdminController::class, 'confirmarPago'])->name('caja.pagar');
-use App\Http\Controllers\MedicoController;
 
 Route::get('/medico/{id}', [MedicoController::class, 'dashboard'])->name('medico.dashboard');
 Route::get('/medico/atender/{idCita}', [MedicoController::class, 'atenderCita'])->name('medico.atender');
@@ -43,9 +43,9 @@ Route::middleware("auth")->group(function () {
     // Rutas de citas
     Route::get('/reservar-cita', [CitaController::class, 'reservar_cita'])->name('reservar_cita');
     Route::get('/ticket/{id}', [CitaController::class, 'showTicket'])->name('ticket');
-    // Rutas protegidas para Citas
     Route::get('/reservar-cita', [CitaController::class, 'create'])->name('reservar_cita');
     Route::post('/reservar-cita', [CitaController::class, 'store'])->name('citas.store');
+    Route::patch('/citas/{id}/cancelar', [CitaController::class, 'cancelar'])->name('citas.cancelar');
 });
 
 //=== RUTAS DE ACCESO GLOBAL ===

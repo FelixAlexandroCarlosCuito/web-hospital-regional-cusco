@@ -83,4 +83,23 @@ class CitaController extends Controller
 
         return view('citas.ticket', compact('cita', 'ordenAtencion', 'totalCitasDia'));
     }
+
+    /**
+     * Cancela una cita médica cambiando su estado, sin destruir el registro.
+     */
+    public function cancelar($id)
+    {
+        $cita = \App\Models\Cita::findOrFail($id);
+
+        // Seguridad estricta: Solo el dueño de la cita puede cancelarla
+        if ($cita->user_id !== \Illuminate\Support\Facades\Auth::id()) {
+            abort(403, 'Acción no autorizada.');
+        }
+
+        // Actualizamos el estado. Al no destruirla, pasará al Historial automáticamente.
+        $cita->update(['estado' => 'Cancelado']);
+
+        // Retornamos a la página anterior (el dashboard)
+        return back();
+    }
 }
