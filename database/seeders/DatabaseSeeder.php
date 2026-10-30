@@ -15,11 +15,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        // Ciudadano de prueba para validar el registro
+        \App\Models\ReniecSimulacion::create([
+            'dni' => '76869228',
+            'digito_verificador' => '4',
+            'fecha_emision' => '2020-05-15',
+            'nombres' => 'FELIX ALEXANDRO',
+            'apellido_paterno' => 'CARLOS',
+            'apellido_materno' => 'CUITO',
         ]);
     }
 }

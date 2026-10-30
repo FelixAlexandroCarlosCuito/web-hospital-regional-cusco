@@ -22,7 +22,8 @@ class User extends Authenticatable
         'tipo_documento',
         'numero_documento',
         'nombres',
-        'apellidos',
+        'apellido_paterno',
+        'apellido_materno',
         'correo',
         'password',
     ];

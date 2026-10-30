@@ -22,16 +22,13 @@
                         <div class="form-group">
                             <label for="tipo_documento">Tipo de Documento</label>
                             <select name="tipo_documento" id="tipo_documento">
-                                <option value="" disabled selected>Seleccione</option>
-                                <option value="DNI">DNI</option>
-                                <option value="CE">Carnet de Extranjería</option>
+                                <option value="DNI" selected>DNI</option>
+                                <option value="CE" disabled>Carnet de Extranjería</option>
                             </select>
-                            <span class="mensaje-error" id="error-tipo_documento"></span>
                         </div>
                         
                         <div class="form-group">
                             <label for="numero_documento">Número de Documento</label>
-                            <!-- El atributo name="..." es vital; es la llave con la que el Controlador leerá este dato -->
                             <input type="text" id="numero_documento" name="numero_documento">
                             <span class="mensaje-error" id="error-numero_documento"></span>
                         </div>
@@ -39,44 +36,56 @@
 
                     <div class="fila-formulario">
                         <div class="form-group">
-                            <label for="nombres">Nombres</label>
-                            <input type="text" id="nombres" name="nombres">
-                            <span class="mensaje-error" id="error-nombres"></span>
+                            <label for="digito_verificador">Dígito Verificador</label>
+                            <input type="text" id="digito_verificador" name="digito_verificador" maxlength="1" placeholder="Ej: 4">
+                            <span class="mensaje-error" id="error-digito_verificador"></span>
                         </div>
                         
                         <div class="form-group">
-                            <label for="apellidos">Apellidos</label>
-                            <input type="text" id="apellidos" name="apellidos">
-                            <span class="mensaje-error" id="error-apellidos"></span>
+                            <label for="fecha_emision">Fecha de Emisión</label>
+                            <input type="date" id="fecha_emision" name="fecha_emision">
+                            <span class="mensaje-error" id="error-fecha_emision"></span>
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="correo">Correo Electrónico (Opcional)</label>
-                        <input type="email" id="correo" name="correo" placeholder="ejemplo@correo.com">
-                        <span class="mensaje-error" id="error-correo"></span>
-                    </div>
+                    <!-- Botón asíncrono para verificar -->
+                    <button type="button" id="btn-verificar" class="btn-secundario btn-registro" style="margin-bottom: 20px;">Verificar Identidad en RENIEC</button>
 
-                    <div class="fila-formulario">
-                        <div class="form-group">
-                            <label for="password">Contraseña</label>
-                            <input type="password" id="password" name="password" placeholder="Mínimo 6 caracteres">
-                            <span class="mensaje-error" id="error-password"></span>
-                        </div>
+                    <!-- FASE 2: Oculta por defecto. Se revelará con JS -->
+                    <div id="seccion-completar-registro" style="display: none;">
                         
-                        <div class="form-group">
-                            <label for="confirm_password">Confirmar Contraseña</label>
-                            <!-- 
-                               Nota: Laravel puede validar la confirmación automáticamente en el backend 
-                               si este input se llama exactamente password_confirmation. 
-                               Cambiamos el name de 'confirm_password' a 'password_confirmation' por estándar del framework. 
-                            -->
-                            <input type="password" id="confirm_password" name="password_confirmation">
-                            <span class="mensaje-error" id="error-confirm_password"></span>
+                        <!-- Campos visuales de confirmación (Bloqueados) -->
+                        <div class="fila-formulario">
+                            <div class="form-group">
+                                <label>Nombres</label>
+                                <input type="text" id="visual_nombres" class="input-bloqueado" readonly disabled>
+                            </div>
+                            <div class="form-group">
+                                <label>Apellidos</label>
+                                <input type="text" id="visual_apellidos" class="input-bloqueado" readonly disabled>
+                            </div>
                         </div>
-                    </div>
 
-                    <button type="submit" class="btn-primario btn-registro">Registrarse</button>
+                        <div class="form-group">
+                            <label for="correo">Correo Electrónico (Opcional)</label>
+                            <input type="email" id="correo" name="correo" placeholder="ejemplo@correo.com">
+                        </div>
+
+                        <div class="fila-formulario">
+                            <div class="form-group">
+                                <label for="password">Crear contraseña</label>
+                                <input type="password" id="password" name="password" placeholder="Mínimo 6 caracteres">
+                                <span class="mensaje-error" id="error-password"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="confirm_password">Confirmar Contraseña</label>
+                                <input type="password" id="confirm_password" name="password_confirmation">
+                                <span class="mensaje-error" id="error-confirm_password"></span>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-primario btn-registro">Completar Registro</button>
+                    </div>
                 </form>
 
                 <div class="registro-enlaces">

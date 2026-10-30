@@ -11,13 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // 1. Nuestra tabla de pacientes modificada
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('tipo_documento', 20);
             $table->string('numero_documento', 20)->unique();
-            $table->string('nombres');
-            $table->string('apellidos');
+            $table->string('nombres');            
+            // Apellidos atomizados según estándar gubernamental
+            $table->string('apellido_paterno');
+            $table->string('apellido_materno');            
             $table->string('correo')->nullable();
             $table->string('password');
             $table->rememberToken();

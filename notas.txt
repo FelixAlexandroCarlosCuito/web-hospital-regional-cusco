@@ -1,0 +1,16 @@
+Control de usuarios
+A: usuario malisioso
+B: usuario afectado 
+-si A tiene el DNI de B, no puede hacer nada sin saber la contraseña B
+-si A sabe la contraseña de B, puede modificar lo que quiera (es necesaro implementar
+un sistema que pida confirmar cada operacion, con la fecha de emisión del DNI y nro de verificación, que se
+consulte en la tabla "reniec_simulacion")
+-si A sabe la contraseña y tiene el DNI de B, pueder hacer lo que quiera (no podemos hacer nada xd)
+-la validación de datos debe empezar desde el registro, no podemos permitir que el usuario ingrese
+su nombre manualmente, pedimos nro de DNI y nro de verificación, estos campos se completaran automaticamente
+con la tabla en la base de datos llamada "reniec_simulacion"
+-en nuestra tabla de usuarios no debemos adicionar los atributos de fecha de emisión ni nro de verificación, estos
+datos seran consultados directamente en "reniec_simulacion" y en el registro solo sirve de verificación
+-en la reserva de cita la primera fase los datos estaran autocompletados y solo se solicitara la fecha de emisión
+y nro
+de verificación

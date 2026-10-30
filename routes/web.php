@@ -31,6 +31,8 @@ Route::middleware("guest")->group(function () {
     Route::post('/inicio-sesion', [AuthController::class, 'autenticar']);
     Route::get('/registro', [AuthController::class, 'registro'])->name('registro');
     Route::post('/registrar', [AuthController::class, 'registrar'])->name('registrar');
+    // API interna para validación
+    Route::post('/verificar-reniec', [AuthController::class, 'verificarReniec'])->name('api.reniec');
 });
 
 Route::middleware("auth")->group(function () {

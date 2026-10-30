@@ -30,34 +30,42 @@ class AuthController extends Controller
      */
     public function registrar(Request $request)
     {
-        // 1. Validación estricta de los datos entrantes.
-        // Se aplica la regla 'unique' para evitar duplicidad de documentos en la base de datos.
-        // La regla 'confirmed' busca automáticamente el campo 'password_confirmation' en el request.
+        // 1. Validamos los inputs que envía el formulario
         $request->validate([
-            'tipo_documento'   => 'required|string|in:DNI,CE',
-            'numero_documento' => 'required|string|unique:users,numero_documento',
-            'nombres'          => 'required|string|max:255',
-            'apellidos'        => 'required|string|max:255',
-            'correo'           => 'nullable|email|max:255',
-            'password'         => 'required|string|min:6|confirmed',
+            'tipo_documento'     => 'required|string|in:DNI,CE',
+            'numero_documento'   => 'required|string|unique:users,numero_documento',
+            'digito_verificador' => 'required|string|size:1',
+            'fecha_emision'      => 'required|date',
+            'correo'             => 'nullable|email|max:255',
+            'password'           => 'required|string|min:6|confirmed',
         ]);
 
-        // 2. Persistencia del modelo User.
-        // Se utiliza Hash::make para encriptar la contraseña mediante Bcrypt antes de guardarla.
-        // Nunca se debe almacenar una contraseña en texto plano.
+        // 2. Cruzamos los datos con la base oficial (Nuestra tabla simulada)
+        $ciudadano = \App\Models\ReniecSimulacion::where('dni', $request->numero_documento)
+                        ->where('digito_verificador', $request->digito_verificador)
+                        ->where('fecha_emision', $request->fecha_emision)
+                        ->first();
+
+        // 3. Si no existe o miente en algún dato, abortamos el registro por seguridad
+        if (!$ciudadano) {
+            return back()->withErrors([
+                'numero_documento' => 'Los datos de validación no coinciden con los registros oficiales de RENIEC.'
+            ])->withInput();
+        }
+
+        // 4. Si pasó el filtro, creamos el paciente extrayendo sus nombres de la base oficial, no de lo que él escribió
         $usuario = User::create([
             'tipo_documento'   => $request->tipo_documento,
             'numero_documento' => $request->numero_documento,
-            'nombres'          => $request->nombres,
-            'apellidos'        => $request->apellidos,
+            'nombres'          => $ciudadano->nombres,
+            'apellido_paterno' => $ciudadano->apellido_paterno,
+            'apellido_materno' => $ciudadano->apellido_materno,
             'correo'           => $request->correo,
             'password'         => Hash::make($request->password),
         ]);
 
-        // 3. Autenticación automática tras el registro exitoso.
+        // Autenticamos y dejamos pasar al sistema
         Auth::login($usuario);
-
-        // 4. Redirección al área protegida del paciente.
         return redirect()->route('dashboard');
     }
 
@@ -104,5 +112,28 @@ class AuthController extends Controller
 
         // 4. Redirige a la pantalla de inicio de sesión
         return redirect()->route('login');
+    }
+
+    public function verificarReniec(Request $request)
+    {
+        $ciudadano = \App\Models\ReniecSimulacion::where('dni', $request->numero_documento)
+                        ->where('digito_verificador', $request->digito_verificador)
+                        ->where('fecha_emision', $request->fecha_emision)
+                        ->first();
+
+        if ($ciudadano) {
+            return response()->json([
+                'success' => true,
+                'nombres' => $ciudadano->nombres,
+                'apellido_paterno' => $ciudadano->apellido_paterno,
+                'apellido_materno' => $ciudadano->apellido_materno
+            ]);
+        }
+
+        // Retornamos un error HTTP 404 si es un impostor o escribió mal
+        return response()->json([
+            'success' => false,
+            'message' => 'Los datos no coinciden con los registros de RENIEC.'
+        ], 404);
     }
 }
