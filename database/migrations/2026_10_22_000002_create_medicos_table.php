@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('medicos', function (Blueprint $table) {
             $table->id();
-            // Llave foránea: Un médico pertenece estrictamente a una especialidad
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('especialidad_id')->constrained('especialidades')->onDelete('cascade');
             $table->string('nombres');
             $table->string('apellidos');

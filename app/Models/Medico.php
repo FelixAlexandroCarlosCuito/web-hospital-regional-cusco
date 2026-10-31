@@ -6,7 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Medico extends Model
 {
-    protected $fillable = ['especialidad_id', 'nombres', 'apellidos', 'consultorio'];
+    protected $fillable = [
+        'user_id',
+        'especialidad_id', 
+        'nombres', 
+        'apellidos', 
+        'consultorio'
+    ];
 
     public function especialidad()
     {
@@ -16,5 +22,10 @@ class Medico extends Model
     public function citas()
     {
         return $this->hasMany(Cita::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

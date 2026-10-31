@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+            $table->enum('rol', ['paciente', 'medico', 'admision'])->default('paciente');
             $table->string('tipo_documento', 20);
             $table->string('numero_documento', 20)->unique();
             $table->string('nombres');            

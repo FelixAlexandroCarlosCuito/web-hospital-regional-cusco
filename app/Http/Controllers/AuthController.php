@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\ReniecSimulacion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -41,7 +42,7 @@ class AuthController extends Controller
         ]);
 
         // 2. Cruzamos los datos con la base oficial (Nuestra tabla simulada)
-        $ciudadano = \App\Models\ReniecSimulacion::where('dni', $request->numero_documento)
+        $ciudadano = ReniecSimulacion::where('dni', $request->numero_documento)
                         ->where('digito_verificador', $request->digito_verificador)
                         ->where('fecha_emision', $request->fecha_emision)
                         ->first();
@@ -83,11 +84,19 @@ class AuthController extends Controller
         ]);
 
         // Intento de autenticación. Auth::attempt maneja internamente 
-        // la comparación del hash de la contraseña.
         if (Auth::attempt($credenciales)) {
-            // Regeneración del identificador de sesión para prevenir vulnerabilidades de Session Fixation.
             $request->session()->regenerate();
+            
+            $rol = Auth::user()->rol;
 
+            // Redirección basada en RBAC
+            if ($rol === 'medico') {
+                return redirect()->route('medico.panel');
+            } elseif ($rol === 'admision') {
+                return redirect()->route('admision.panel'); // Lo construiremos después
+            }
+
+            // Por defecto, asume que es paciente
             return redirect()->route('dashboard');
         }
 
@@ -118,7 +127,7 @@ class AuthController extends Controller
 
     public function verificarReniec(Request $request)
     {
-        $ciudadano = \App\Models\ReniecSimulacion::where('dni', $request->numero_documento)
+        $ciudadano = ReniecSimulacion::where('dni', $request->numero_documento)
                         ->where('digito_verificador', $request->digito_verificador)
                         ->where('fecha_emision', $request->fecha_emision)
                         ->first();

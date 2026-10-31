@@ -19,6 +19,7 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
+        'rol',
         'tipo_documento',
         'numero_documento',
         'nombres',
@@ -52,5 +53,11 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    // Si el usuario es médico, esto nos permite traer sus datos de consultorio fácilmente
+    public function medico()
+    {
+        return $this->hasOne(Medico::class);
     }
 }

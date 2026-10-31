@@ -2,16 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cita;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PacienteController extends Controller
 {
     public function dashboard()
     {
-        $usuarioId = \Illuminate\Support\Facades\Auth::id();
+        $usuarioId = Auth::id();
 
         // 1. Citas Activas: Estado pendiente y fecha igual o mayor a hoy
-        $citasActivas = \App\Models\Cita::with('medico.especialidad')
+        $citasActivas = Cita::with('medico.especialidad')
             ->where('user_id', $usuarioId)
             ->where('estado', 'Pendiente')
             ->where('fecha', '>=', now()->toDateString())
@@ -20,7 +22,7 @@ class PacienteController extends Controller
             ->get();
 
         // 2. Historial: Estado diferente a pendiente, o citas que ya pasaron
-        $historialCitas = \App\Models\Cita::with('medico.especialidad')
+        $historialCitas = Cita::with('medico.especialidad')
             ->where('user_id', $usuarioId)
             ->where(function($query) {
                 $query->where('estado', '!=', 'Pendiente')

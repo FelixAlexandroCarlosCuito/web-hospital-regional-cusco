@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Especialidad;
+use App\Models\Cita;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CitaController extends Controller
 {
@@ -66,18 +68,18 @@ class CitaController extends Controller
 
         // 2. Seguridad: Verificamos que el usuario actual sea el dueño de la cita.
         // Si alguien intenta cambiar el ID en la URL para ver el ticket de otro paciente, lo bloqueamos.
-        if ($cita->user_id !== \Illuminate\Support\Facades\Auth::id()) {
+        if ($cita->user_id !== Auth::id()) {
             abort(403, 'Acceso no autorizado a este ticket.');
         }
 
         // 3. Calculamos el "Orden" del paciente (Cuántos pacientes hay antes que él ese mismo día con ese médico)
-        $ordenAtencion = \App\Models\Cita::where('medico_id', $cita->medico_id)
+        $ordenAtencion = Cita::where('medico_id', $cita->medico_id)
                                 ->where('fecha', $cita->fecha)
                                 ->where('id', '<=', $cita->id) // Solo contamos los que se registraron antes o igual que él
                                 ->count();
 
         // 4. Calculamos el total de citas del médico para ese día
-        $totalCitasDia = \App\Models\Cita::where('medico_id', $cita->medico_id)
+        $totalCitasDia = Cita::where('medico_id', $cita->medico_id)
                                 ->where('fecha', $cita->fecha)
                                 ->count();
 
@@ -89,10 +91,10 @@ class CitaController extends Controller
      */
     public function cancelar($id)
     {
-        $cita = \App\Models\Cita::findOrFail($id);
+        $cita = Cita::findOrFail($id);
 
         // Seguridad estricta: Solo el dueño de la cita puede cancelarla
-        if ($cita->user_id !== \Illuminate\Support\Facades\Auth::id()) {
+        if ($cita->user_id !== Auth::id()) {
             abort(403, 'Acción no autorizada.');
         }
 
@@ -121,7 +123,7 @@ class CitaController extends Controller
 
         // 2. Buscamos todas las citas que YA están ocupadas para ese doctor en ese día.
         // Ignoramos las canceladas, porque esos cupos vuelven a estar libres.
-        $citasOcupadas = \App\Models\Cita::where('medico_id', $request->medico_id)
+        $citasOcupadas = Cita::where('medico_id', $request->medico_id)
                             ->where('fecha', $request->fecha)
                             ->where('estado', '!=', 'Cancelado')
                             ->pluck('hora')

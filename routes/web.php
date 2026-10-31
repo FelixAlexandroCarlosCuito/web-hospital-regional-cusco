@@ -7,22 +7,12 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CitaController;
 use App\Http\Controllers\PacienteController;
 use App\Http\Controllers\MedicoController;
+use App\Http\Middleware\CheckRolMedico;
 
-// Ruta de inicio por defecto de Laravel
+// Ruta de inicio por defecto
 Route::get('/', function () {
     return view('inicio'); 
 });
-
-// Rutas de nuestro Panel del Director
-Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
-Route::post('/admin/especialidades', [AdminController::class, 'guardarEspecialidad'])->name('admin.especialidades.store');
-Route::post('/admin/medicos', [AdminController::class, 'guardarMedico'])->name('admin.medicos.store');
-Route::get('/caja', [AdminController::class, 'indexCaja'])->name('caja.dashboard');
-Route::post('/caja/pagar/{id}', [AdminController::class, 'confirmarPago'])->name('caja.pagar');
-
-Route::get('/medico/{id}', [MedicoController::class, 'dashboard'])->name('medico.dashboard');
-Route::get('/medico/atender/{idCita}', [MedicoController::class, 'atenderCita'])->name('medico.atender');
-Route::post('/medico/atender/{idCita}', [MedicoController::class, 'guardarHistorial'])->name('medico.guardar');
 
 //=== RUTAS DE ACCESO EXCLUSIVAS ===
 Route::middleware("guest")->group(function () {
@@ -47,6 +37,11 @@ Route::middleware("auth")->group(function () {
     Route::post('/reservar-cita', [CitaController::class, 'store'])->name('citas.store');
     Route::patch('/citas/{id}/cancelar', [CitaController::class, 'cancelar'])->name('citas.cancelar');
     Route::get('/citas/horarios', [CitaController::class, 'getHorarios'])->name('citas.horarios');
+
+    // MÓDULO MÉDICO
+    Route::middleware([CheckRolMedico::class])->group(function () {        
+        Route::get('/panel-medico', [MedicoController::class, 'panel'])->name('medico.panel');        
+    });
 });
 
 //=== RUTAS DE ACCESO GLOBAL ===
