@@ -79,14 +79,56 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // --- LÓGICA DEL PASO 2 (Fecha, Hora y Datos) ---
-    document.getElementById('fecha_cita').addEventListener('change', function() {
+    document.getElementById('fecha_cita').addEventListener('change', async function() {
         limpiarErrores('paso-2');
-        const dateObj = new Date(this.value + 'T00:00:00');
-        const diaSemana = dateObj.getDay();
-
-        if (diaSemana === 0 || diaSemana === 6) {
+        const fechaSeleccionada = this.value;
+        const selectHora = document.getElementById('hora_cita');
+        const medicoId = document.getElementById('medico').value;
+        
+        // 1. Validar fin de semana
+        const dateObj = new Date(fechaSeleccionada + 'T00:00:00');
+        if (dateObj.getDay() === 0 || dateObj.getDay() === 6) {
             mostrarError('fecha_cita', 'Atención solo de Lunes a Viernes.');
             this.value = '';
+            selectHora.innerHTML = '<option value="" disabled selected>Seleccione una fecha válida</option>';
+            selectHora.disabled = true;
+            return;
+        }
+
+        if (!medicoId) {
+            alert('Error crítico: No se ha seleccionado un médico.');
+            return;
+        }
+
+        // 2. Estado de carga visual
+        selectHora.innerHTML = '<option value="" disabled selected>Buscando cupos...</option>';
+        selectHora.disabled = true;
+
+        // 3. Consulta en vivo al backend para evitar colisiones
+        try {
+            const respuesta = await fetch(`/citas/horarios?medico_id=${medicoId}&fecha=${fechaSeleccionada}`);
+            const horariosDisponibles = await respuesta.json();
+
+            selectHora.innerHTML = '<option value="" disabled selected>Seleccione su turno</option>';
+            
+            if (horariosDisponibles.length > 0) {
+                horariosDisponibles.forEach(hora => {
+                    // Formateamos para que el paciente vea '08:00 AM' en lugar de '08:00:00'
+                    const [h, m] = hora.split(':');
+                    const formato12h = new Date(2000, 0, 1, h, m).toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit'});
+                    
+                    const option = document.createElement('option');
+                    option.value = hora; // El value sigue siendo H:i:s para la base de datos
+                    option.textContent = formato12h;
+                    selectHora.appendChild(option);
+                });
+                selectHora.disabled = false;
+            } else {
+                selectHora.innerHTML = '<option value="" disabled selected>Sin cupos para este día</option>';
+            }
+        } catch (error) {
+            console.error("Error al cargar horarios:", error);
+            selectHora.innerHTML = '<option value="" disabled selected>Error de conexión</option>';
         }
     });
 

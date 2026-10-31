@@ -102,4 +102,39 @@ class CitaController extends Controller
         // Retornamos a la página anterior (el dashboard)
         return back();
     }
+
+    /**
+     * Devuelve en JSON los horarios disponibles para un médico en una fecha específica.
+     */
+    public function getHorarios(Request $request)
+    {
+        $request->validate([
+            'medico_id' => 'required|exists:medicos,id',
+            'fecha'     => 'required|date'
+        ]);
+
+        // 1. Definimos la jornada estándar del hospital (Intervalos de 30 min)
+        $horariosBase = [
+            '08:00:00', '08:30:00', '09:00:00', '09:30:00', '10:00:00',
+            '10:30:00', '11:00:00', '11:30:00', '12:00:00', '12:30:00', '13:00:00'
+        ];
+
+        // 2. Buscamos todas las citas que YA están ocupadas para ese doctor en ese día.
+        // Ignoramos las canceladas, porque esos cupos vuelven a estar libres.
+        $citasOcupadas = \App\Models\Cita::where('medico_id', $request->medico_id)
+                            ->where('fecha', $request->fecha)
+                            ->where('estado', '!=', 'Cancelado')
+                            ->pluck('hora')
+                            ->toArray();
+
+        // 3. Normalizamos el formato de hora que devuelve MySQL para evitar errores de comparación
+        $citasOcupadas = array_map(function($hora) {
+            return date('H:i:s', strtotime($hora));
+        }, $citasOcupadas);
+
+        // 4. Matemáticas de conjuntos: Horarios Base MENOS Horarios Ocupados
+        $horariosDisponibles = array_values(array_diff($horariosBase, $citasOcupadas));
+
+        return response()->json($horariosDisponibles);
+    }
 }

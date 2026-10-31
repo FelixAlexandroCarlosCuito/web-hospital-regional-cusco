@@ -46,6 +46,7 @@ Route::middleware("auth")->group(function () {
     Route::get('/reservar-cita', [CitaController::class, 'create'])->name('reservar_cita');
     Route::post('/reservar-cita', [CitaController::class, 'store'])->name('citas.store');
     Route::patch('/citas/{id}/cancelar', [CitaController::class, 'cancelar'])->name('citas.cancelar');
+    Route::get('/citas/horarios', [CitaController::class, 'getHorarios'])->name('citas.horarios');
 });
 
 //=== RUTAS DE ACCESO GLOBAL ===

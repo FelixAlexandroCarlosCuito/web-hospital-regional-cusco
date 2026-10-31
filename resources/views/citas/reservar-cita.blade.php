@@ -61,8 +61,10 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="hora_cita">Hora</label>
-                        <input type="time" id="hora_cita" name="hora" required>
+                        <label for="hora_cita">Hora Disponible</label>
+                        <select id="hora_cita" name="hora" required disabled>
+                            <option value="" disabled selected>Seleccione una fecha primero</option>
+                        </select>
                         <span class="mensaje-error" id="error-hora_cita"></span>
                     </div>
                 </div>
