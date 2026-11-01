@@ -11,24 +11,42 @@ class MedicoController extends Controller
     /**
      * Renderiza el panel principal del médico con su agenda del día.
      */
-    public function panel()
+    public function panel(Request $request)
     {
-        // Extraemos el perfil médico asociado a esta cuenta de usuario
         $medico = Auth::user()->medico;
 
-        // Validamos de forma paranoica que el usuario realmente tenga un perfil médico asignado
         if (!$medico) {
             abort(403, 'No se encontró un perfil clínico asociado a esta cuenta.');
         }
 
-        // Consultamos las citas DE HOY, ordenadas por hora. 
-        // Traemos los datos del paciente para que el doctor sepa a quién atiende.
+        // 1. Capturamos la fecha del filtro. Si no existe, usamos la fecha actual.
+        $fechaFiltro = $request->input('fecha', now()->toDateString());
+
+        // 2. Buscamos las citas usando la fecha dinámica
         $citasHoy = Cita::with('paciente')
                         ->where('medico_id', $medico->id)
-                        ->where('fecha', now()->toDateString())
+                        ->where('fecha', $fechaFiltro)
                         ->orderBy('hora', 'asc')
                         ->get();
 
-        return view('medico.panel', compact('citasHoy', 'medico'));
+        // 3. Pasamos la variable $fechaFiltro a la vista para mantener el input actualizado
+        return view('medico.panel', compact('citasHoy', 'medico', 'fechaFiltro'));
+    }
+
+    /**
+     * Marca la cita de un paciente como 'Atendida'.
+     */
+    public function atender($id)
+    {
+        $cita = Cita::findOrFail($id);
+
+        // Seguridad: El doctor solo puede atender sus propias citas, no las de otros médicos
+        if ($cita->medico_id !== Auth::user()->medico->id) {
+            abort(403, 'No tienes permiso para modificar las citas de otro consultorio.');
+        }
+
+        $cita->update(['estado' => 'Atendido']);
+
+        return back(); // Recarga la agenda automáticamente
     }
 }

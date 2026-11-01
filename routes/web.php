@@ -40,7 +40,13 @@ Route::middleware("auth")->group(function () {
 
     // MÓDULO MÉDICO
     Route::middleware([CheckRolMedico::class])->group(function () {        
-        Route::get('/panel-medico', [MedicoController::class, 'panel'])->name('medico.panel');        
+        Route::get('/panel-medico', [MedicoController::class, 'panel'])->name('medico.panel');
+        Route::patch('/panel-medico/citas/{id}/atender', [MedicoController::class, 'atender'])->name('medico.citas.atender');
+    });
+
+    // MÓDULO ADMISIÓN
+    Route::middleware([\App\Http\Middleware\CheckRolAdmision::class])->group(function () {        
+        Route::get('/panel-admision', [App\Http\Controllers\AdmisionController::class, 'panel'])->name('admision.panel');        
     });
 });
 

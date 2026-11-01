@@ -81,6 +81,21 @@ class DatabaseSeeder extends Seeder
             'apellidos' => 'Qori Tupac',
             'consultorio' => 'Consultorio 05 - Piso 1'
         ]);
+
+        // 5. Cuenta maestra de Ventanilla / Admisión
+        User::create([
+            'tipo_documento' => 'DNI',
+            'numero_documento' => '11223344',
+            'nombres' => 'Ventanilla',
+            'apellido_paterno' => 'Central',
+            'apellido_materno' => 'Hospital',
+            'fecha_nacimiento' => '1990-01-01',
+            'direccion' => 'Sede Principal - Hospital Regional',
+            'telefono' => '084223344',
+            'correo' => 'admision@hospitalregional.gob.pe',
+            'password' => bcrypt('11223344'),
+            'rol' => 'admision'
+        ]);
     }
 
 }
