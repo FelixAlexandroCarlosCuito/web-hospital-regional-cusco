@@ -30,4 +30,20 @@ class AdmisionController extends Controller
 
         return view('admision.panel', compact('medicos', 'citas', 'medicoFiltro', 'fechaFiltro'));
     }
+
+    /**
+     * Permite a Admisión cancelar una cita presencial o telefónicamente.
+     */
+    public function cancelarCita($id)
+    {
+        $cita = Cita::findOrFail($id);
+        
+        // Admisión tiene el poder de cancelar cualquier cita que esté pendiente
+        if ($cita->estado === 'Pendiente') {
+            $cita->update(['estado' => 'Cancelado']);
+        }
+
+        // Recarga el panel manteniendo los filtros de fecha y médico que ya estaban aplicados
+        return back();
+    }
 }

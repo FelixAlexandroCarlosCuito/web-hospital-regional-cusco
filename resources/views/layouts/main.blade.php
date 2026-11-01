@@ -14,20 +14,29 @@
             <img class="logo-container" src="{{ asset('img/logo-hospital.png') }}" alt="Logo">
             <h1 class="titulo-sitio">Hospital Regional del Cusco</h1>
             <nav class="navegacion-superior">
-                <a href="{{ route('inicio') }}">Inicio</a>
-                <a href="{{ route('reservar_cita') }}">Reservar cita</a>
-                @guest
-                    <a href="{{ route('login') }}" class="btn-login">Iniciar Sesión</a>
-                    <a href="{{ route('registro') }}" class="btn-registro">Registrarse</a>
-                @endguest
+                <a href="{{ route('inicio') }}">Inicio</a>                
                 @auth
-                    <span class="nav-usuario">Hola, {{ Auth::user()->nombres }}</span>
-                    <a href="{{ route('dashboard') }}" class="btn-dashboard">Mis citas</a>
-                    <form action="{{ route('logout') }}" method="POST" style="display: inline;">
-                        @csrf
-                        <button type="submit" class="btn-logout">Cerrar Sesión</button>
-                    </form>
+                        @if(Auth::user()->rol === 'admision')
+                            <a href="{{ route('admision.panel') }}" class="nav-link">Ventanilla</a>
+                        @elseif(Auth::user()->rol === 'medico')
+                            <span class="nav-usuario">Hola, {{ Auth::user()->nombres }}</span>
+                            <a href="{{ route('medico.panel') }}" class="nav-link">Mi Agenda</a>
+                        @else
+                            <a href="{{ route('reservar_cita') }}">Reservar cita</a>
+                            <span class="nav-usuario">Hola, {{ Auth::user()->nombres }}</span>
+                            <a href="{{ route('dashboard') }}" class="nav-link">Mis Citas</a>
+                        @endif
+                        
+                        <form action="{{ route('logout') }}" method="POST" style="display: inline;">
+                            @csrf
+                            <button type="submit" class="btn-salir">Cerrar Sesión</button>
+                        </form>
                 @endauth
+                @guest
+                    <a href="{{ route('reservar_cita') }}">Reservar cita</a>
+                    <a href="{{ route('login') }}" class="nav-link">Iniciar Sesión</a>
+                    <a href="{{ route('registro') }}" class="btn-primario">Registrarse</a>
+                @endguest
             </nav>
         </div>
     </header>

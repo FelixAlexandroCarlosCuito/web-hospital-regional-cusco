@@ -1,13 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AdminController; // <-- El use va arriba, junto al otro
+use App\Http\Controllers\AdmisionController;
 use App\Http\Controllers\PaginasController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CitaController;
 use App\Http\Controllers\PacienteController;
 use App\Http\Controllers\MedicoController;
 use App\Http\Middleware\CheckRolMedico;
+use App\Http\Middleware\CheckRolAdmision;
 
 // Ruta de inicio por defecto
 Route::get('/', function () {
@@ -45,8 +46,9 @@ Route::middleware("auth")->group(function () {
     });
 
     // MÓDULO ADMISIÓN
-    Route::middleware([\App\Http\Middleware\CheckRolAdmision::class])->group(function () {        
-        Route::get('/panel-admision', [App\Http\Controllers\AdmisionController::class, 'panel'])->name('admision.panel');        
+    Route::middleware([CheckRolAdmision::class])->group(function () {        
+        Route::get('/panel-admision', [AdmisionController::class, 'panel'])->name('admision.panel');        
+        Route::patch('/panel-admision/citas/{id}/cancelar', [AdmisionController::class, 'cancelarCita'])->name('admision.citas.cancelar');
     });
 });
 

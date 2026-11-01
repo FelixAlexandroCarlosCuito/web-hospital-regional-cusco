@@ -71,8 +71,17 @@
                                             {{ $cita->estado }}
                                         </span>
                                     </td>
-                                    <td>
-                                        <a href="{{ route('ticket', $cita->id) }}" target="_blank" class="btn-outline" style="padding: 5px 10px; font-size: 0.85em;">Imprimir Ticket</a>
+                                    <td style="display: flex; gap: 8px; align-items: center;">
+                                        <a href="{{ route('ticket', $cita->id) }}" target="_blank" class="btn-outline" style="padding: 5px 10px; font-size: 0.85em;">Imprimir</a>
+                                        
+                                        @if($cita->estado === 'Pendiente')
+            
+                                            <form action="{{ route('admision.citas.cancelar', $cita->id) }}" method="POST" onsubmit="return confirm('¿Confirma la cancelación de esta cita médica desde Ventanilla? El cupo será liberado.');">
+                                                @csrf
+                                                @method('PATCH')
+                                                <button type="submit" class="btn-peligro" style="padding: 5px 10px; font-size: 0.85em;">Cancelar</button>
+                                            </form>
+                                        @endif
                                     </td>
                                 </tr>
                             @empty
