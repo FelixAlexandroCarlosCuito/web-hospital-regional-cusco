@@ -1,22 +1,27 @@
 @extends('layouts.main')
 
+@section('titulo', 'Panel Admisión')
+
 @section('contenido')
-    <main class="contenedor-dashboard">
+    <div class="container py-5">
         
-        <div class="cabecera-seccion" style="background-color: #0f766e; color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-            <h2 style="margin: 0; color: #f0fdfa;">Centro de Comando - Admisión y Ventanilla</h2>
-            <p style="margin: 5px 0 0 0; color: #ccfbf1;">Gestión global de citas y control de agendas médicas</p>
+        <!-- Cabecera Institucional del Módulo -->
+        <div class="card border-0 shadow-sm mb-4" style="background-color: var(--hrc-azul-primario);">
+            <div class="card-body p-4 p-md-5 text-white">
+                <h2 class="fw-bold mb-2">Centro de Comando - Admisión y Ventanilla</h2>
+                <p class="mb-0 fs-5 opacity-75">Gestión global de citas y control de agendas médicas</p>
+            </div>
         </div>
 
-        <section class="contenido-dashboard">
-            <!-- Panel de Búsqueda y Filtros -->
-            <div style="background-color: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e2e8f0;">
-                <form action="{{ route('admision.panel') }}" method="GET" style="display: flex; gap: 15px; align-items: flex-end;">
+        <!-- Motor de Búsqueda y Filtros -->
+        <div class="card border-0 shadow-sm mb-4 rounded-4">
+            <div class="card-body p-4">
+                <form action="{{ route('admision.panel') }}" method="GET" class="row g-3 align-items-end">
                     
-                    <div style="flex: 1;">
-                        <label for="medico_id" style="font-weight: bold; display: block; margin-bottom: 5px;">Consultar Agenda de:</label>
-                        <select name="medico_id" id="medico_id" class="input-formulario" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #cbd5e1;">
-                            <option value="" disabled {{ !$medicoFiltro ? 'selected' : '' }}>Seleccione un médico</option>
+                    <div class="col-md-5">
+                        <label for="medico_id" class="form-label fw-bold text-secondary">Consultar Agenda de:</label>
+                        <select name="medico_id" id="medico_id" class="form-select form-select-lg" required>
+                            <option value="" disabled {{ !$medicoFiltro ? 'selected' : '' }}>Seleccione un médico...</option>
                             @foreach($medicos as $medico)
                                 <option value="{{ $medico->id }}" {{ $medicoFiltro == $medico->id ? 'selected' : '' }}>
                                     Dr. {{ $medico->apellidos }} {{ $medico->nombres }} ({{ $medico->especialidad->nombre }})
@@ -25,80 +30,127 @@
                         </select>
                     </div>
 
-                    <div>
-                        <label for="fecha" style="font-weight: bold; display: block; margin-bottom: 5px;">Para la fecha:</label>
-                        <input type="date" name="fecha" id="fecha" value="{{ $fechaFiltro }}" class="input-formulario" required style="padding: 10px; border-radius: 6px; border: 1px solid #cbd5e1;">
+                    <div class="col-md-4">
+                        <label for="fecha" class="form-label fw-bold text-secondary">Para la fecha:</label>
+                        <input type="date" name="fecha" id="fecha" value="{{ $fechaFiltro }}" class="form-control form-control-lg" required>
                     </div>
 
-                    <div>
-                        <button type="submit" class="btn-primario" style="padding: 10px 20px; background-color: #0f766e; height: 100%;">Buscar Agenda</button>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-hrc-acento btn-lg w-100 fw-bold">Buscar Agenda</button>
                     </div>
+                    
                 </form>
             </div>
+        </div>
 
-            <!-- Resultados de la Agenda -->
-            @if($medicoFiltro)
-                <div class="tabla-historial-contenedor">
-                    <h3 style="margin-bottom: 15px;">Pacientes Programados ({{ $citas->count() }})</h3>
-                    <table class="tabla-historial">
-                        <thead style="background-color: #f1f5f9;">
+        <!-- Renderizado Condicional: Resultados de la Agenda -->
+        @if($medicoFiltro)
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="card-header bg-white border-bottom p-4">
+                    <h4 class="fw-bold text-hrc-primario mb-0">Pacientes Programados ({{ $citas->count() }})</h4>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light text-secondary">
                             <tr>
-                                <th>Orden</th>
-                                <th>Hora</th>
-                                <th>Paciente (DNI)</th>
-                                <th>Tipo</th>
-                                <th>Estado</th>
-                                <th>Gestión</th>
+                                <th class="ps-4 py-3">Orden</th>
+                                <th class="py-3">Hora</th>
+                                <th class="py-3">Paciente (DNI)</th>
+                                <th class="py-3">Tipo</th>
+                                <th class="py-3">Estado</th>
+                                <th class="pe-4 py-3 text-center">Gestión operativa</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($citas as $index => $cita)
                                 <tr>
-                                    <td style="font-weight: bold;">#{{ $index + 1 }}</td>
-                                    <td style="color: #0284c7; font-weight: bold;">
+                                    <td class="ps-4 py-3 fw-bold text-secondary">#{{ $index + 1 }}</td>
+                                    
+                                    <td class="py-3 fw-bold text-hrc-primario">
                                         {{ \Carbon\Carbon::parse($cita->hora)->format('h:i A') }}
                                     </td>
-                                    <td>
-                                        <strong>{{ strtoupper($cita->paciente->apellido_paterno . ' ' . $cita->paciente->apellido_materno) }}</strong>, {{ $cita->paciente->nombres }}
-                                        <br>
-                                        <span style="font-size: 0.85em; color: #64748b;">{{ $cita->paciente->numero_documento }}</span>
-                                    </td>
-                                    <td>
-                                        {{ $cita->codigo_referencia_sis ? 'SIS' : 'Particular' }}
-                                    </td>
-                                    <td>
-                                        <span class="estado-texto estado-{{ strtolower($cita->estado) }}">
-                                            {{ $cita->estado }}
+                                    
+                                    <td class="py-3">
+                                        <span class="d-block text-dark">
+                                            <strong>{{ strtoupper($cita->paciente->apellido_paterno . ' ' . $cita->paciente->apellido_materno) }}</strong>, 
+                                            {{ $cita->paciente->nombres }}
                                         </span>
+                                        <small class="text-muted">DNI: {{ $cita->paciente->numero_documento }}</small>
                                     </td>
-                                    <td style="display: flex; gap: 8px; align-items: center;">
-                                        <a href="{{ route('ticket', $cita->id) }}" target="_blank" class="btn-outline" style="padding: 5px 10px; font-size: 0.85em;">Imprimir</a>
-                                        
-                                        @if($cita->estado === 'Pendiente')
-            
-                                            <form action="{{ route('admision.citas.cancelar', $cita->id) }}" method="POST" onsubmit="return confirm('¿Confirma la cancelación de esta cita médica desde Ventanilla? El cupo será liberado.');">
-                                                @csrf
-                                                @method('PATCH')
-                                                <button type="submit" class="btn-peligro" style="padding: 5px 10px; font-size: 0.85em;">Cancelar</button>
-                                            </form>
+                                    
+                                    <td class="py-3">
+                                        @if($cita->codigo_referencia_sis)
+                                            <span class="badge bg-success">SIS</span>
+                                        @else
+                                            <span class="badge bg-secondary">Particular</span>
                                         @endif
+                                    </td>
+
+                                    <td class="py-3">
+                                        @if($cita->estado === 'Pendiente')
+                                            <span class="badge bg-warning text-dark">Pendiente</span>
+                                        @elseif($cita->estado === 'Atendido')
+                                            <span class="badge bg-primary">Atendido</span>
+                                        @elseif($cita->estado === 'Cancelado')
+                                            <span class="badge bg-danger">Cancelado</span>
+                                        @else
+                                            <span class="badge bg-secondary">{{ $cita->estado }}</span>
+                                        @endif
+                                    </td>
+
+                                    <td class="pe-4 py-3">
+                                        <div class="d-flex justify-content-center gap-2">
+                                            <a href="{{ route('ticket', $cita->id) }}" target="_blank" class="btn btn-outline-secondary btn-sm fw-bold">
+                                                Imprimir
+                                            </a>
+                                            
+                                            <!-- Intercepción de lógica de negocio: Cancelación operativa por Admisión -->
+                                            @if($cita->estado === 'Pendiente')
+                                                <form action="{{ route('admision.citas.cancelar', $cita->id) }}" method="POST" class="m-0" onsubmit="return confirm('¿Confirma la cancelación de esta cita médica desde Ventanilla? El cupo será liberado en la base de datos.');">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm fw-bold">
+                                                        Cancelar
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        </div>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" style="text-align: center; padding: 30px; color: #64748b;">
-                                        No hay pacientes programados para este médico en la fecha seleccionada.
+                                    <td colspan="6" class="text-center py-5 text-muted">
+                                        <div class="d-flex flex-column align-items-center">
+                                            <!-- SVG: Bandeja Vacía -->
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-inbox opacity-50 mb-3" viewBox="0 0 16 16">
+                                                <path d="M4.98 4a.5.5 0 0 0-.39.188L1.54 8H6a.5.5 0 0 1 .5.5 1.5 1.5 0 1 0 3 0A.5.5 0 0 1 10 8h4.46l-3.05-3.812A.5.5 0 0 0 11.02 4zM3.81.563A1.5 1.5 0 0 1 4.98 0h6.04a1.5 1.5 0 0 1 1.17.563l3.7 4.625a.5.5 0 0 1 .106.374l-.39 3.124A1.5 1.5 0 0 1 14.117 10H1.883a1.5 1.5 0 0 1-1.489-1.314l-.39-3.124a.5.5 0 0 1 .106-.374zM.125 11.17A.5.5 0 0 1 .5 11H6a.5.5 0 0 1 .5.5 1.5 1.5 0 0 0 3 0 .5.5 0 0 1 .5-.5h5.5a.5.5 0 0 1 .496.562l-.39 3.124A1.5 1.5 0 0 1 14.117 16H1.883a1.5 1.5 0 0 1-1.489-1.314l-.39-3.124a.5.5 0 0 1 .121-.392z"/>
+                                            </svg>
+                                            <strong class="fs-5">Sin agenda asignada</strong>
+                                            <p class="mb-0">El médico seleccionado no tiene pacientes programados en esta fecha.</p>
+                                        </div>
                                     </td>
                                 </tr>
                             @endforelse
                         </tbody>
                     </table>
                 </div>
-            @else
-                <div style="text-align: center; padding: 50px; color: #94a3b8; background-color: #f8fafc; border-radius: 8px;">
-                    Seleccione un médico y una fecha en el panel superior para visualizar la agenda completa.
+            </div>
+        @else
+            <!-- Estado Inicial: Esperando parámetros de búsqueda -->
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body text-center py-5 text-muted bg-light">
+                    <div class="d-flex flex-column align-items-center">
+                        <!-- SVG: Búsqueda / Interfaz -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-search opacity-50 mb-3" viewBox="0 0 16 16">
+                          <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                        </svg>
+                        <strong class="fs-5">Seleccione parámetros de búsqueda</strong>
+                        <p class="mb-0">Indique un médico y una fecha en el panel superior para visualizar y gestionar la agenda.</p>
+                    </div>
                 </div>
-            @endif
-        </section>
-    </main>
+            </div>
+        @endif
+        
+    </div>
 @endsection

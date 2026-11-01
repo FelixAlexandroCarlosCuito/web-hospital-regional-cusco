@@ -68,6 +68,78 @@
     box-shadow: 0 .5rem 1rem rgba(0,0,0,.15) !important;
 }
 
+/* Interacción del Stepper de Reservas (Estilo Bloque Institucional) */
+.barra-pasos li {
+    transition: all 0.3s ease;
+}
+
+/* Estado Activo: Fondo azul marino, texto blanco */
+.barra-pasos .activo {
+    background-color: var(--hrc-azul-primario) !important;
+    border-color: var(--hrc-azul-primario) !important;
+    color: white !important;
+    transform: translateY(-2px); /* Pequeño realce visual */
+}
+
+/* Círculo numérico del estado activo: Fondo blanco, texto azul marino */
+.barra-pasos .activo .badge-paso {
+    background-color: white !important;
+    color: var(--hrc-azul-primario) !important;
+}
+
+/* === Impresión para el Ticket Físico === */
+@media print {
+    body {
+        background-color: white !important;
+    }
+    
+    .oculta-impresion {
+        display: none !important;
+    }
+
+    /* Redimensionamiento para evitar cortes en el papel */
+    .contenedor-ticket {
+        margin: 0 !important;
+        padding: 0 !important;
+        max-width: 100% !important;
+    }
+
+    /* Forzar bordes negros sólidos y eliminar sombras */
+    .tarjeta-ticket {
+        box-shadow: none !important;
+        border: 2px solid #000 !important;
+        border-radius: 0 !important;
+    }
+
+    /* Forzar que el encabezado verde se imprima en blanco y negro */
+    .ticket-cabecera {
+        background-color: white !important;
+        color: black !important;
+        border-bottom: 2px solid #000 !important;
+        padding: 20px !important;
+    }
+
+    .icono-exito {
+        border: 2px solid #000 !important;
+        color: #000 !important;
+    }
+
+    /* Convertir el cuadro de advertencia a un cuadro de notas estándar */
+    .ticket-advertencia {
+        border: 2px solid #000 !important;
+        color: #000 !important;
+        background-color: white !important;
+    }
+
+    .ticket-cuerpo, .ticket-pie {
+        background-color: white !important;
+    }
+    
+    .ticket-pie {
+        border-top: none !important;
+    }
+}
+
 @media print {
     .oculta-impresion {
         display: none !important;

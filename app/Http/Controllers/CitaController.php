@@ -62,30 +62,31 @@ class CitaController extends Controller
      */
     public function showTicket($id)
     {
-        // 1. Buscamos la cita. Usamos 'with' para traer los datos del médico y la especialidad.
-        // failOrFail garantiza que si el ID no existe, arroja un 404 seguro.
-        $cita = \App\Models\Cita::with(['medico.especialidad'])->findOrFail($id);
+        // 1. Buscamos la cita. Cargamos las relaciones 'medico' y 'paciente' en la misma consulta.
+        $cita = \App\Models\Cita::with(['medico.especialidad', 'paciente'])->findOrFail($id);
 
-        // 2. Seguridad: Verificamos que el usuario actual sea el dueño de la cita.
-        // Si alguien intenta cambiar el ID en la URL para ver el ticket de otro paciente, lo bloqueamos.
-        if ($cita->user_id !== Auth::id()) {
-            abort(403, 'Acceso no autorizado a este ticket.');
+        // 2. Seguridad (RBAC): Verificamos el acceso.
+        // Si el rol es 'paciente', estrictamente debe ser el dueño de la cita.
+        // Los roles administrativos ('admision', 'medico') eluden este bloqueo por jerarquía.
+        $usuarioActual = Auth::user();
+        if ($usuarioActual->rol === 'paciente' && $cita->user_id !== $usuarioActual->id) {
+            abort(403, 'Acceso denegado: No tiene permisos para visualizar este ticket.');
         }
 
-        // 3. Calculamos el "Orden" del paciente (Cuántos pacientes hay antes que él ese mismo día con ese médico)
-        $ordenAtencion = Cita::where('medico_id', $cita->medico_id)
+        // 3. Calculamos el "Orden" del paciente
+        $ordenAtencion = \App\Models\Cita::where('medico_id', $cita->medico_id)
                                 ->where('fecha', $cita->fecha)
-                                ->where('id', '<=', $cita->id) // Solo contamos los que se registraron antes o igual que él
+                                ->where('id', '<=', $cita->id) 
                                 ->count();
 
         // 4. Calculamos el total de citas del médico para ese día
-        $totalCitasDia = Cita::where('medico_id', $cita->medico_id)
+        $totalCitasDia = \App\Models\Cita::where('medico_id', $cita->medico_id)
                                 ->where('fecha', $cita->fecha)
                                 ->count();
 
         return view('citas.ticket', compact('cita', 'ordenAtencion', 'totalCitasDia'));
     }
-
+    
     /**
      * Cancela una cita médica cambiando su estado, sin destruir el registro.
      */

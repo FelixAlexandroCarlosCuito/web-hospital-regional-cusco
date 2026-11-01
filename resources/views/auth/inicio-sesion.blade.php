@@ -16,18 +16,12 @@
                 <!-- Tarjeta del Formulario -->
                 <div class="card border-0 shadow-sm rounded-3">
                     <div class="card-body p-4 p-md-5">
-                        
-                        <!-- Se mantienen los IDs intactos para asegurar que el JS siga funcionando -->
                         <form id="formulario-login" action="{{ route('login') }}" method="POST" novalidate>
                             @csrf
                             
                             <div class="mb-4">
                                 <label for="documento" class="form-label fw-bold text-secondary">Número de Documento (DNI / CE)</label>
-                                <input type="text" id="documento" name="numero_documento" value="{{ old('numero_documento') }}" 
-                                       class="form-control form-control-lg @error('numero_documento') is-invalid @enderror" 
-                                       placeholder="Ingrese su documento">
-                                       
-                                <!-- Se mantiene la clase mensaje-error y el ID para la lógica JS -->
+                                <input type="text" id="documento" name="numero_documento" value="{{ old('numero_documento') }}" class="form-control form-control-lg @error('numero_documento') is-invalid @enderror" placeholder="Ingrese su documento">
                                 <span class="mensaje-error d-block text-danger small mt-1" id="error-documento">
                                     @error('numero_documento') {{ $message }} @enderror
                                 </span>
@@ -35,9 +29,7 @@
                             
                             <div class="mb-4">
                                 <label for="password" class="form-label fw-bold text-secondary">Contraseña</label>
-                                <input type="password" id="password" name="password" 
-                                       class="form-control form-control-lg @error('password') is-invalid @enderror" 
-                                       placeholder="••••••••">
+                                <input type="password" id="password" name="password" class="form-control form-control-lg @error('password') is-invalid @enderror" placeholder="Ingrese su contraseña">
                                        
                                 <span class="mensaje-error d-block text-danger small mt-1" id="error-password">
                                     @error('password') {{ $message }} @enderror

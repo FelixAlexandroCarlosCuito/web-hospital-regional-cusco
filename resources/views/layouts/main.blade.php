@@ -34,16 +34,16 @@
                             <a class="nav-link" href="{{ route('inicio') }}">Inicio</a>
                         </li>
                         
-                        <!-- Control de Acceso Basado en Roles (RBAC) para el enrutamiento visual -->
+                        <!-- Control de Acceso Basado en Roles para el enrutamiento visual -->
                         @auth
                             @if(Auth::user()->rol === 'admision')
-                                <li class="nav-item"><a href="{{ route('admision.panel') }}" class="nav-link fw-bold text-hrc-acento">Centro de Comando</a></li>
+                                <li class="nav-item"><a href="{{ route('admision.panel') }}" class="nav-link fw-bold text-hrc-acento">Panel Admisión</a></li>
                             @elseif(Auth::user()->rol === 'medico')
                                 <li class="nav-item"><span class="navbar-text fw-bold me-2">Dr. {{ Auth::user()->apellido_paterno }}</span></li>
                                 <li class="nav-item"><a href="{{ route('medico.panel') }}" class="nav-link fw-bold text-hrc-acento">Mi Agenda</a></li>
                             @else
                                 <li class="nav-item"><a href="{{ route('reservar_cita') }}" class="btn btn-hrc-acento">Reservar cita</a></li>
-                                <li class="nav-item"><a href="{{ route('dashboard') }}" class="nav-link">Mis Citas</a></li>
+                                <li class="nav-item"><a href="{{ route('dashboard') }}" class="nav-link fw-bold text-hrc-acento">Mis Citas</a></li>
                                 <li class="nav-item"><span class="navbar-text">Hola, {{ Auth::user()->nombres }}</span></li>
                             @endif
                             
