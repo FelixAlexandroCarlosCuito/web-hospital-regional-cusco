@@ -12,3 +12,4 @@ En computadoras propias
 - Ejecutar: php artisan key:generate
 - Ejecutar: php artisan migrate:fresh --seed
 - Ejecutar: php artisan serve
+- Si falla intentar seguir las indicaciones de la semana 9 igualmente
