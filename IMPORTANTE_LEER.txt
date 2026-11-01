@@ -13,3 +13,8 @@ En computadoras propias
 - Ejecutar: php artisan migrate:fresh --seed
 - Ejecutar: php artisan serve
 - Si falla intentar seguir las indicaciones de la semana 9 igualmente
+
+Por reglas del negocio
+- La información necesaria para crear e ingresar a una cuenta dependiendo del rol se encuentra en
+  database/seeders/DatabaseSeeder.php debido a que es una plataforma de momento exclusiva para
+  ciudadanos que tengan registro en RENIEC y la plantilla de empleados del propio hospital
