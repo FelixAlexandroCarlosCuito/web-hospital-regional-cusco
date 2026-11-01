@@ -1,0 +1,14 @@
+En la universidad
+- Seguir los pasos adjuntos en el doc de la semana 9 https://aulavirtualuc.continental.edu.pe/mod/resource/view.php?id=3220874
+- Continuar con las indicaciones para las computadoras propias
+
+En computadoras propias
+- Crear desde 0 la base de datos con el nombre "hospital_regional"
+- Tener el proyecto abierto en VS
+- Entrar a la terminal
+- Ejecutar: composer install
+- Ejecutar: cp .env.example .env
+- Cambiar el puerto en .env al que se muestra en XAAMP
+- Ejecutar: php artisan key:generate
+- Ejecutar: php artisan migrate:fresh --seed
+- Ejecutar: php artisan serve
