@@ -1,0 +1,78 @@
+/* === Paleta basado en la página oficial del Hospital Regional del Cusco === */
+:root {
+    --hrc-azul-primario: #21325b; /* Azul marino profundo: Institucionalidad y confianza */
+    --hrc-purpura-acento: #7c3aed; /* Púrpura vibrante: Llamados a la acción (CTAs) */
+    --hrc-dorado-alerta: #d97706; /* Mostaza/Dorado: Alertas y estados pendientes */
+    --hrc-gris-fondo: #f8fafc; /* Gris nieve: Fondos generales para descanso visual */
+}
+
+/* === Clases Personalizadas ===*/
+
+/* Colores de texto */
+.text-hrc-primario {
+    color: var(--hrc-azul-primario) !important;
+}
+.text-hrc-acento {
+    color: var(--hrc-purpura-acento) !important;
+}
+
+/* Fondos */
+.footer-hrc {
+    background-color: var(--hrc-azul-primario);
+}
+
+/* Botón de Acción Principal (Reservar Cita) */
+.btn-hrc-acento {
+    background-color: var(--hrc-purpura-acento);
+    color: white;
+    border: none;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+}
+.btn-hrc-acento:hover {
+    background-color: #6d28d9; /* Púrpura más oscuro al pasar el mouse */
+    color: white;
+}
+
+/* Botón Secundario Outline (Registrarse) */
+.btn-outline-hrc-primario {
+    color: var(--hrc-azul-primario);
+    border: 2px solid var(--hrc-azul-primario);
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+.btn-outline-hrc-primario:hover {
+    background-color: var(--hrc-azul-primario);
+    color: white;
+}
+
+/* Efectos hover para enlaces del footer */
+.footer-hrc a:hover {
+    color: white !important;
+    text-decoration: underline !important;
+}
+
+/* Hero Banner de Inicio */
+.hero-hrc {
+    /* El degradado aplica una capa azul semi-transparente sobre la imagen para que el texto blanco sea legible */
+    background: linear-gradient(rgba(73, 87, 119, 0.8), rgba(73, 87, 119, 0.8)), url('../img/hospital-regional-foto.png') center/cover no-repeat;
+    min-height: 70vh; /* Ocupa el 70% del alto de la pantalla */
+}
+
+/* Efecto sutil al pasar el mouse por las tarjetas de especialidades */
+.card-especialidad {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.card-especialidad:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.15) !important;
+}
+
+@media print {
+    .oculta-impresion {
+        display: none !important;
+    }
+    body {
+        background-color: white;
+    }
+}
