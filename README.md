@@ -1,59 +1,85 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Sistema de Gestión de Citas Médicas - Hospital Regional del Cusco
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Plataforma transaccional orientada a la web para la gestión de citas médicas presenciales. Diseñada como un MVP para el Hospital Regional del Cusco, su objetivo central es eliminar las barreras logísticas (colas físicas "interminables") y optimizar el flujo operativo entre los pacientes, el personal médico y el área de admisión.
 
-## About Laravel
+## 🚀 Características Principales (Release 1.0.0)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Control de Acceso Basado en Roles (RBAC):** Vistas y lógicas de negocio separadas para `Paciente`, `Médico` y `Admisión`.
+- **Wizard de Reservas:** Flujo de programación de citas con validación asíncrona de disponibilidad de horarios y médicos.
+- **Generación de Tickets:** Emisión de constancias de citas con formato de impresión física adaptado (soporte SIS y Particular).
+- **Gestión Operativa:** Panel de ventanilla para cancelación y auditoría de la agenda clínica en tiempo real.
+- **Interfaz Institucional:** Diseño responsivo basado en Bootstrap 5, respetando la paleta de colores oficial del hospital.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🛠️ Stack Tecnológico
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Backend:** Laravel (PHP)
+- **Frontend:** Blade, Bootstrap 5, CSS3, JavaScript
+- **Base de Datos:** MySQL / MariaDB
+- **Control de Versiones:** Git / GitHub (Commits Convencionales)
 
-## Learning Laravel
+## ⚙️ Requisitos Previos
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+Para desplegar este proyecto en un entorno local, asegúrese de tener instalado:
+- PHP
+- Composer
+- Motor de base de datos MySQL (XAMPP o similar)
+- Repositorio del proyecto
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 🖥️ Guía de Instalación Local
 
-## Laravel Sponsors
+Siga estos pasos estructurados para compilar y ejecutar el proyecto desde cero:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### En laboratorios de la universidad
+- Seguir los pasos adjuntos en el [documento de la semana 9](https://aulavirtualuc.continental.edu.pe/mod/resource/view.php?id=3220874).
+- Continuar con las indicaciones para computadoras propias detalladas a continuación.
 
-### Premium Partners
+### En computadoras propias
+> **Nota de contingencia:** Si ocurre un fallo en los siguientes pasos, intente seguir las indicaciones del documento de la semana 9.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+1. Crear desde cero una base de datos local con el nombre `hospital_regional`.
+2. Abrir el proyecto clonado en su editor de código (ej. Visual Studio Code).
+3. Abrir la terminal integrada y ejecutar la instalación de dependencias principales:
+   ```bash
+   composer install
+   ```
+4. Generar el archivo de variables de entorno:
+   ```bash
+   cp .env.example .env
+   ```
+5. Editar el archivo `.env` y **cambiar el puerto de la base de datos** (`DB_PORT`) para que coincida con el mostrado en el panel de control de XAMPP (suele ser 3306, pero puede variar según la configuración).
+6. Generar la clave criptográfica de la aplicación:
+   ```bash
+   php artisan key:generate
+   ```
+7. Ejecutar las migraciones y poblar la base de datos con los registros de prueba (Seeders):
+   ```bash
+   php artisan migrate:fresh --seed
+   ```
+8. Levantar el servidor local de desarrollo:
+   ```bash
+   php artisan serve
+   ```
 
-## Contributing
+## 🔐 Accesos y Usuarios de Prueba
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+> **Reglas de negocio simuladas:** La creación de cuentas de pacientes y el acceso de personal interno están restringidos. La validación de pacientes simula una conexión con RENIEC, y las cuentas del personal médico/admisión son pre-creadas por la administración del hospital.
 
-## Code of Conduct
+Para realizar pruebas operativas en el entorno local, utilice los siguientes datos precargados:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 1. Flujo de Paciente (Nuevo Registro)
+Para ingresar como paciente, debe registrar una nueva cuenta validando su identidad con estos datos de prueba (Simulación RENIEC):
+- **Nro DNI:** `76543210`
+- **Dígito verificador:** `4`
+- **Fecha de emisión:** `2020-05-15`
 
-## Security Vulnerabilities
+### 2. Flujos Internos (Cuentas pre-creadas)
+El sistema cuenta con personal de prueba ya registrado. Utilice las siguientes credenciales en el Login:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+| Rol Asignado | Usuario (Documento) | Contraseña |
+| :--- | :--- | :--- |
+| **Médico** (Dr. Carlos) | `44556677` | `44556677` |
+| **Médico** (Dr. Sumaq) | `77665544` | `77665544` |
+| **Admisión / Ventanilla** | `11223344` | `11223344` |
 
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+*Desarrollado para el Proyecto Académico de Programación Web.*
