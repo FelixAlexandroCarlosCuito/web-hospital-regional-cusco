@@ -13,21 +13,15 @@ use Illuminate\Support\Facades\DB;
 
 class CitaController extends Controller
 {
-    public function ticket(){
-        return view('citas.ticket');
-    }
 
-    public function reservar_cita(){
-        return view('citas.reservar-cita');
-    }
-    /**
-     * Renderiza el formulario de reserva con los datos dinámicos de MySQL.
-     */
     public function create()
     {
-        // Extraemos las especialidades junto con los médicos que pertenecen a cada una
-        $especialidades = Especialidad::with('medicos')->get();
-        return view('citas.reservar-cita', compact('especialidades'));
+        $especialidades = Especialidad::where('activo', true)
+            ->with(['medicos' => function ($query) {
+                $query->where('activo', true);
+            }])
+            ->orderBy('nombre')
+            ->get();
 
         $hoy = now()->toDateString();
 
@@ -36,15 +30,20 @@ class CitaController extends Controller
             ->whereDate('fecha', '>=', $hoy)
             ->count();
 
-        $especialidadesOcupadas = Cita::where('user_id', Auth::id())
-            ->where('estado', 'Pendiente')
-            ->whereDate('fecha', '>=', $hoy)
+        // Calificación explícita con prefijo de tabla para evitar ambigüedad con medicos.user_id en el JOIN
+        $especialidadesOcupadas = Cita::where('citas.user_id', Auth::id())
+            ->where('citas.estado', 'Pendiente')
+            ->whereDate('citas.fecha', '>=', $hoy)
             ->join('medicos', 'citas.medico_id', '=', 'medicos.id')
             ->pluck('medicos.especialidad_id')
             ->unique()
             ->toArray();
 
-        return view('reservar-cita', compact('especialidades', 'citasPendientesTotal', 'especialidadesOcupadas'));
+        return view('citas.reservar-cita', compact(
+            'especialidades',
+            'citasPendientesTotal',
+            'especialidadesOcupadas'
+        ));
     }
 
     public function store(Request $request)
@@ -59,23 +58,40 @@ class CitaController extends Controller
         ]);
 
         $horaNormalizada = Carbon::parse($request->hora)->format('H:i:s');
+        $fechaHoraCita = Carbon::parse("{$request->fecha} {$horaNormalizada}");
+
+        if ($fechaHoraCita->isWeekend()) {
+            return back()
+                ->withErrors(['fecha' => 'La atención de citas es únicamente de lunes a viernes.'])
+                ->withInput();
+        }
+
+        if ($fechaHoraCita->isPast()) {
+            return back()
+                ->withErrors(['hora' => 'No puedes reservar un horario que ya pasó.'])
+                ->withInput();
+        }
+
         $hoy = now()->toDateString();
         $limiteGlobal = 3;
 
-        // Transacción con bloqueo pesimista para evitar condiciones de carrera
-        // (doble clic del mismo paciente o dos pacientes tomando el mismo cupo a la vez)
+        // Bloqueo pesimista sobre usuario y médico para evitar reservas duplicadas concurrentes
         return DB::transaction(function () use ($request, $horaNormalizada, $hoy, $limiteGlobal) {
             $usuario = User::where('id', Auth::id())->lockForUpdate()->firstOrFail();
-            $medico = Medico::where('id', $request->medico_id)->lockForUpdate()->firstOrFail();
+            $medico = Medico::with('especialidad')->where('id', $request->medico_id)->lockForUpdate()->firstOrFail();
 
-            // 1. El médico debe pertenecer a la especialidad enviada
             if ((int) $medico->especialidad_id !== (int) $request->especialidad_id) {
                 return back()
                     ->withErrors(['medico_id' => 'El médico seleccionado no corresponde a la especialidad indicada.'])
                     ->withInput();
             }
 
-            // 2. Disponibilidad real del cupo (evita doble reserva en el mismo médico)
+            if (!$medico->activo || !$medico->especialidad || !$medico->especialidad->activo) {
+                return back()
+                    ->withErrors(['medico_id' => 'La especialidad o el médico seleccionado no se encuentra disponible actualmente.'])
+                    ->withInput();
+            }
+
             $cupoOcupado = Cita::where('medico_id', $medico->id)
                 ->where('fecha', $request->fecha)
                 ->where('hora', $horaNormalizada)
@@ -88,7 +104,6 @@ class CitaController extends Controller
                     ->withInput();
             }
 
-            // 3. Límite global de citas pendientes vigentes por paciente
             $citasPendientesTotal = Cita::where('user_id', $usuario->id)
                 ->where('estado', 'Pendiente')
                 ->whereDate('fecha', '>=', $hoy)
@@ -100,7 +115,6 @@ class CitaController extends Controller
                     ->withInput();
             }
 
-            // 4. Límite por especialidad (máximo 1 cita pendiente vigente por especialidad)
             $tieneEnEspecialidad = Cita::where('user_id', $usuario->id)
                 ->where('estado', 'Pendiente')
                 ->whereDate('fecha', '>=', $hoy)
@@ -115,7 +129,6 @@ class CitaController extends Controller
                     ->withInput();
             }
 
-            // 5. Prevención de cruce horario del mismo paciente en otro consultorio
             $tieneCruceHorario = Cita::where('user_id', $usuario->id)
                 ->where('estado', 'Pendiente')
                 ->where('fecha', $request->fecha)
@@ -128,7 +141,6 @@ class CitaController extends Controller
                     ->withInput();
             }
 
-            // Si pasó todas las reglas, ejecutamos las escrituras
             if ($usuario->telefono !== $request->telefono) {
                 $usuario->update(['telefono' => $request->telefono]);
             }
@@ -144,20 +156,47 @@ class CitaController extends Controller
 
             return redirect()->route('ticket', ['id' => $cita->id]);
         });
+    }
 
-        $fechaHoraCita = Carbon::parse("{$request->fecha} {$horaNormalizada}");
+    public function getHorarios(Request $request)
+    {
+        $request->validate([
+            'medico_id' => 'required|exists:medicos,id',
+            'fecha'     => 'required|date',
+        ]);
 
-        if ($fechaHoraCita->isWeekend()) {
-            return back()
-                ->withErrors(['fecha' => 'La atención de citas es únicamente de lunes a viernes.'])
-                ->withInput();
+        $medicoActivo = Medico::where('id', $request->medico_id)
+            ->where('activo', true)
+            ->whereHas('especialidad', fn ($q) => $q->where('activo', true))
+            ->exists();
+
+        if (!$medicoActivo) {
+            return response()->json([]);
         }
 
-        if ($fechaHoraCita->isPast()) {
-            return back()
-                ->withErrors(['hora' => 'No puedes reservar un horario que ya pasó.'])
-                ->withInput();
+        $horariosBase = [
+            '08:00:00', '08:30:00', '09:00:00', '09:30:00', '10:00:00',
+            '10:30:00', '11:00:00', '11:30:00', '12:00:00', '12:30:00', '13:00:00',
+        ];
+
+        $citasOcupadas = Cita::where('medico_id', $request->medico_id)
+            ->where('fecha', $request->fecha)
+            ->where('estado', '!=', 'Cancelado')
+            ->pluck('hora')
+            ->map(fn ($hora) => date('H:i:s', strtotime($hora)))
+            ->toArray();
+
+        $horariosDisponibles = array_values(array_diff($horariosBase, $citasOcupadas));
+
+        // Excluye turnos cuya hora ya transcurrió si la fecha consultada es hoy
+        if (Carbon::parse($request->fecha)->isToday()) {
+            $ahora = now();
+            $horariosDisponibles = array_values(array_filter($horariosDisponibles, function ($hora) use ($request, $ahora) {
+                return Carbon::parse("{$request->fecha} {$hora}")->gt($ahora);
+            }));
         }
+
+        return response()->json($horariosDisponibles);
     }
 
     /**
@@ -217,40 +256,5 @@ class CitaController extends Controller
         $cita->update(['estado' => 'Cancelado']);
 
         return back()->with('success', 'Tu cita ha sido cancelada correctamente y el cupo fue liberado.');
-    }
-
-    /**
-     * Devuelve en JSON los horarios disponibles para un médico en una fecha específica.
-     */
-    public function getHorarios(Request $request)
-    {
-        $request->validate([
-            'medico_id' => 'required|exists:medicos,id',
-            'fecha'     => 'required|date'
-        ]);
-
-        // 1. Definimos la jornada estándar del hospital (Intervalos de 30 min)
-        $horariosBase = [
-            '08:00:00', '08:30:00', '09:00:00', '09:30:00', '10:00:00',
-            '10:30:00', '11:00:00', '11:30:00', '12:00:00', '12:30:00', '13:00:00'
-        ];
-
-        // 2. Buscamos todas las citas que YA están ocupadas para ese doctor en ese día.
-        // Ignoramos las canceladas, porque esos cupos vuelven a estar libres.
-        $citasOcupadas = Cita::where('medico_id', $request->medico_id)
-                            ->where('fecha', $request->fecha)
-                            ->where('estado', '!=', 'Cancelado')
-                            ->pluck('hora')
-                            ->toArray();
-
-        // 3. Normalizamos el formato de hora que devuelve MySQL para evitar errores de comparación
-        $citasOcupadas = array_map(function($hora) {
-            return date('H:i:s', strtotime($hora));
-        }, $citasOcupadas);
-
-        // 4. Matemáticas de conjuntos: Horarios Base MENOS Horarios Ocupados
-        $horariosDisponibles = array_values(array_diff($horariosBase, $citasOcupadas));
-
-        return response()->json($horariosDisponibles);
     }
 }

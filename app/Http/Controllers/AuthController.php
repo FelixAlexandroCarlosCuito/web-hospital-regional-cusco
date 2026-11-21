@@ -82,31 +82,37 @@ class AuthController extends Controller
      */
     public function autenticar(Request $request)
     {
-        // Validación de formato previo a la consulta a la base de datos.
         $credenciales = $request->validate([
             'numero_documento' => 'required|string',
             'password'         => 'required|string',
         ]);
 
-        // Intento de autenticación. Auth::attempt maneja internamente 
         if (Auth::attempt($credenciales)) {
-            $request->session()->regenerate();
-            
-            $rol = Auth::user()->rol;
+            // Si la cuenta fue dada de baja lógicamente, cerramos sesión de inmediato
+            if (!Auth::user()->activo) {
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
 
-            // Redirección basada en RBAC
-            if ($rol === 'medico') {
-                return redirect()->route('medico.panel');
-            } elseif ($rol === 'admision') {
-                return redirect()->route('admision.panel'); // Lo construiremos después
+                return back()->withErrors([
+                    'numero_documento' => 'Esta cuenta se encuentra desactivada. Comuníquese con Administración.',
+                ]);
             }
 
-            // Por defecto, asume que es paciente
+            $request->session()->regenerate();
+            $rol = Auth::user()->rol;
+
+            if ($rol === 'admin') {
+                return redirect()->route('admin.panel');
+            } elseif ($rol === 'medico') {
+                return redirect()->route('medico.panel');
+            } elseif ($rol === 'admision') {
+                return redirect()->route('admision.panel');
+            }
+
             return redirect()->route('dashboard');
         }
 
-        // Si las credenciales fallan, se retorna a la vista anterior con un mensaje de error genérico
-        // por razones de seguridad (no se especifica si falló el usuario o la contraseña).
         return back()->withErrors([
             'numero_documento' => 'Las credenciales proporcionadas no coinciden con nuestros registros.',
         ]);

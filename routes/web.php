@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\Admin\EspecialidadController as AdminEspecialidadController;
+use App\Http\Controllers\Admin\PanelController as AdminPanelController;
+
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdmisionController;
 use App\Http\Controllers\PaginasController;
@@ -9,6 +12,7 @@ use App\Http\Controllers\PacienteController;
 use App\Http\Controllers\MedicoController;
 use App\Http\Middleware\CheckRolMedico;
 use App\Http\Middleware\CheckRolAdmision;
+use App\Http\Middleware\CheckRolAdmin;
 
 //=== RUTAS PÚBLICAS ===
 Route::get('/', [PaginasController::class, 'inicio'])->name('inicio');
@@ -54,4 +58,17 @@ Route::middleware('auth')->group(function () {
         Route::get('/panel-admision', [AdmisionController::class, 'panel'])->name('admision.panel');
         Route::patch('/panel-admision/citas/{id}/cancelar', [AdmisionController::class, 'cancelarCita'])->name('admision.citas.cancelar');
     });
+
+    // Módulo Administrador
+    Route::middleware([CheckRolAdmin::class])
+        ->prefix('panel-admin')
+        ->name('admin.')
+        ->group(function () {
+            Route::get('/', [AdminPanelController::class, 'panel'])->name('panel');
+
+            Route::get('/especialidades', [AdminEspecialidadController::class, 'index'])->name('especialidades.index');
+            Route::post('/especialidades', [AdminEspecialidadController::class, 'store'])->name('especialidades.store');
+            Route::put('/especialidades/{especialidad}', [AdminEspecialidadController::class, 'update'])->name('especialidades.update');
+            Route::patch('/especialidades/{especialidad}/estado', [AdminEspecialidadController::class, 'toggleEstado'])->name('especialidades.toggle');
+        });
 });

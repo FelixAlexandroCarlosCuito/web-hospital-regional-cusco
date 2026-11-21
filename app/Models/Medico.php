@@ -10,8 +10,9 @@ class Medico extends Model
         'user_id',
         'especialidad_id', 
         'nombres', 
-        'apellidos', 
-        'consultorio'
+        'apellidos',
+        'consultorio',
+        'activo'
     ];
 
     public function especialidad()
