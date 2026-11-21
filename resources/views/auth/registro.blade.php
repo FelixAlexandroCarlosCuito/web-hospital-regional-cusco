@@ -14,38 +14,59 @@
 
                 <div class="card border-0 shadow-sm rounded-3">
                     <div class="card-body p-4 p-md-5">
+
+                        {{-- Alerta general de errores devueltos por Laravel --}}
+                        @if ($errors->any())
+                            <div class="alert alert-danger alert-dismissible fade show shadow-sm mb-4" role="alert">
+                                <strong class="d-block mb-1">No se pudo completar el registro:</strong>
+                                <ul class="mb-0 ps-3">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+
+                                @if ($errors->has('numero_documento'))
+                                    <div class="mt-2 pt-2 border-top border-danger-subtle">
+                                        <a href="{{ route('login') }}" class="alert-link">Ir a Iniciar Sesión &rarr;</a>
+                                    </div>
+                                @endif
+
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                            </div>
+                        @endif
                         
                         <!-- Formulario de Registro - Los IDs son vitales para la validación asíncrona de Reniec -->
-                        <form id="formulario-registro" action="{{ route('registrar') }}" method="POST" novalidate>
+                        <form id="formulario-registro" action="{{ route('registrar') }}" data-login-url="{{ route('login') }}" data-reniec-url="{{ route('api.reniec') }}" method="POST" novalidate>
                             @csrf
                             
                             <div class="row mb-3">
                                 <div class="col-md-6 mb-3 mb-md-0">
                                     <label for="tipo_documento" class="form-label fw-bold text-secondary">Tipo de Documento</label>
-                                    <select name="tipo_documento" id="tipo_documento" class="form-select form-select-lg">
-                                        <option value="DNI" selected>DNI</option>
+                                    <select name="tipo_documento" id="tipo_documento" class="form-select form-select-lg @error('tipo_documento') is-invalid @enderror">
+                                        <option value="DNI" {{ old('tipo_documento', 'DNI') === 'DNI' ? 'selected' : '' }}>DNI</option>
                                         <option value="CE" disabled>Carnet de Extranjería</option>
                                     </select>
+                                    <span class="mensaje-error d-block text-danger small mt-1" id="error-tipo_documento">@error('tipo_documento') {{ $message }} @enderror</span>
                                 </div>
                                 
                                 <div class="col-md-6">
                                     <label for="numero_documento" class="form-label fw-bold text-secondary">Número de Documento</label>
-                                    <input type="text" id="numero_documento" name="numero_documento" class="form-control form-control-lg">
-                                    <span class="mensaje-error d-block text-danger small mt-1" id="error-numero_documento"></span>
+                                    <input type="text" id="numero_documento" name="numero_documento" value="{{ old('numero_documento') }}" class="form-control form-control-lg @error('numero_documento') is-invalid @enderror">
+                                    <span class="mensaje-error d-block text-danger small mt-1" id="error-numero_documento">@error('numero_documento') {{ $message }} @enderror</span>
                                 </div>
                             </div>
 
                             <div class="row mb-4">
                                 <div class="col-md-6 mb-3 mb-md-0">
                                     <label for="digito_verificador" class="form-label fw-bold text-secondary">Dígito Verificador</label>
-                                    <input type="text" id="digito_verificador" name="digito_verificador" maxlength="1" placeholder="Ej: 4" class="form-control form-control-lg">
-                                    <span class="mensaje-error d-block text-danger small mt-1" id="error-digito_verificador"></span>
+                                    <input type="text" id="digito_verificador" name="digito_verificador" value="{{ old('digito_verificador') }}" maxlength="1" placeholder="Ej: 4" class="form-control form-control-lg @error('digito_verificador') is-invalid @enderror">
+                                    <span class="mensaje-error d-block text-danger small mt-1" id="error-digito_verificador">@error('digito_verificador') {{ $message }} @enderror</span>
                                 </div>
                                 
                                 <div class="col-md-6">
                                     <label for="fecha_emision" class="form-label fw-bold text-secondary">Fecha de Emisión</label>
-                                    <input type="date" id="fecha_emision" name="fecha_emision" class="form-control form-control-lg">
-                                    <span class="mensaje-error d-block text-danger small mt-1" id="error-fecha_emision"></span>
+                                    <input type="date" id="fecha_emision" name="fecha_emision" value="{{ old('fecha_emision') }}" class="form-control form-control-lg @error('fecha_emision') is-invalid @enderror">
+                                    <span class="mensaje-error d-block text-danger small mt-1" id="error-fecha_emision">@error('fecha_emision') {{ $message }} @enderror</span>
                                 </div>
                             </div>
 
@@ -72,14 +93,15 @@
 
                                 <div class="mb-3">
                                     <label for="correo" class="form-label fw-bold text-secondary">Correo Electrónico (Opcional)</label>
-                                    <input type="email" id="correo" name="correo" placeholder="ejemplo@correo.com" class="form-control form-control-lg">
+                                    <input type="email" id="correo" name="correo" value="{{ old('correo') }}" placeholder="ejemplo@correo.com" class="form-control form-control-lg @error('correo') is-invalid @enderror">
+                                    <span class="mensaje-error d-block text-danger small mt-1" id="error-correo">@error('correo') {{ $message }} @enderror</span>
                                 </div>
 
                                 <div class="row mb-4">
                                     <div class="col-md-6 mb-3 mb-md-0">
                                         <label for="password" class="form-label fw-bold text-secondary">Crear contraseña</label>
-                                        <input type="password" id="password" name="password" placeholder="Mínimo 6 caracteres" class="form-control form-control-lg">
-                                        <span class="mensaje-error d-block text-danger small mt-1" id="error-password"></span>
+                                        <input type="password" id="password" name="password" placeholder="Mínimo 6 caracteres" class="form-control form-control-lg @error('password') is-invalid @enderror">
+                                        <span class="mensaje-error d-block text-danger small mt-1" id="error-password">@error('password') {{ $message }} @enderror</span>
                                     </div>
                                     <div class="col-md-6">
                                         <label for="confirm_password" class="form-label fw-bold text-secondary">Confirmar Contraseña</label>

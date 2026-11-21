@@ -36,6 +36,26 @@
                 <div class="card border-0 shadow-sm rounded-3">
                     <div class="card-body p-4 p-md-5">
                         
+                        {{-- Alertas de error enviadas por el backend (límites, cruce horario, cupo ocupado) --}}
+                        @if ($errors->any())
+                            <div class="alert alert-danger alert-dismissible fade show shadow-sm mb-4" role="alert">
+                                <strong class="d-block mb-1">No se pudo completar la reserva:</strong>
+                                <ul class="mb-0 ps-3">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                            </div>
+                        @endif
+
+                        {{-- Aviso preventivo si ya llegó al tope global --}}
+                        @if (($citasPendientesTotal ?? 0) >= 3)
+                            <div class="alert alert-warning shadow-sm mb-4" role="alert">
+                                <strong>Límite alcanzado:</strong> Ya cuentas con {{ $citasPendientesTotal }} citas pendientes activas. Debes asistir o cancelar una desde tu panel antes de agendar otra.
+                            </div>
+                        @endif
+                        
                         <form id="formulario-reserva" action="{{ route('citas.store') }}" method="POST">
                             @csrf
                             
@@ -49,7 +69,10 @@
                                         <select id="especialidad" name="especialidad_id" class="form-select form-select-lg" required>
                                             <option value="" disabled selected>Seleccione Especialidad</option>
                                             @foreach($especialidades as $especialidad)
-                                                <option value="{{ $especialidad->id }}">{{ $especialidad->nombre }}</option>
+                                                @php $ocupada = in_array($especialidad->id, $especialidadesOcupadas ?? []); @endphp
+                                                <option value="{{ $especialidad->id }}" {{ $ocupada ? 'disabled' : '' }}>
+                                                    {{ $especialidad->nombre }} {{ $ocupada ? '(Ya tienes una cita pendiente)' : '' }}
+                                                </option>
                                             @endforeach
                                         </select>
                                         <span class="mensaje-error d-block text-danger small mt-1" id="error-especialidad"></span>
@@ -94,13 +117,13 @@
                                 <div class="row g-4 mb-5">
                                     <div class="col-md-6">
                                         <label for="telefono" class="form-label fw-bold text-secondary">Teléfono de Contacto Actual</label>
-                                        <input type="tel" id="telefono" name="telefono" value="{{ Auth::user()->telefono }}" class="form-control form-control-lg" required placeholder="Ej: 987654321">
+                                        <input type="tel" id="telefono" name="telefono" value="{{ old('telefono', Auth::user()->telefono) }}" class="form-control form-control-lg" required placeholder="Ej: 987654321">
                                         <span class="mensaje-error d-block text-danger small mt-1" id="error-telefono"></span>
                                     </div>
                                     
                                     <div class="col-md-6">
                                         <label for="referencia_sis" class="form-label fw-bold text-secondary">Hoja de Referencia (Solo SIS)</label>
-                                        <input type="text" id="referencia_sis" name="codigo_referencia_sis" class="form-control form-control-lg" placeholder="Opcional: Código del centro de salud">
+                                        <input type="text" id="referencia_sis" name="codigo_referencia_sis" value="{{ old('codigo_referencia_sis') }}" class="form-control form-control-lg" placeholder="Opcional: Código del centro de salud">
                                     </div>
                                 </div>
 

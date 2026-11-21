@@ -10,52 +10,48 @@ use App\Http\Controllers\MedicoController;
 use App\Http\Middleware\CheckRolMedico;
 use App\Http\Middleware\CheckRolAdmision;
 
-// Ruta de inicio por defecto
-Route::get('/', function () {
-    return view('inicio'); 
-});
+//=== RUTAS PÚBLICAS ===
+Route::get('/', [PaginasController::class, 'inicio'])->name('inicio');
+Route::get('/inicio', [PaginasController::class, 'inicio']);
 
-//=== RUTAS DE ACCESO EXCLUSIVAS ===
-Route::middleware("guest")->group(function () {
-    // Rutas de autenticación de la página
+//=== RUTAS DE INVITADOS (NO AUTENTICADOS) ===
+Route::middleware('guest')->group(function () {
     Route::get('/inicio-sesion', [AuthController::class, 'index'])->name('login');
-    Route::post('/inicio-sesion', [AuthController::class, 'autenticar']);
+    Route::post('/inicio-sesion', [AuthController::class, 'autenticar'])
+        ->middleware('throttle:10,1'); // Máx. 10 intentos por minuto
+
     Route::get('/registro', [AuthController::class, 'registro'])->name('registro');
-    Route::post('/registrar', [AuthController::class, 'registrar'])->name('registrar');
-    // API interna para validación
-    Route::post('/verificar-reniec', [AuthController::class, 'verificarReniec'])->name('api.reniec');
+    Route::post('/registrar', [AuthController::class, 'registrar'])
+        ->middleware('throttle:10,1')
+        ->name('registrar');
+
+    // API interna para validación de identidad (limitada contra fuerza bruta)
+    Route::post('/verificar-reniec', [AuthController::class, 'verificarReniec'])
+        ->middleware('throttle:15,1')
+        ->name('api.reniec');
 });
 
-Route::middleware("auth")->group(function () {
-    // Rutas de autenticación de la página
+//=== RUTAS PROTEGIDAS (AUTENTICADOS) ===
+Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-    // Rutas de paciente
+
+    // Módulo Paciente y Citas
     Route::get('/dashboard', [PacienteController::class, 'dashboard'])->name('dashboard');
-    // Rutas de citas
-    Route::get('/reservar-cita', [CitaController::class, 'reservar_cita'])->name('reservar_cita');
-    Route::get('/ticket/{id}', [CitaController::class, 'showTicket'])->name('ticket');
     Route::get('/reservar-cita', [CitaController::class, 'create'])->name('reservar_cita');
     Route::post('/reservar-cita', [CitaController::class, 'store'])->name('citas.store');
+    Route::get('/ticket/{id}', [CitaController::class, 'showTicket'])->name('ticket');
     Route::patch('/citas/{id}/cancelar', [CitaController::class, 'cancelar'])->name('citas.cancelar');
     Route::get('/citas/horarios', [CitaController::class, 'getHorarios'])->name('citas.horarios');
 
-    // MÓDULO MÉDICO
-    Route::middleware([CheckRolMedico::class])->group(function () {        
+    // Módulo Médico
+    Route::middleware([CheckRolMedico::class])->group(function () {
         Route::get('/panel-medico', [MedicoController::class, 'panel'])->name('medico.panel');
         Route::patch('/panel-medico/citas/{id}/atender', [MedicoController::class, 'atender'])->name('medico.citas.atender');
     });
 
-    // MÓDULO ADMISIÓN
-    Route::middleware([CheckRolAdmision::class])->group(function () {        
-        Route::get('/panel-admision', [AdmisionController::class, 'panel'])->name('admision.panel');        
+    // Módulo Admisión
+    Route::middleware([CheckRolAdmision::class])->group(function () {
+        Route::get('/panel-admision', [AdmisionController::class, 'panel'])->name('admision.panel');
         Route::patch('/panel-admision/citas/{id}/cancelar', [AdmisionController::class, 'cancelarCita'])->name('admision.citas.cancelar');
     });
 });
-
-//=== RUTAS DE ACCESO GLOBAL ===
-// Rutas de pestañas
-Route::get('/inicio', [PaginasController::class, 'inicio'])->name('inicio');
-
-// Rutas de citas
-
-// Rutas de paciente

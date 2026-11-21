@@ -1,0 +1,6 @@
+2. Recuperación de contraseña
+Para esto necesitamos levantar una pequeña arquitectura de mensajería. No es solo un cambio en la base de datos; requiere configurar tokens criptográficos de un solo uso con tiempo de caducidad (para que el enlace expire en 60 minutos) y configurar un interceptor de correos local (como Mailtrap) para que puedas simular el envío de emails en tu PC sin necesidad de comprar un servidor SMTP real todavía.
+
+¿Qué más falta para blindar la web? (Reglas de Negocio)
+
+Actualización de Perfil (El eslabón débil): Si vamos a implementar la recuperación de contraseña por correo, el paciente debe tener un apartado en su Dashboard para actualizar su email. Si cambia de correo y no puede actualizarlo en el sistema, la función de recuperación quedará inutilizada y el paciente perderá su cuenta para siempre.

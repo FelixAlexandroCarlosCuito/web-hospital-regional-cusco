@@ -44,6 +44,18 @@ document.addEventListener('DOMContentLoaded', function() {
         inputFecha.min = `${anio}-${mes}-${dia}`;
     }
 
+    function resetearProgramacion() {
+    const inputFecha = document.getElementById('fecha_cita');
+    const selectHora = document.getElementById('hora_cita');
+    inputFecha.value = '';
+    selectHora.innerHTML = '<option value="" disabled selected>Seleccione una fecha primero</option>';
+    selectHora.disabled = true;
+    }
+
+    // Llama a resetearProgramacion() dentro del listener 'change' de #especialidad
+    // y agrega este listener para #medico:
+    document.getElementById('medico').addEventListener('change', resetearProgramacion);
+
     // --- LÓGICA DEL PASO 1 (Especialidad y Médico) ---
     document.getElementById('especialidad').addEventListener('change', function() {
         const especialidadId = this.value;
@@ -157,6 +169,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const fechaRaw = document.getElementById('fecha_cita').value.split('-');
         const fechaFormat = `${fechaRaw[2]}/${fechaRaw[1]}/${fechaRaw[0]}`;
+        const selHora = document.getElementById('hora_cita');
         
         const telefono = document.getElementById('telefono').value;
         const sis = document.getElementById('referencia_sis').value.trim();
@@ -166,7 +179,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('resumen-especialidad').textContent = selEsp.options[selEsp.selectedIndex].text;
         document.getElementById('resumen-medico').textContent = selMed.options[selMed.selectedIndex].text;
         document.getElementById('resumen-fecha').textContent = fechaFormat;
-        document.getElementById('resumen-hora').textContent = document.getElementById('hora_cita').value;
+        document.getElementById('resumen-hora').textContent = selHora.options[selHora.selectedIndex].text;
         document.getElementById('resumen-telefono').textContent = telefono;
         document.getElementById('resumen-sis').textContent = sis ? sis : 'Ninguna (Paciente Regular)';
     }

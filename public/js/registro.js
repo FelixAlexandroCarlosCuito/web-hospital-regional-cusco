@@ -4,35 +4,62 @@ document.addEventListener('DOMContentLoaded', function() {
     const seccionCompletar = document.getElementById('seccion-completar-registro');
 
     function mostrarError(idElemento, mensaje) {
-        document.getElementById(`error-${idElemento}`).textContent = mensaje;
-        document.getElementById(idElemento).classList.add('input-error');
+        const spanError = document.getElementById(`error-${idElemento}`);
+        const input = document.getElementById(idElemento);
+        if (spanError) spanError.textContent = mensaje;
+        if (input) input.classList.add('input-error', 'is-invalid');
     }
 
     function limpiarErrores() {
         document.querySelectorAll('.mensaje-error').forEach(msg => msg.textContent = '');
-        document.querySelectorAll('.input-error').forEach(input => input.classList.remove('input-error'));
+        document.querySelectorAll('.input-error, .is-invalid').forEach(input => {
+            input.classList.remove('input-error', 'is-invalid');
+        });
+        const alertaPrevia = document.getElementById('alerta-cuenta-existente');
+        if (alertaPrevia) alertaPrevia.remove();
+    }
+
+    function mostrarAvisoCuentaExistente(mensaje) {
+        const alerta = document.createElement('div');
+        alerta.id = 'alerta-cuenta-existente';
+        alerta.className = 'alert alert-warning shadow-sm mb-4';
+        alerta.setAttribute('role', 'alert');
+
+        const texto = document.createElement('span');
+        texto.textContent = mensaje + ' ';
+
+        const enlace = document.createElement('a');
+        enlace.href = formularioRegistro.dataset.loginUrl;
+        enlace.className = 'alert-link fw-bold';
+        enlace.textContent = 'Ir a Iniciar Sesión →';
+
+        alerta.appendChild(texto);
+        alerta.appendChild(enlace);
+
+        formularioRegistro.parentNode.insertBefore(alerta, formularioRegistro);
     }
 
     // 1. Lógica Asíncrona (Verificar en RENIEC)
     btnVerificar.addEventListener('click', async function() {
         limpiarErrores();
+
         const numDoc = document.getElementById('numero_documento').value.trim();
         const digito = document.getElementById('digito_verificador').value.trim();
         const fecha = document.getElementById('fecha_emision').value;
         const csrfToken = document.querySelector('input[name="_token"]').value;
 
-        if (!numDoc || !digito || !fecha) {
-            alert('Por favor, complete DNI, dígito y fecha de emisión para verificar.');
-            return;
-        }
+        let fase1Valida = true;
+        if (!numDoc) { mostrarError('numero_documento', 'Ingrese su número de documento.'); fase1Valida = false; }
+        if (!digito) { mostrarError('digito_verificador', 'Ingrese el dígito verificador.'); fase1Valida = false; }
+        if (!fecha)  { mostrarError('fecha_emision', 'Seleccione la fecha de emisión.'); fase1Valida = false; }
+        if (!fase1Valida) return;
 
-        // Cambiamos el texto del botón para UX
         const textoOriginal = btnVerificar.textContent;
         btnVerificar.textContent = 'Verificando...';
         btnVerificar.disabled = true;
 
         try {
-            const respuesta = await fetch('/verificar-reniec', {
+            const respuesta = await fetch(formularioRegistro.dataset.reniecUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -49,24 +76,24 @@ document.addEventListener('DOMContentLoaded', function() {
             const datos = await respuesta.json();
 
             if (respuesta.ok && datos.success) {
-                // Bloqueamos los inputs originales para que no los cambie después de verificar
                 document.getElementById('numero_documento').readOnly = true;
                 document.getElementById('digito_verificador').readOnly = true;
                 document.getElementById('fecha_emision').readOnly = true;
 
-                // Llenamos los visuales con los datos del servidor
                 document.getElementById('visual_nombres').value = datos.nombres;
-                document.getElementById('visual_apellidos').value = datos.apellido_paterno + ' ' + datos.apellido_materno;
+                document.getElementById('visual_apellidos').value = `${datos.apellido_paterno} ${datos.apellido_materno}`;
 
-                // Ocultamos el botón de verificar y mostramos la fase 2
                 btnVerificar.style.display = 'none';
                 seccionCompletar.style.display = 'block';
+            } else if (respuesta.status === 409 && datos.ya_registrado) {
+                mostrarError('numero_documento', 'Este documento ya cuenta con un usuario activo.');
+                mostrarAvisoCuentaExistente(datos.message);
             } else {
-                mostrarError('numero_documento', datos.message || 'Datos incorrectos.');
-            }
+                mostrarError('numero_documento', datos.message || 'Los datos ingresados son incorrectos.');
+            } 
         } catch (error) {
             console.error('Error de red:', error);
-            alert('Hubo un problema de conexión. Intente nuevamente.');
+            mostrarError('numero_documento', 'Hubo un problema de conexión con el servidor. Intente nuevamente.');
         } finally {
             btnVerificar.textContent = textoOriginal;
             btnVerificar.disabled = false;
@@ -78,12 +105,12 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         limpiarErrores();
 
-        const password = document.getElementById('password').value.trim();
-        const confirmPassword = document.getElementById('confirm_password').value.trim();
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirm_password').value;
         let esValido = true;
 
         if (!password || password.length < 6) {
-            mostrarError('password', 'Mínimo 6 caracteres.');
+            mostrarError('password', 'La contraseña debe tener al menos 6 caracteres.');
             esValido = false;
         }
 
@@ -93,7 +120,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         if (esValido) {
-            formularioRegistro.submit(); 
+            const btnSubmit = formularioRegistro.querySelector('button[type="submit"]');
+            if (btnSubmit) {
+                btnSubmit.disabled = true;
+                btnSubmit.textContent = 'Creando cuenta...';
+            }
+            formularioRegistro.submit();
         }
     });
 });

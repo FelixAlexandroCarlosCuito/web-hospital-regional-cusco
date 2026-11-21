@@ -37,6 +37,20 @@
             <!-- Contenido Principal: Citas Transaccionales -->
             <div class="col-lg-8">
                 
+                @if (session('success'))
+                    <div class="alert alert-success alert-dismissible fade show shadow-sm mb-4" role="alert">
+                        {{ session('success') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                    </div>
+                @endif
+
+                @if (session('error'))
+                    <div class="alert alert-danger alert-dismissible fade show shadow-sm mb-4" role="alert">
+                        {{ session('error') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                    </div>
+                @endif
+
                 <h3 class="fw-bold text-hrc-primario mb-3">Mis Citas Próximas</h3>
                 
                 <div id="contenedor-citas-activas" class="mb-5">
@@ -64,13 +78,22 @@
                                     <div class="col-md-3 text-md-end text-center">
                                         <div class="d-grid gap-2">
                                             <a href="{{ route('ticket', $cita->id) }}" class="btn btn-outline-hrc-primario btn-sm">Ver Ticket</a>
-                                            
-                                            <!-- Intercepción JS para confirmación de cancelación -->
-                                            <form action="{{ route('citas.cancelar', $cita->id) }}" method="POST" class="formulario-cancelar m-0">
-                                                @csrf
-                                                @method('PATCH')
-                                                <button type="submit" class="btn btn-outline-danger btn-sm w-100 btn-cancelar-cita">Cancelar</button>
-                                            </form>
+
+                                            @if ($cita->puedeCancelarsePorPaciente())
+                                                <form action="{{ route('citas.cancelar', $cita->id) }}" method="POST" class="formulario-cancelar m-0">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm w-100 btn-cancelar-cita">Cancelar</button>
+                                                </form>
+                                            @else
+                                                <button type="button" class="btn btn-outline-secondary btn-sm w-100" disabled
+                                                        title="Las cancelaciones en línea solo se permiten con al menos {{ \App\Models\Cita::HORAS_MINIMAS_CANCELACION }} horas de anticipación.">
+                                                    Cancelación cerrada
+                                                </button>
+                                                <small class="text-muted text-center" style="font-size: 0.72rem;">
+                                                    Menos de {{ \App\Models\Cita::HORAS_MINIMAS_CANCELACION }}h restantes
+                                                </small>
+                                            @endif
                                         </div>
                                     </div>
                                     
