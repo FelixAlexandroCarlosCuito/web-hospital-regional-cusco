@@ -9,9 +9,11 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\URL;
 
 /**
- * Gestiona el flujo de reserva con asignación automática de médico, consulta de ticket y cancelación.
+ * Gestiona el flujo de reserva con asignación automática de médico, constancia digital,
+ * verificación mediante enlace firmado y cancelación operativa.
  */
 class CitaController extends Controller
 {
@@ -241,14 +243,13 @@ class CitaController extends Controller
             return back()->withInput()->withErrors(['reserva' => $resultado['error']]);
         }
 
-        // Resuelve la redirección por acción para no depender del alias configurado en routes/web.php
         return redirect()
             ->action([self::class, 'showTicket'], [$resultado['cita']->id])
             ->with('success', 'Cita reservada correctamente. Se asignó automáticamente al especialista disponible.');
     }
 
     /**
-     * Muestra el comprobante de atención generado para una cita específica.
+     * Muestra la constancia oficial de la cita e incluye la URL firmada para el código QR.
      */
     public function showTicket($id)
     {
@@ -260,25 +261,36 @@ class CitaController extends Controller
             abort(403, 'Acceso denegado: No tiene permisos para visualizar este ticket.');
         }
 
-        // Calcula el orden según horario efectivo del médico excluyendo citas canceladas
-        $ordenAtencion = Cita::where('medico_id', $cita->medico_id)
-            ->whereDate('fecha', $cita->fecha)
-            ->where('estado', '!=', 'Cancelado')
-            ->where(function ($q) use ($cita) {
-                $q->where('hora', '<', $cita->hora)
-                    ->orWhere(function ($q2) use ($cita) {
-                        $q2->where('hora', $cita->hora)
-                            ->where('id', '<=', $cita->id);
-                    });
-            })
-            ->count();
+        [$ordenAtencion, $totalCitasDia] = $this->calcularOrdenJornada($cita);
 
-        $totalCitasDia = Cita::where('medico_id', $cita->medico_id)
-            ->whereDate('fecha', $cita->fecha)
-            ->where('estado', '!=', 'Cancelado')
-            ->count();
+        // Firma criptográfica para impedir enumeración de citas ajenas en la verificación por QR
+        $urlVerificacion = URL::signedRoute('citas.verificar', ['cita' => $cita->id]);
 
-        return view('citas.ticket', compact('cita', 'ordenAtencion', 'totalCitasDia'));
+        return view('citas.ticket', compact('cita', 'ordenAtencion', 'totalCitasDia', 'urlVerificacion'));
+    }
+
+    /**
+     * Valida en tiempo real la autenticidad y vigencia de una constancia escaneada por QR.
+     */
+    public function verificarTicket($cita)
+    {
+        $registro = Cita::with(['medico.especialidad', 'paciente'])->findOrFail($cita);
+        [$ordenAtencion, $totalCitasDia] = $this->calcularOrdenJornada($registro);
+
+        // Enmascara el documento para consultas externas; el personal autenticado ve el número completo
+        $documento = (string) ($registro->paciente->numero_documento ?? '');
+        $esPersonalInterno = Auth::check() && in_array(Auth::user()->rol, ['admin', 'admision', 'medico'], true);
+        $documentoVisible = $esPersonalInterno || strlen($documento) <= 4
+            ? $documento
+            : str_repeat('•', strlen($documento) - 4) . substr($documento, -4);
+
+        return view('citas.verificar', [
+            'cita' => $registro,
+            'ordenAtencion' => $ordenAtencion,
+            'totalCitasDia' => $totalCitasDia,
+            'documentoVisible' => $documentoVisible,
+            'esPersonalInterno' => $esPersonalInterno,
+        ]);
     }
 
     /**
@@ -304,5 +316,30 @@ class CitaController extends Controller
         $cita->update(['estado' => 'Cancelado']);
 
         return back()->with('success', 'Tu cita ha sido cancelada correctamente y el cupo fue liberado.');
+    }
+
+    /**
+     * Calcula el orden de atención dentro de la jornada del médico excluyendo citas canceladas.
+     */
+    private function calcularOrdenJornada(Cita $cita): array
+    {
+        $ordenAtencion = Cita::where('medico_id', $cita->medico_id)
+            ->whereDate('fecha', $cita->fecha)
+            ->where('estado', '!=', 'Cancelado')
+            ->where(function ($q) use ($cita) {
+                $q->where('hora', '<', $cita->hora)
+                    ->orWhere(function ($q2) use ($cita) {
+                        $q2->where('hora', $cita->hora)
+                            ->where('id', '<=', $cita->id);
+                    });
+            })
+            ->count();
+
+        $totalCitasDia = Cita::where('medico_id', $cita->medico_id)
+            ->whereDate('fecha', $cita->fecha)
+            ->where('estado', '!=', 'Cancelado')
+            ->count();
+
+        return [$ordenAtencion, $totalCitasDia];
     }
 }

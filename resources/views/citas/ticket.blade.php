@@ -1,31 +1,27 @@
 @extends('layouts.main')
 
-@section('titulo', 'Ticket de Cita')
+@section('titulo', 'Constancia de Cita')
 
 @section('contenido')
     @php
-        $codigoTicket = 'HRC-' . date('Y', strtotime($cita->created_at)) . '-' . str_pad($cita->id, 5, '0', STR_PAD_LEFT);
+        $anioEmision = optional($cita->created_at)->format('Y') ?? now()->format('Y');
+        $codigoTicket = 'HRC-' . $anioEmision . '-' . str_pad($cita->id, 5, '0', STR_PAD_LEFT);
         $esSis = !empty($cita->codigo_referencia_sis);
+        $fechaCita = \Carbon\Carbon::parse($cita->fecha)->format('d/m/Y');
+        $horaCita = \Carbon\Carbon::parse($cita->hora)->format('h:i A');
 
-        // Adapta cabecera e icono al estado real del registro para evitar mostrar constancias válidas en citas canceladas
         $configEstado = match ($cita->estado) {
             'Atendido' => [
-                'titulo' => 'Cita Atendida',
-                'icono' => 'bi-check2-all',
-                'claseCabecera' => 'ticket-cabecera-atendida',
-                'claseBadge' => 'badge-estado-atendido',
+                'sello' => 'ATENDIDA',
+                'claseSello' => 'doc-sello-atendida',
             ],
             'Cancelado' => [
-                'titulo' => 'Cita Cancelada',
-                'icono' => 'bi-x-lg',
-                'claseCabecera' => 'ticket-cabecera-cancelada',
-                'claseBadge' => 'badge-estado-cancelado',
+                'sello' => 'CANCELADA',
+                'claseSello' => 'doc-sello-cancelada',
             ],
             default => [
-                'titulo' => 'Cita Confirmada',
-                'icono' => 'bi-check-lg',
-                'claseCabecera' => 'ticket-cabecera-confirmada',
-                'claseBadge' => 'badge-estado-pendiente',
+                'sello' => 'VIGENTE',
+                'claseSello' => 'doc-sello-vigente',
             ],
         };
 
@@ -39,7 +35,7 @@
 
     <div class="container py-4 py-md-5 contenedor-ticket">
         <div class="row justify-content-center">
-            <div class="col-12 col-md-10 col-lg-7">
+            <div class="col-12 col-lg-9 col-xl-8">
 
                 @if (session('success'))
                     <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm mb-4 oculta-impresion" role="alert">
@@ -48,148 +44,197 @@
                     </div>
                 @endif
 
-                <div class="card border-0 overflow-hidden tarjeta-ticket" id="tarjeta-ticket">
-
-                    {{-- Cabecera institucional con estado de la cita --}}
-                    <div class="text-white p-4 p-md-5 ticket-cabecera {{ $configEstado['claseCabecera'] }}">
-                        <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3">
-                            <div class="d-flex align-items-center gap-3">
-                                <div class="icono-exito d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0">
-                                    <i class="bi {{ $configEstado['icono'] }}"></i>
-                                </div>
-                                <div>
-                                    <span class="etiqueta-panel-oscuro d-block mb-1">Hospital Regional del Cusco</span>
-                                    <h1 class="h3 fw-bold mb-0">{{ $configEstado['titulo'] }}</h1>
-                                </div>
-                            </div>
-
-                            <div class="text-sm-end">
-                                <span class="d-block texto-xs texto-claro-mate text-uppercase">N° de Ticket</span>
-                                <strong class="ticket-codigo-cabecera">{{ $codigoTicket }}</strong>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- Bloque principal de programación para lectura rápida en admisión y consultorio --}}
-                    <div class="card-body p-4 p-md-5 bg-white ticket-cuerpo">
-                        <div class="ticket-franja-horario p-3 p-md-4 mb-4">
-                            <div class="row g-3 align-items-center">
-                                <div class="col-6 col-sm-4">
-                                    <span class="ticket-etiqueta d-block">Fecha</span>
-                                    <span class="fw-bold text-hrc-primario fs-5">
-                                        {{ date('d/m/Y', strtotime($cita->fecha)) }}
-                                    </span>
-                                </div>
-                                <div class="col-6 col-sm-4">
-                                    <span class="ticket-etiqueta d-block">Hora</span>
-                                    <span class="fw-bold text-hrc-acento fs-5">
-                                        {{ date('h:i A', strtotime($cita->hora)) }}
-                                    </span>
-                                </div>
-                                <div class="col-12 col-sm-4 text-sm-end">
-                                    <span class="ticket-etiqueta d-block">Consultorio</span>
-                                    <span class="fw-bold text-hrc-primario fs-6">
-                                        {{ $cita->medico->consultorio }}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-4">
-                            <span class="ticket-pill-estado {{ $configEstado['claseBadge'] }}">
-                                Estado: {{ $cita->estado }}
-                            </span>
-                            <span class="badge-categoria-mate">
-                                {{ $esSis ? 'SIS - Referido' : 'Paciente Particular' }}
-                            </span>
-                        </div>
-
-                        {{-- Datos del paciente y asignación médica --}}
-                        <div class="row g-4 mb-4">
-                            <div class="col-12">
-                                <span class="ticket-etiqueta d-block">Paciente</span>
-                                <span class="d-block fw-bold text-hrc-primario text-uppercase fs-6">
-                                    {{ $cita->paciente->apellido_paterno }} {{ $cita->paciente->apellido_materno }}, {{ $cita->paciente->nombres }}
-                                </span>
-                            </div>
-
-                            <div class="col-6">
-                                <span class="ticket-etiqueta d-block">Documento</span>
-                                <span class="d-block text-dark fw-medium">
-                                    {{ $cita->paciente->tipo_documento ?? 'DNI' }} {{ $cita->paciente->numero_documento }}
-                                </span>
-                            </div>
-
-                            <div class="col-6">
-                                <span class="ticket-etiqueta d-block">Orden de Atención</span>
-                                <span class="d-block text-dark fw-bold">
-                                    Turno {{ $ordenAtencion }} de {{ $totalCitasDia }}
-                                </span>
-                            </div>
-
-                            <div class="col-sm-6">
-                                <span class="ticket-etiqueta d-block">Especialidad</span>
-                                <span class="d-block fw-bold text-hrc-primario">
-                                    {{ $cita->medico->especialidad->nombre }}
-                                </span>
-                            </div>
-
-                            <div class="col-sm-6">
-                                <span class="ticket-etiqueta d-block">Médico Asignado</span>
-                                <span class="d-block text-dark fw-medium">
-                                    Dr. {{ $cita->medico->nombres }} {{ $cita->medico->apellidos }}
-                                </span>
-                            </div>
-
-                            @if ($esSis)
-                                <div class="col-12">
-                                    <span class="ticket-etiqueta d-block">Código de Referencia SIS</span>
-                                    <span class="d-block text-dark fw-semibold">
-                                        {{ $cita->codigo_referencia_sis }}
-                                    </span>
-                                </div>
-                            @endif
-                        </div>
-
-                        {{-- Indicaciones operativas según modalidad --}}
-                        <div class="ticket-advertencia p-3 d-flex align-items-start gap-3">
-                            <i class="bi bi-info-circle-fill fs-5 flex-shrink-0 mt-1"></i>
-                            <div class="small">
-                                <strong class="d-block mb-1">Indicaciones para tu atención</strong>
-                                @if ($cita->estado === 'Cancelado')
-                                    Esta cita fue cancelada y el cupo ya fue liberado. Si necesitas atenderte, genera una nueva reserva desde el portal.
-                                @else
-                                    Presenta esta constancia impresa o desde tu celular en Admisión <strong>15 minutos antes</strong> de tu horario junto con tu documento de identidad original.
-                                    @if (!$esSis)
-                                        Acércate previamente a Caja para realizar el pago correspondiente.
-                                    @else
-                                        Lleva contigo la copia de tu DNI y tu hoja de referencia vigente ({{ $cita->codigo_referencia_sis }}).
-                                    @endif
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- Separador perforado tipo talón --}}
-                    <div class="ticket-perforacion" aria-hidden="true"></div>
-
-                    {{-- Acciones de pantalla y nota de validez impresa --}}
-                    <div class="card-footer p-4 bg-white border-0 ticket-pie">
-                        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-stretch align-items-sm-center gap-3 oculta-impresion acciones-ticket">
-                            <a href="{{ $rutaPanel }}" class="btn btn-outline-hrc-primario rounded-pill px-4">
-                                <i class="bi bi-arrow-left me-1"></i> Volver a mi Panel
-                            </a>
-                            <button type="button" id="btn-imprimir-ticket" class="btn btn-hrc-acento rounded-pill px-4">
-                                <i class="bi bi-printer-fill me-2"></i> Imprimir Constancia
-                            </button>
-                        </div>
-
-                        <p class="d-none d-print-block text-center small mb-0">
-                            Av. de La Cultura S/N, Cusco &middot; Central Telefónica: (084) 231131 &middot; Emitido el {{ now()->format('d/m/Y h:i A') }}
-                        </p>
-                    </div>
-
+                {{-- Barra de acciones fuera del documento oficial --}}
+                <div class="d-flex flex-column flex-sm-row justify-content-between align-items-stretch align-items-sm-center gap-2 mb-3 oculta-impresion">
+                    <a href="{{ $rutaPanel }}" class="btn btn-outline-hrc-primario btn-sm rounded-pill px-4">
+                        <i class="bi bi-arrow-left me-1"></i> Volver a mi Panel
+                    </a>
+                    <button type="button" id="btn-imprimir-ticket" class="btn btn-hrc-acento btn-sm rounded-pill px-4">
+                        <i class="bi bi-printer-fill me-2"></i> Imprimir / Guardar PDF
+                    </button>
                 </div>
+
+                {{-- Documento oficial de constancia de cita --}}
+                <article class="doc-constancia bg-white" id="tarjeta-ticket">
+
+                    {{-- Membrete institucional --}}
+                    <header class="doc-membrete p-4">
+                        <div class="row align-items-center g-3">
+                            <div class="col-md-8">
+                                <div class="doc-entidad-superior text-uppercase">
+                                    Gobierno Regional del Cusco &middot; Gerencia Regional de Salud
+                                </div>
+                                <h1 class="h4 fw-bold text-hrc-primario mb-1">
+                                    Hospital Regional del Cusco
+                                </h1>
+                                <div class="doc-subtitulo-oficial text-uppercase">
+                                    Constancia de Cita &mdash; Consulta Externa
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 text-md-end">
+                                <div class="doc-folio-caja d-inline-block text-start text-md-end">
+                                    <span class="doc-etiqueta d-block">N° de Constancia</span>
+                                    <strong class="doc-codigo d-block">{{ $codigoTicket }}</strong>
+                                    <span class="doc-sello-estado {{ $configEstado['claseSello'] }} mt-1">
+                                        {{ $configEstado['sello'] }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </header>
+
+                    @if ($cita->estado === 'Cancelado')
+                        <div class="doc-banda-anulada px-4 py-2 small">
+                            <i class="bi bi-x-octagon-fill me-2"></i>
+                            <strong>Documento sin validez operativa:</strong> esta cita fue cancelada y el cupo fue liberado.
+                        </div>
+                    @endif
+
+                    <div class="doc-cuerpo p-4">
+
+                        {{-- Sección I: Programación de consulta --}}
+                        <h2 class="doc-seccion-titulo">I. Datos de la Atención Programada</h2>
+                        <div class="doc-grilla mb-4">
+                            <div class="row g-0">
+                                <div class="col-6 col-md-4 doc-celda">
+                                    <span class="doc-etiqueta">Fecha de Atención</span>
+                                    <span class="doc-valor-destacado">{{ $fechaCita }}</span>
+                                </div>
+                                <div class="col-6 col-md-4 doc-celda">
+                                    <span class="doc-etiqueta">Hora Programada</span>
+                                    <span class="doc-valor-destacado text-hrc-acento">{{ $horaCita }}</span>
+                                </div>
+                                <div class="col-12 col-md-4 doc-celda">
+                                    <span class="doc-etiqueta">Consultorio</span>
+                                    <span class="doc-valor fw-bold">{{ $cita->medico->consultorio }}</span>
+                                </div>
+                                <div class="col-12 col-md-4 doc-celda">
+                                    <span class="doc-etiqueta">Especialidad</span>
+                                    <span class="doc-valor fw-bold text-hrc-primario">{{ $cita->medico->especialidad->nombre }}</span>
+                                </div>
+                                <div class="col-12 col-md-5 doc-celda">
+                                    <span class="doc-etiqueta">Médico Asignado</span>
+                                    <span class="doc-valor">Dr. {{ $cita->medico->nombres }} {{ $cita->medico->apellidos }}</span>
+                                </div>
+                                <div class="col-12 col-md-3 doc-celda">
+                                    <span class="doc-etiqueta">Orden de Atención</span>
+                                    <span class="doc-valor fw-bold">
+                                        @if ($cita->estado === 'Cancelado')
+                                            Anulado
+                                        @else
+                                            Turno {{ $ordenAtencion }} de {{ $totalCitasDia }}
+                                        @endif
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Sección II: Identificación del paciente y modalidad --}}
+                        <h2 class="doc-seccion-titulo">II. Datos del Paciente y Modalidad</h2>
+                        <div class="doc-grilla mb-4">
+                            <div class="row g-0">
+                                <div class="col-12 col-md-8 doc-celda">
+                                    <span class="doc-etiqueta">Apellidos y Nombres</span>
+                                    <span class="doc-valor fw-bold text-uppercase text-hrc-primario">
+                                        {{ $cita->paciente->apellido_paterno }} {{ $cita->paciente->apellido_materno }}, {{ $cita->paciente->nombres }}
+                                    </span>
+                                </div>
+                                <div class="col-12 col-md-4 doc-celda">
+                                    <span class="doc-etiqueta">Documento de Identidad</span>
+                                    <span class="doc-valor fw-semibold">
+                                        {{ $cita->paciente->tipo_documento ?? 'DNI' }} {{ $cita->paciente->numero_documento }}
+                                    </span>
+                                </div>
+                                <div class="col-12 col-md-6 doc-celda">
+                                    <span class="doc-etiqueta">Modalidad de Atención</span>
+                                    <span class="doc-valor fw-semibold">
+                                        {{ $esSis ? 'Seguro Integral de Salud (SIS - Referido)' : 'Paciente Particular (Pago en Caja)' }}
+                                    </span>
+                                </div>
+                                <div class="col-12 col-md-6 doc-celda">
+                                    <span class="doc-etiqueta">
+                                        {{ $esSis ? 'Código de Referencia SIS' : 'Condición de Pago' }}
+                                    </span>
+                                    <span class="doc-valor">
+                                        @if ($esSis)
+                                            <strong class="doc-codigo-inline">{{ $cita->codigo_referencia_sis }}</strong>
+                                        @else
+                                            Presencial en ventanilla de Caja del hospital
+                                        @endif
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Sección III: Indicaciones operativas y código QR de verificación --}}
+                        <h2 class="doc-seccion-titulo">III. Indicaciones y Verificación de Autenticidad</h2>
+                        <div class="row g-3 align-items-stretch">
+                            <div class="col-md-8">
+                                <div class="doc-indicaciones p-3 h-100 small">
+                                    @if ($cita->estado === 'Cancelado')
+                                        <p class="mb-0">
+                                            Esta constancia corresponde a una reserva cancelada y no habilita el ingreso a consultorio. Si requiere atención médica, registre una nueva cita desde el portal institucional.
+                                        </p>
+                                    @else
+                                        <ul class="doc-lista-indicaciones mb-0 ps-3">
+                                            <li>
+                                                Presente esta constancia (impresa o en celular) junto con su <strong>documento de identidad original</strong>.
+                                            </li>
+                                            @if ($esSis)
+                                                <li>
+                                                    Preséntese en Admisión <strong>15 minutos antes</strong> de su horario portando copia de su DNI y su <strong>Hoja de Referencia SIS vigente</strong> ({{ $cita->codigo_referencia_sis }}).
+                                                </li>
+                                                <li>
+                                                    Atención cubierta por el Seguro Integral de Salud; no requiere realizar pago en Caja.
+                                                </li>
+                                            @else
+                                                <li>
+                                                    Acérquese con <strong>20 a 30 minutos de anticipación</strong> a las ventanillas de <strong>Caja del hospital</strong> indicando su código de constancia (<strong>{{ $codigoTicket }}</strong>) para efectuar el pago presencial.
+                                                </li>
+                                                <li>
+                                                    El Hospital Regional del Cusco no recibe pagos en línea ni en bancos externos. Se recomienda llevar <strong>dinero en efectivo</strong> (sencillo).
+                                                </li>
+                                                <li>
+                                                    Conserve la <strong>boleta de venta emitida por Caja</strong>; su presentación es obligatoria para ingresar al consultorio asignado.
+                                                </li>
+                                            @endif
+                                        </ul>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="doc-qr-panel p-3 h-100 d-flex flex-column align-items-center justify-content-center text-center">
+                                    <div id="qr-constancia"
+                                         class="doc-qr-caja mb-2"
+                                         role="img"
+                                         aria-label="Código QR de verificación de la constancia {{ $codigoTicket }}"
+                                         data-url="{{ $urlVerificacion }}">
+                                    </div>
+                                    <div class="doc-qr-titulo">Verificación Digital</div>
+                                    <div class="doc-qr-nota">
+                                        Escanear en Admisión o Caja para validar vigencia en tiempo real
+                                    </div>
+                                    <a href="{{ $urlVerificacion }}"
+                                       target="_blank"
+                                       rel="noopener"
+                                       class="enlace-mate texto-xs fw-semibold text-decoration-none mt-2 oculta-impresion">
+                                        Abrir ficha de verificación <i class="bi bi-box-arrow-up-right ms-1"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    {{-- Pie institucional del documento --}}
+                    <footer class="doc-pie px-4 py-3 d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2">
+                        <span>Av. de La Cultura S/N, Cusco &middot; Central Telefónica: (084) 231131</span>
+                        <span>Emitido: {{ now()->format('d/m/Y h:i A') }}</span>
+                    </footer>
+
+                </article>
 
             </div>
         </div>
@@ -197,5 +242,6 @@
 @endsection
 
 @section('js')
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
     <script src="{{ asset('js/ticket.js') }}"></script>
 @endsection

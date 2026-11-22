@@ -1047,40 +1047,177 @@ input[type="password"]::-ms-clear {
     box-shadow: 0 6px 14px rgba(181, 82, 76, 0.26);
 }
 
-.tarjeta-ticket {
-    border-radius: 1.35rem;
+/* Documento institucional de constancia de cita y verificación por QR */
+.doc-constancia {
+    border: 1px solid #cbd5e1;
+    border-top: 4px solid var(--hrc-azul-primario);
+    border-radius: 0.35rem;
+    box-shadow: 0 8px 24px rgba(33, 50, 91, 0.07);
+    overflow: hidden;
+}
+
+.doc-membrete {
+    border-bottom: 2px solid var(--hrc-azul-primario);
     background-color: #ffffff;
-    box-shadow: 0 16px 38px rgba(33, 50, 91, 0.11);
 }
 
-.ticket-cabecera-confirmada { background-color: var(--hrc-azul-primario); }
-.ticket-cabecera-atendida { background-color: var(--hrc-salvia); }
-.ticket-cabecera-cancelada { background-color: #64748b; }
-
-.icono-exito {
-    width: 56px;
-    height: 56px;
-    background-color: #ffffff;
-    color: var(--hrc-salvia);
-    font-size: 1.7rem;
-}
-
-.ticket-cabecera-cancelada .icono-exito { color: var(--hrc-terracota); }
-
-.ticket-codigo-cabecera {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    font-size: 1.05rem;
-    letter-spacing: 0.06em;
-}
-
-.ticket-etiqueta {
-    font-size: 0.72rem;
+.doc-entidad-superior {
+    font-size: 0.7rem;
     font-weight: 700;
-    text-transform: uppercase;
     letter-spacing: 0.06em;
     color: var(--hrc-texto-secundario);
-    margin-bottom: 0.2rem;
 }
+
+.doc-subtitulo-oficial {
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--hrc-terracota);
+}
+
+.doc-folio-caja {
+    border: 1px solid #cbd5e1;
+    background-color: #f8fafc;
+    border-radius: 0.25rem;
+    padding: 0.55rem 0.85rem;
+}
+
+.doc-codigo,
+.doc-codigo-inline {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    letter-spacing: 0.05em;
+    color: var(--hrc-azul-primario);
+}
+
+.doc-codigo { font-size: 1rem; }
+
+.doc-sello-estado {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    padding: 0.16rem 0.55rem;
+    border-radius: 0.2rem;
+    border: 1.5px solid currentColor;
+}
+
+.doc-sello-vigente { color: var(--hrc-salvia); background-color: var(--hrc-salvia-suave); }
+.doc-sello-atendida { color: var(--hrc-azul-primario); background-color: var(--hrc-azul-suave); }
+.doc-sello-cancelada { color: var(--hrc-terracota); background-color: var(--hrc-terracota-suave); }
+.doc-sello-vencida { color: #8a611a; background-color: var(--hrc-ocre-suave); }
+
+.doc-banda-anulada {
+    background-color: var(--hrc-terracota-suave);
+    color: var(--hrc-terracota);
+    border-bottom: 1px solid rgba(181, 82, 76, 0.28);
+}
+
+.doc-seccion-titulo {
+    font-size: 0.74rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--hrc-azul-primario);
+    border-bottom: 1px solid var(--hrc-borde-sutil);
+    padding-bottom: 0.4rem;
+    margin-bottom: 0.75rem;
+}
+
+.doc-grilla {
+    border-top: 1px solid #d5dce6;
+    border-left: 1px solid #d5dce6;
+}
+
+.doc-celda {
+    border-right: 1px solid #d5dce6;
+    border-bottom: 1px solid #d5dce6;
+    padding: 0.65rem 0.85rem;
+    background-color: #ffffff;
+}
+
+.doc-etiqueta {
+    display: block;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--hrc-texto-secundario);
+    margin-bottom: 0.15rem;
+}
+
+.doc-valor {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--hrc-texto-principal);
+}
+
+.doc-valor-destacado {
+    display: block;
+    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    font-size: 1.12rem;
+    font-weight: 800;
+    color: var(--hrc-azul-primario);
+}
+
+.doc-indicaciones {
+    border: 1px solid #d5dce6;
+    background-color: #f8fafc;
+    color: var(--hrc-texto-principal);
+    border-radius: 0.25rem;
+}
+
+.doc-lista-indicaciones li {
+    margin-bottom: 0.45rem;
+    line-height: 1.5;
+}
+
+.doc-lista-indicaciones li:last-child { margin-bottom: 0; }
+
+.doc-qr-panel {
+    border: 1px solid #d5dce6;
+    background-color: #ffffff;
+    border-radius: 0.25rem;
+}
+
+.doc-qr-caja {
+    width: 118px;
+    height: 118px;
+    padding: 4px;
+    border: 1px solid var(--hrc-borde-sutil);
+    background-color: #ffffff;
+}
+
+.doc-qr-caja svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.doc-qr-titulo {
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--hrc-azul-primario);
+}
+
+.doc-qr-nota {
+    font-size: 0.72rem;
+    line-height: 1.35;
+    color: var(--hrc-texto-secundario);
+}
+
+.doc-pie {
+    border-top: 1px solid #cbd5e1;
+    background-color: #f8fafc;
+    font-size: 0.75rem;
+    color: var(--hrc-texto-secundario);
+}
+
+.verif-estado-vigente { background-color: var(--hrc-salvia-suave); color: var(--hrc-salvia); }
+.verif-estado-atendida { background-color: var(--hrc-azul-suave); color: var(--hrc-azul-primario); }
+.verif-estado-anulada { background-color: var(--hrc-terracota-suave); color: var(--hrc-terracota); }
+.verif-estado-vencida { background-color: var(--hrc-ocre-suave); color: #7c5616; }
 
 .ticket-pill-estado {
     display: inline-block;
@@ -1089,33 +1226,6 @@ input[type="password"]::-ms-clear {
     padding: 0.28rem 0.8rem;
     border-radius: 999px;
 }
-
-.ticket-advertencia {
-    border-left: 4px solid var(--hrc-ocre);
-    border-radius: 0.85rem;
-}
-
-/* Línea perforada con muescas laterales que adoptan el fondo piedra de la página */
-.ticket-perforacion {
-    position: relative;
-    height: 2px;
-    background-color: #ffffff;
-    border-top: 2px dashed #cbd5e1;
-}
-
-.ticket-perforacion::before,
-.ticket-perforacion::after {
-    content: "";
-    position: absolute;
-    top: -13px;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background-color: var(--hrc-piedra-fondo);
-}
-
-.ticket-perforacion::before { left: -12px; }
-.ticket-perforacion::after { right: -12px; }
 
 /* Autenticación (inicio de sesión y registro en dos fases) */
 .auth-portada-completa {
@@ -1483,6 +1593,7 @@ input[type="password"]::-ms-clear {
 }
 
 /* Reglas de impresión en blanco y negro de alto contraste para el comprobante del ticket */
+/* Reglas de impresión monocromática para la constancia oficial */
 @media print {
     body { background-color: #ffffff !important; }
     .oculta-impresion { display: none !important; }
@@ -1493,48 +1604,29 @@ input[type="password"]::-ms-clear {
         max-width: 100% !important;
     }
 
-    .tarjeta-ticket {
+    .doc-constancia {
         box-shadow: none !important;
-        border: 2px solid #000000 !important;
-        border-radius: 0 !important;
-    }
-
-    .ticket-cabecera {
-        background-color: #ffffff !important;
-        color: #000000 !important;
-        border-bottom: 2px solid #000000 !important;
-        padding: 20px !important;
-    }
-
-    .ticket-cabecera .texto-claro-mate,
-    .ticket-cabecera .etiqueta-panel-oscuro {
-        color: #000000 !important;
-    }
-
-    .icono-exito {
-        border: 2px solid #000000 !important;
-        color: #000000 !important;
-    }
-
-    .ticket-franja-horario,
-    .ticket-advertencia,
-    .ticket-pill-estado,
-    .badge-categoria-mate {
-        background-color: #ffffff !important;
-        color: #000000 !important;
         border: 1.5px solid #000000 !important;
+        border-top: 4px solid #000000 !important;
         border-radius: 0 !important;
     }
 
-    .ticket-perforacion { border-top: 1.5px dashed #000000 !important; }
+    .doc-membrete { border-bottom: 2px solid #000000 !important; }
+    .doc-grilla { border-top-color: #000000 !important; border-left-color: #000000 !important; }
+    .doc-celda { border-right-color: #000000 !important; border-bottom-color: #000000 !important; }
 
-    .ticket-perforacion::before,
-    .ticket-perforacion::after {
-        display: none !important;
+    .doc-folio-caja,
+    .doc-indicaciones,
+    .doc-qr-panel,
+    .doc-pie,
+    .doc-sello-estado,
+    .doc-banda-anulada {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        border-color: #000000 !important;
     }
 
-    .ticket-cuerpo,
-    .ticket-pie {
-        background-color: #ffffff !important;
+    .doc-constancia * {
+        color: #000000 !important;
     }
 }

@@ -24,6 +24,11 @@ Route::get('/novedades/{slug}', [PaginasController::class, 'verNovedad'])->name(
 Route::get('/especialidades', [PaginasController::class, 'especialidades'])->name('especialidades');
 Route::get('/guia-contacto', [PaginasController::class, 'guiaContacto'])->name('guia.contacto');
 
+//=== RUTAS PÚBLICAS (Sujeto a evalucación de seguridad)===
+Route::get('/verificar-cita/{cita}', [CitaController::class, 'verificarTicket'])
+    ->name('citas.verificar')
+    ->middleware('signed');
+
 //=== RUTAS DE INVITADOS (NO AUTENTICADOS) ===
 Route::middleware('guest')->group(function () {
     Route::get('/inicio-sesion', [AuthController::class, 'index'])->name('login');
