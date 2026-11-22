@@ -48,6 +48,32 @@
                 'claseSello' => 'doc-sello-vigente',
             ];
         }
+
+        // Prefiltra la agenda operativa para reducir pasos del personal al escanear en ventanilla
+        $accesoOperativo = null;
+        if ($esPersonalInterno) {
+            $rolActual = Auth::user()->rol;
+            $accesoOperativo = match ($rolActual) {
+                'admision' => [
+                    'url' => route('admision.panel', [
+                        'medico_id' => $cita->medico_id,
+                        'fecha' => $fechaCita->toDateString(),
+                    ]),
+                    'texto' => 'Abrir agenda en Admisión',
+                    'icono' => 'bi-clipboard2-pulse',
+                ],
+                'medico' => [
+                    'url' => route('medico.panel', ['fecha' => $fechaCita->toDateString()]),
+                    'texto' => 'Abrir mi agenda de ese día',
+                    'icono' => 'bi-calendar2-week',
+                ],
+                default => [
+                    'url' => route('admin.panel'),
+                    'texto' => 'Ir al Panel Admin',
+                    'icono' => 'bi-speedometer2',
+                ],
+            };
+        }
     @endphp
 
     <div class="container py-4 py-md-5">
@@ -57,13 +83,18 @@
                 <article class="doc-constancia bg-white">
                     <header class="doc-membrete p-4">
                         <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
-                            <div>
-                                <div class="doc-entidad-superior text-uppercase">
-                                    Hospital Regional del Cusco &middot; Sistema de Citas
+                            <div class="d-flex align-items-center gap-3">
+                                <img src="{{ asset('img/logo-hospital.png') }}"
+                                     alt="Escudo Hospital Regional del Cusco"
+                                     class="doc-logo flex-shrink-0">
+                                <div>
+                                    <div class="doc-entidad-superior text-uppercase">
+                                        Hospital Regional del Cusco &middot; Sistema de Citas
+                                    </div>
+                                    <h1 class="h5 fw-bold text-hrc-primario mb-0">
+                                        Verificación de Constancia
+                                    </h1>
                                 </div>
-                                <h1 class="h5 fw-bold text-hrc-primario mb-0">
-                                    Verificación de Constancia
-                                </h1>
                             </div>
 
                             <div class="text-sm-end">
@@ -73,7 +104,6 @@
                         </div>
                     </header>
 
-                    {{-- Dictamen en tiempo real consultado contra la base de datos --}}
                     <div class="p-4 border-bottom {{ $estadoVerificacion['clase'] }}">
                         <div class="d-flex align-items-start gap-3">
                             <i class="bi {{ $estadoVerificacion['icono'] }} fs-3 flex-shrink-0"></i>
@@ -147,7 +177,16 @@
                             </div>
                         </div>
 
-                        @if (!$esPersonalInterno)
+                        @if ($esPersonalInterno && $accesoOperativo)
+                            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-stretch align-items-sm-center gap-2 pt-2">
+                                <a href="{{ route('ticket', $cita->id) }}" class="btn btn-outline-hrc-primario btn-sm rounded-pill px-4">
+                                    <i class="bi bi-file-earmark-text me-1"></i> Ver constancia completa
+                                </a>
+                                <a href="{{ $accesoOperativo['url'] }}" class="btn btn-hrc-acento btn-sm rounded-pill px-4">
+                                    <i class="bi {{ $accesoOperativo['icono'] }} me-1"></i> {{ $accesoOperativo['texto'] }}
+                                </a>
+                            </div>
+                        @else
                             <p class="texto-xs text-muted mb-0">
                                 <i class="bi bi-lock-fill me-1"></i>
                                 Por protección de datos personales, el documento se muestra parcialmente oculto para consultas sin sesión institucional.

@@ -44,7 +44,6 @@
                     </div>
                 @endif
 
-                {{-- Barra de acciones fuera del documento oficial --}}
                 <div class="d-flex flex-column flex-sm-row justify-content-between align-items-stretch align-items-sm-center gap-2 mb-3 oculta-impresion">
                     <a href="{{ $rutaPanel }}" class="btn btn-outline-hrc-primario btn-sm rounded-pill px-4">
                         <i class="bi bi-arrow-left me-1"></i> Volver a mi Panel
@@ -54,21 +53,27 @@
                     </button>
                 </div>
 
-                {{-- Documento oficial de constancia de cita --}}
                 <article class="doc-constancia bg-white" id="tarjeta-ticket">
 
-                    {{-- Membrete institucional --}}
+                    {{-- Membrete institucional con escudo oficial --}}
                     <header class="doc-membrete p-4">
                         <div class="row align-items-center g-3">
                             <div class="col-md-8">
-                                <div class="doc-entidad-superior text-uppercase">
-                                    Gobierno Regional del Cusco &middot; Gerencia Regional de Salud
-                                </div>
-                                <h1 class="h4 fw-bold text-hrc-primario mb-1">
-                                    Hospital Regional del Cusco
-                                </h1>
-                                <div class="doc-subtitulo-oficial text-uppercase">
-                                    Constancia de Cita &mdash; Consulta Externa
+                                <div class="d-flex align-items-center gap-3">
+                                    <img src="{{ asset('img/logo-hospital.png') }}"
+                                         alt="Escudo Hospital Regional del Cusco"
+                                         class="doc-logo flex-shrink-0">
+                                    <div>
+                                        <div class="doc-entidad-superior text-uppercase">
+                                            Gobierno Regional del Cusco &middot; Gerencia Regional de Salud
+                                        </div>
+                                        <h1 class="h4 fw-bold text-hrc-primario mb-1">
+                                            Hospital Regional del Cusco
+                                        </h1>
+                                        <div class="doc-subtitulo-oficial text-uppercase">
+                                            Constancia de Cita &mdash; Consulta Externa
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -93,7 +98,6 @@
 
                     <div class="doc-cuerpo p-4">
 
-                        {{-- Sección I: Programación de consulta --}}
                         <h2 class="doc-seccion-titulo">I. Datos de la Atención Programada</h2>
                         <div class="doc-grilla mb-4">
                             <div class="row g-0">
@@ -130,7 +134,6 @@
                             </div>
                         </div>
 
-                        {{-- Sección II: Identificación del paciente y modalidad --}}
                         <h2 class="doc-seccion-titulo">II. Datos del Paciente y Modalidad</h2>
                         <div class="doc-grilla mb-4">
                             <div class="row g-0">
@@ -167,7 +170,6 @@
                             </div>
                         </div>
 
-                        {{-- Sección III: Indicaciones operativas y código QR de verificación --}}
                         <h2 class="doc-seccion-titulo">III. Indicaciones y Verificación de Autenticidad</h2>
                         <div class="row g-3 align-items-stretch">
                             <div class="col-md-8">
@@ -228,7 +230,6 @@
 
                     </div>
 
-                    {{-- Pie institucional del documento --}}
                     <footer class="doc-pie px-4 py-3 d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2">
                         <span>Av. de La Cultura S/N, Cusco &middot; Central Telefónica: (084) 231131</span>
                         <span>Emitido: {{ now()->format('d/m/Y h:i A') }}</span>

@@ -1061,6 +1061,19 @@ input[type="password"]::-ms-clear {
     background-color: #ffffff;
 }
 
+.doc-logo {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+}
+
+.error-icono-grande {
+    width: 60px;
+    height: 60px;
+    border-radius: 1rem;
+    font-size: 1.65rem;
+}
+
 .doc-entidad-superior {
     font-size: 0.7rem;
     font-weight: 700;
@@ -1592,16 +1605,51 @@ input[type="password"]::-ms-clear {
     }
 }
 
-/* Reglas de impresión en blanco y negro de alto contraste para el comprobante del ticket */
-/* Reglas de impresión monocromática para la constancia oficial */
+/* Reglas de impresión monocromática para la constancia oficial en una sola página */
 @media print {
-    body { background-color: #ffffff !important; }
-    .oculta-impresion { display: none !important; }
+    @page {
+        size: A4 portrait;
+        margin: 0;
+    }
+
+    body {
+        background-color: #ffffff !important;
+        min-height: auto !important;
+        height: auto !important;
+        margin: 0 !important;
+        padding: 12mm !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    /* Oculta únicamente la navegación y pie globales sin afectar el membrete ni pie del documento */
+    .header-hrc,
+    .footer-hrc,
+    .oculta-impresion {
+        display: none !important;
+    }
+
+    main {
+        padding: 0 !important;
+        flex: none !important;
+    }
 
     .contenedor-ticket {
         margin: 0 !important;
         padding: 0 !important;
         max-width: 100% !important;
+        width: 100% !important;
+    }
+
+    .contenedor-ticket > .row {
+        margin: 0 !important;
+    }
+
+    .contenedor-ticket > .row > div {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: 0 0 100% !important;
+        padding: 0 !important;
     }
 
     .doc-constancia {
@@ -1609,11 +1657,55 @@ input[type="password"]::-ms-clear {
         border: 1.5px solid #000000 !important;
         border-top: 4px solid #000000 !important;
         border-radius: 0 !important;
+        overflow: visible !important;
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    /* Restaura la grilla horizontal en A4 vertical donde el viewport de impresión es menor a 768px */
+    .doc-constancia .col-md-3 { flex: 0 0 auto !important; width: 25% !important; }
+    .doc-constancia .col-md-4 { flex: 0 0 auto !important; width: 33.333333% !important; }
+    .doc-constancia .col-md-5 { flex: 0 0 auto !important; width: 41.666667% !important; }
+    .doc-constancia .col-md-6 { flex: 0 0 auto !important; width: 50% !important; }
+    .doc-constancia .col-md-8 { flex: 0 0 auto !important; width: 66.666667% !important; }
+    .doc-constancia .text-md-end { text-align: right !important; }
+
+    .doc-membrete,
+    .doc-cuerpo {
+        padding: 1rem 1.25rem !important;
+    }
+
+    .doc-celda {
+        padding: 0.45rem 0.65rem !important;
+        border-right-color: #000000 !important;
+        border-bottom-color: #000000 !important;
+    }
+
+    .doc-grilla {
+        margin-bottom: 1rem !important;
+        border-top-color: #000000 !important;
+        border-left-color: #000000 !important;
+    }
+
+    .doc-logo {
+        width: 44px;
+        height: 44px;
+        filter: grayscale(100%);
+    }
+
+    .doc-qr-caja {
+        width: 104px;
+        height: 104px;
     }
 
     .doc-membrete { border-bottom: 2px solid #000000 !important; }
-    .doc-grilla { border-top-color: #000000 !important; border-left-color: #000000 !important; }
-    .doc-celda { border-right-color: #000000 !important; border-bottom-color: #000000 !important; }
+
+    .doc-pie {
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        padding: 0.65rem 1.25rem !important;
+    }
 
     .doc-folio-caja,
     .doc-indicaciones,
