@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Novedad;
+use App\Models\Cita;
+use App\Models\Especialidad;
 
 class PaginasController extends Controller
 {
@@ -51,5 +53,30 @@ class PaginasController extends Controller
         return view('novedades.show', compact('novedad', 'recientes'));
     }
 
+    /**
+     * Muestra el catálogo público de especialidades activas junto con su staff médico vigente.
+     */
+    public function especialidades()
+    {
+        $especialidades = Especialidad::where('activo', true)
+            ->with(['medicos' => function ($query) {
+                $query->where('activo', true)->orderBy('apellidos');
+            }])
+            ->orderBy('nombre')
+            ->get();
+
+        return view('paginas.especialidades', compact('especialidades'));
+    }
+
+    /**
+     * Renderiza la guía operativa de atención, preguntas frecuentes y canales de contacto.
+     */
+    public function guiaContacto()
+    {
+        // Se lee desde el modelo para mantener una única fuente de verdad sobre la regla de cancelación
+        $horasCancelacion = Cita::HORAS_MINIMAS_CANCELACION;
+
+        return view('paginas.guia-contacto', compact('horasCancelacion'));
+    }
     
 }

@@ -21,6 +21,8 @@ Route::get('/', [PaginasController::class, 'inicio'])->name('inicio');
 Route::get('/inicio', [PaginasController::class, 'inicio']);
 Route::get('/novedades', [PaginasController::class, 'novedades'])->name('novedades.index');
 Route::get('/novedades/{slug}', [PaginasController::class, 'verNovedad'])->name('novedades.show');
+Route::get('/especialidades', [PaginasController::class, 'especialidades'])->name('especialidades');
+Route::get('/guia-contacto', [PaginasController::class, 'guiaContacto'])->name('guia.contacto');
 
 //=== RUTAS DE INVITADOS (NO AUTENTICADOS) ===
 Route::middleware('guest')->group(function () {

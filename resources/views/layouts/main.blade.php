@@ -20,7 +20,7 @@
                 <!-- Identidad Institucional -->
                 <a class="navbar-brand d-flex align-items-center" href="{{ route('inicio') }}">
                     <img src="{{ asset('img/logo-hospital.png') }}" alt="Logo HRC" width="50" class="me-3">
-                    <span class="fw-bold h4 mb-0 text-hrc-primario">Hospital Regional del Cusco</span>
+                    <span class="fw-bold h4 mb-0 text-hrc-primario">HRC</span>
                 </a>
 
                 <!-- Botón de menú colapsable para dispositivos móviles -->
@@ -32,13 +32,27 @@
                 <div class="collapse navbar-collapse" id="navbarPrincipal">
                     <ul class="navbar-nav ms-auto align-items-center gap-3">
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('inicio') }}">Inicio</a>
+                            <a class="nav-link {{ request()->routeIs('inicio') ? 'active fw-bold text-hrc-primario' : '' }}"
+                            href="{{ route('inicio') }}">
+                                Inicio
+                            </a>
                         </li>
-
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('especialidades') ? 'active fw-bold text-hrc-primario' : '' }}"
+                            href="{{ route('especialidades') }}">
+                                Especialidades
+                            </a>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('novedades.*') ? 'active fw-bold text-hrc-primario' : '' }}"
                             href="{{ route('novedades.index') }}">
                                 Novedades
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('guia.contacto') ? 'active fw-bold text-hrc-primario' : '' }}"
+                            href="{{ route('guia.contacto') }}">
+                                Guía y Contacto
                             </a>
                         </li>
                         

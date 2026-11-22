@@ -6,5 +6,3 @@ Para esto necesitamos levantar una pequeña arquitectura de mensajería. No es s
 Actualización de Perfil (El eslabón débil): Si vamos a implementar la recuperación de contraseña por correo, el paciente debe tener un apartado en su Dashboard para actualizar su email. Si cambia de correo y no puede actualizarlo en el sistema, la función de recuperación quedará inutilizada y el paciente perderá su cuenta para siempre.
 
 Cambiar el diseño a uno más moderno
-Añadir páginas de relleno con información (aún no está definido)
-Añadir el ojito en el inicio de sesión 
