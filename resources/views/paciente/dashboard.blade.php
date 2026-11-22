@@ -13,7 +13,7 @@
         );
 
         $totalActivas = $citasActivas->count();
-        $totalHistorial = $historialCitas->count();
+        $totalHistorial = $historialCitas->total();
         $limiteCitas = 3;
         $porcentajeCupo = min(100, (int) round(($totalActivas / $limiteCitas) * 100));
         $limiteAlcanzado = $totalActivas >= $limiteCitas;
@@ -31,7 +31,7 @@
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
                 <div>
                     <span class="sobretitulo-mate d-block mb-1">Portal del paciente</span>
-                    <h1 class="h2 fw-bold text-hrc-primario mb-1">
+                    <h1 class="h3 fw-bold text-hrc-primario mb-1">
                         Hola, {{ explode(' ', trim($usuario->nombres))[0] }}
                     </h1>
                     <p class="text-muted small mb-0">
@@ -60,90 +60,100 @@
         </div>
     </section>
 
-    <section class="py-5">
+    <section class="py-4 py-md-5">
         <div class="container">
             <div class="row g-4 align-items-start">
 
-                {{-- Columna lateral: ficha del paciente y estado del límite de reservas --}}
+                {{-- Columna lateral: perfil del paciente, cuota de reservas y política de cancelación --}}
                 <div class="col-lg-4">
                     <div class="sidebar-pegajoso-hrc d-flex flex-column gap-4">
-                        <div class="card border-0 tarjeta-articulo-mate">
-                            <div class="card-body p-4">
-                                <div class="d-flex align-items-center gap-3 mb-4">
-                                    <div class="avatar-paciente-mate d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0">
-                                        {{ $iniciales }}
-                                    </div>
-                                    <div class="min-w-0">
-                                        <h2 class="h5 fw-bold text-hrc-primario mb-1 text-truncate">
-                                            {{ $usuario->nombres }} {{ $usuario->apellido_paterno }}
-                                        </h2>
-                                        <div class="small text-muted">
-                                            {{ $usuario->tipo_documento }}: {{ $usuario->numero_documento }}
-                                        </div>
+                        <div class="panel-card-elevada p-4">
+                            <div class="d-flex align-items-center gap-3 mb-4">
+                                <div class="avatar-paciente-mate d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0">
+                                    {{ $iniciales }}
+                                </div>
+                                <div class="min-w-0">
+                                    <h2 class="h5 fw-bold text-hrc-primario mb-1 text-truncate">
+                                        {{ $usuario->nombres }} {{ $usuario->apellido_paterno }}
+                                    </h2>
+                                    <div class="small text-muted">
+                                        {{ $usuario->tipo_documento }}: {{ $usuario->numero_documento }}
                                     </div>
                                 </div>
+                            </div>
 
-                                @if (!empty($usuario->telefono) || !empty($usuario->correo))
-                                    <ul class="list-unstyled small text-muted mb-4 pb-3 border-bottom d-flex flex-column gap-2">
-                                        @if (!empty($usuario->telefono))
-                                            <li class="d-flex align-items-center gap-2">
-                                                <i class="bi bi-telephone text-hrc-acento"></i>
-                                                <span>{{ $usuario->telefono }}</span>
-                                            </li>
-                                        @endif
-                                        @if (!empty($usuario->correo))
-                                            <li class="d-flex align-items-center gap-2 text-truncate">
-                                                <i class="bi bi-envelope text-hrc-acento flex-shrink-0"></i>
-                                                <span class="text-truncate">{{ $usuario->correo }}</span>
-                                            </li>
-                                        @endif
-                                    </ul>
-                                @endif
+                            @if (!empty($usuario->telefono) || !empty($usuario->correo))
+                                <ul class="list-unstyled small text-muted mb-4 pb-3 border-bottom d-flex flex-column gap-2">
+                                    @if (!empty($usuario->telefono))
+                                        <li class="d-flex align-items-center gap-2">
+                                            <i class="bi bi-telephone text-hrc-acento"></i>
+                                            <span>{{ $usuario->telefono }}</span>
+                                        </li>
+                                    @endif
+                                    @if (!empty($usuario->correo))
+                                        <li class="d-flex align-items-center gap-2 text-truncate">
+                                            <i class="bi bi-envelope text-hrc-acento flex-shrink-0"></i>
+                                            <span class="text-truncate">{{ $usuario->correo }}</span>
+                                        </li>
+                                    @endif
+                                </ul>
+                            @endif
 
-                                {{-- Indicador de cuota de citas pendientes simultáneas --}}
-                                <div class="mb-4">
-                                    <div class="d-flex justify-content-between align-items-center small mb-2">
-                                        <span class="fw-semibold text-hrc-primario">Cupo de citas activas</span>
-                                        <span class="fw-bold {{ $limiteAlcanzado ? 'text-hrc-acento' : 'text-hrc-salvia' }}">
-                                            {{ $totalActivas }} / {{ $limiteCitas }}
-                                        </span>
-                                    </div>
-                                    <div class="barra-cupo-mate" role="progressbar" aria-valuenow="{{ $totalActivas }}" aria-valuemin="0" aria-valuemax="{{ $limiteCitas }}">
-                                        <div class="barra-cupo-relleno {{ $limiteAlcanzado ? 'al-limite' : '' }}" style="width: {{ $porcentajeCupo }}%;"></div>
-                                    </div>
-                                    <div class="texto-xs text-muted mt-2">
-                                        Máximo 1 cita pendiente por especialidad y hasta {{ $limiteCitas }} en simultáneo.
+                            {{-- Indicador de cuota de citas pendientes simultáneas --}}
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between align-items-center small mb-2">
+                                    <span class="fw-semibold text-hrc-primario">Cupo de citas activas</span>
+                                    <span class="fw-bold {{ $limiteAlcanzado ? 'text-hrc-acento' : 'text-hrc-salvia' }}">
+                                        {{ $totalActivas }} / {{ $limiteCitas }}
+                                    </span>
+                                </div>
+                                <div class="barra-cupo-mate" role="progressbar" aria-valuenow="{{ $totalActivas }}" aria-valuemin="0" aria-valuemax="{{ $limiteCitas }}">
+                                    <div class="barra-cupo-relleno {{ $limiteAlcanzado ? 'al-limite' : '' }}" style="width: {{ $porcentajeCupo }}%;"></div>
+                                </div>
+                                <div class="texto-xs text-muted mt-2">
+                                    Máximo 1 cita pendiente por especialidad y hasta {{ $limiteCitas }} en simultáneo.
+                                </div>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-6">
+                                    <div class="kpi-bloque-interno p-3 h-100">
+                                        <div class="d-flex align-items-center gap-2 mb-2">
+                                            <div class="kpi-icono-cuadro kpi-icono-azul">
+                                                <i class="bi bi-calendar2-check"></i>
+                                            </div>
+                                        </div>
+                                        <div class="h4 fw-bold text-hrc-primario mb-0">{{ $totalActivas }}</div>
+                                        <div class="texto-xs text-muted">Próximas</div>
                                     </div>
                                 </div>
-
-                                <div class="row g-2 text-center">
-                                    <div class="col-6">
-                                        <div class="resumen-contador-mate p-3">
-                                            <div class="h4 fw-bold text-hrc-primario mb-0">{{ $totalActivas }}</div>
-                                            <div class="texto-xs text-muted">Próximas</div>
+                                <div class="col-6">
+                                    <div class="kpi-bloque-interno p-3 h-100">
+                                        <div class="d-flex align-items-center gap-2 mb-2">
+                                            <div class="kpi-icono-cuadro kpi-icono-salvia">
+                                                <i class="bi bi-clock-history"></i>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="resumen-contador-mate p-3">
-                                            <div class="h4 fw-bold text-hrc-primario mb-0">{{ $totalHistorial }}</div>
-                                            <div class="texto-xs text-muted">Historial</div>
-                                        </div>
+                                        <div class="h4 fw-bold text-hrc-primario mb-0">{{ $totalHistorial }}</div>
+                                        <div class="texto-xs text-muted">Historial</div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="nota-asignacion-reserva p-3 d-flex align-items-start gap-2">
-                            <i class="bi bi-clock-history text-hrc-primario mt-1 flex-shrink-0"></i>
+                        <div class="panel-card-elevada p-4 d-flex align-items-start gap-3">
+                            <div class="kpi-icono-cuadro kpi-icono-ocre flex-shrink-0">
+                                <i class="bi bi-info-circle"></i>
+                            </div>
                             <div class="texto-xs text-muted">
-                                <strong class="text-hrc-primario d-block mb-1">Política de cancelación</strong>
+                                <strong class="text-hrc-primario d-block mb-1 small">Política de cancelación</strong>
                                 Puedes cancelar una cita en línea hasta <strong>{{ \App\Models\Cita::HORAS_MINIMAS_CANCELACION }} horas antes</strong> de tu turno para liberar el cupo a otro paciente.
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {{-- Columna principal: citas próximas e historial --}}
+                {{-- Columna principal: citas próximas e historial reciente --}}
                 <div class="col-lg-8">
 
                     @if (session('success'))
@@ -160,28 +170,34 @@
                         </div>
                     @endif
 
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h2 class="h4 fw-bold text-hrc-primario mb-0">Mis Citas Próximas</h2>
-                        <span class="badge-categoria-mate">{{ $totalActivas }} {{ $totalActivas === 1 ? 'activa' : 'activas' }}</span>
-                    </div>
+                    {{-- Bloque elevado de citas próximas --}}
+                    <div class="panel-card-elevada p-4 mb-4">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                            <div>
+                                <h2 class="h6 fw-bold titulo-panel-acento mb-0">Mis Citas Próximas</h2>
+                                <span class="texto-xs text-muted">Turnos vigentes programados en consulta externa</span>
+                            </div>
+                            <span class="pill-periodo-panel">
+                                {{ $totalActivas }} {{ $totalActivas === 1 ? 'activa' : 'activas' }}
+                            </span>
+                        </div>
 
-                    <div id="contenedor-citas-activas" class="d-flex flex-column gap-3 mb-5">
-                        @forelse($citasActivas as $cita)
-                            @php
-                                $fechaCarbon = \Carbon\Carbon::parse($cita->fecha);
-                                $diaCita = $fechaCarbon->format('d');
-                                $mesCita = $mesesCortos[(int) $fechaCarbon->format('n')];
-                                $fechaTexto = $fechaCarbon->format('d/m/Y');
-                                $horaTexto = \Carbon\Carbon::parse($cita->hora)->format('h:i A');
-                            @endphp
+                        <div id="contenedor-citas-activas" class="d-flex flex-column gap-3">
+                            @forelse($citasActivas as $cita)
+                                @php
+                                    $fechaCarbon = \Carbon\Carbon::parse($cita->fecha);
+                                    $diaCita = $fechaCarbon->format('d');
+                                    $mesCita = $mesesCortos[(int) $fechaCarbon->format('n')];
+                                    $fechaTexto = $fechaCarbon->format('d/m/Y');
+                                    $horaTexto = \Carbon\Carbon::parse($cita->hora)->format('h:i A');
+                                @endphp
 
-                            <article class="card border-0 tarjeta-mate tarjeta-cita-paciente" id="cita-{{ $cita->id }}">
-                                <div class="card-body p-4">
+                                <article class="kpi-bloque-interno p-3 p-sm-4" id="cita-{{ $cita->id }}">
                                     <div class="row align-items-center g-3">
 
-                                        {{-- Bloque calendario --}}
-                                        <div class="col-sm-3 col-md-3">
-                                            <div class="caja-fecha-cita text-center p-3">
+                                        {{-- Bloque calendario sin borde curvo superior --}}
+                                        <div class="col-sm-3">
+                                            <div class="resumen-contador-mate text-center p-3">
                                                 <span class="d-block cita-mes-mate">{{ $mesCita }}</span>
                                                 <span class="d-block cita-dia-mate">{{ $diaCita }}</span>
                                                 <span class="d-block cita-hora-mate mt-1">{{ $horaTexto }}</span>
@@ -191,13 +207,17 @@
                                         {{-- Detalles clínicos asignados --}}
                                         <div class="col-sm-9 col-md-6">
                                             <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
-                                                <span class="ticket-pill-estado badge-estado-pendiente">{{ $cita->estado }}</span>
-                                                <span class="badge-categoria-mate">
-                                                    {{ $cita->codigo_referencia_sis ? 'SIS - Referido' : 'Particular' }}
+                                                <span class="ticket-pill-estado badge-agenda-pendiente py-1 px-2 texto-xs">
+                                                    {{ $cita->estado }}
                                                 </span>
+                                                @if ($cita->codigo_referencia_sis)
+                                                    <span class="badge-sis-mate">SIS - Referido</span>
+                                                @else
+                                                    <span class="badge-particular-mate">Particular</span>
+                                                @endif
                                             </div>
 
-                                            <h3 class="h5 fw-bold text-hrc-primario mb-2">
+                                            <h3 class="h6 fw-bold text-hrc-primario mb-2">
                                                 {{ $cita->medico->especialidad->nombre }}
                                             </h3>
 
@@ -246,82 +266,85 @@
                                         </div>
 
                                     </div>
-                                </div>
-                            </article>
-                        @empty
-                            <div class="card border-0 tarjeta-articulo-mate text-center py-5 px-4">
-                                <div class="card-body">
+                                </article>
+                            @empty
+                                <div class="text-center py-4 px-3">
                                     <div class="icono-vacio-mate mx-auto mb-3">
                                         <i class="bi bi-calendar2-x"></i>
                                     </div>
-                                    <h3 class="h5 fw-bold text-hrc-primario mb-2">No tienes citas próximas programadas</h3>
-                                    <p class="text-muted small mb-4">
+                                    <h3 class="h6 fw-bold text-hrc-primario mb-1">No tienes citas próximas programadas</h3>
+                                    <p class="text-muted small mb-3">
                                         Cuando necesites atención ambulatoria, puedes consultar las especialidades vigentes y agendar en línea.
                                     </p>
-                                    <a href="{{ route('reservar_cita') }}" class="btn btn-hrc-acento rounded-pill px-4">
+                                    <a href="{{ route('reservar_cita') }}" class="btn btn-hrc-acento btn-sm rounded-pill px-4">
                                         Reservar mi primera cita
                                     </a>
                                 </div>
+                            @endforelse
+                        </div>
+                    </div>
+
+                    {{-- Tabla elevada de historial médico reciente --}}
+                    <div class="panel-card-elevada overflow-hidden">
+                        <div class="px-4 pt-4 pb-3 border-bottom d-flex justify-content-between align-items-center gap-2">
+                            <div>
+                                <h2 class="h6 fw-bold titulo-panel-acento mb-0">Historial Médico Reciente</h2>
+                                <span class="texto-xs text-muted">Atenciones previas y reservas anuladas</span>
                             </div>
-                        @endforelse
-                    </div>
+                            <span class="pill-periodo-panel">
+                                {{ $totalHistorial }} {{ $totalHistorial === 1 ? 'registro' : 'registros' }}
+                            </span>
+                        </div>
 
-                    {{-- Tabla de historial médico reciente --}}
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h2 class="h4 fw-bold text-hrc-primario mb-0">Historial Médico Reciente</h2>
-                        <span class="small text-muted">{{ $totalHistorial }} {{ $totalHistorial === 1 ? 'registro' : 'registros' }}</span>
-                    </div>
-
-                    <div class="card border-0 tarjeta-articulo-mate overflow-hidden">
                         <div class="table-responsive">
-                            <table class="table tabla-mate align-middle mb-0">
+                            <table class="table tabla-panel-suave align-middle mb-0 small">
                                 <thead>
                                     <tr>
-                                        <th class="ps-4 py-3">Fecha y Hora</th>
-                                        <th class="py-3">Especialidad</th>
-                                        <th class="py-3">Médico</th>
-                                        <th class="py-3">Estado</th>
-                                        <th class="pe-4 py-3 text-end">Constancia</th>
+                                        <th class="ps-4">Fecha y Hora</th>
+                                        <th>Especialidad</th>
+                                        <th>Médico</th>
+                                        <th>Estado</th>
+                                        <th class="pe-4 text-end">Constancia</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @forelse($historialCitas as $historial)
                                         @php
                                             $claseBadgeHistorial = match ($historial->estado) {
-                                                'Atendido' => 'badge-estado-atendido',
-                                                'Cancelado' => 'badge-estado-cancelado',
+                                                'Atendido' => 'badge-agenda-atendido',
+                                                'Cancelado' => 'badge-agenda-cancelado',
                                                 default => 'etiqueta-sin-cupos-mate',
                                             };
                                         @endphp
-                                        <tr>
-                                            <td class="ps-4 py-3 text-nowrap">
-                                                <div class="fw-semibold text-dark small">
+                                        <tr class="{{ $historial->estado === 'Cancelado' ? 'fila-cita-inactiva' : '' }}">
+                                            <td class="ps-4 text-nowrap">
+                                                <div class="fw-semibold text-dark">
                                                     {{ \Carbon\Carbon::parse($historial->fecha)->format('d/m/Y') }}
                                                 </div>
                                                 <div class="texto-xs text-muted">
                                                     {{ \Carbon\Carbon::parse($historial->hora)->format('h:i A') }}
                                                 </div>
                                             </td>
-                                            <td class="fw-bold text-hrc-primario py-3 small">
+                                            <td class="fw-bold text-hrc-primario">
                                                 {{ $historial->medico->especialidad->nombre }}
                                             </td>
-                                            <td class="py-3 small text-muted">
+                                            <td class="text-muted">
                                                 Dr. {{ $historial->medico->apellidos }}
                                             </td>
-                                            <td class="py-3">
-                                                <span class="ticket-pill-estado {{ $claseBadgeHistorial }}">
+                                            <td>
+                                                <span class="ticket-pill-estado {{ $claseBadgeHistorial }} py-1 px-2 texto-xs">
                                                     {{ $historial->estado }}
                                                 </span>
                                             </td>
-                                            <td class="pe-4 py-3 text-end">
-                                                <a href="{{ route('ticket', $historial->id) }}" class="enlace-mate small fw-bold text-decoration-none">
-                                                    Ver <i class="bi bi-arrow-right ms-1"></i>
+                                            <td class="pe-4 text-end text-nowrap">
+                                                <a href="{{ route('ticket', $historial->id) }}" class="btn btn-icono-panel btn-sm">
+                                                    <i class="bi bi-ticket-detailed me-1"></i>Ver
                                                 </a>
                                             </td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="5" class="text-center py-5 text-muted small">
+                                            <td colspan="5" class="text-center py-5 text-muted">
                                                 Aún no hay registros en tu historial médico.
                                             </td>
                                         </tr>
@@ -329,6 +352,11 @@
                                 </tbody>
                             </table>
                         </div>
+                        @if ($historialCitas->hasPages())
+                            <div class="px-4 py-3 border-top d-flex justify-content-center paginacion-hrc">
+                                {{ $historialCitas->links() }}
+                            </div>
+                        @endif
                     </div>
 
                 </div>

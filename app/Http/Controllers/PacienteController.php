@@ -21,15 +21,16 @@ class PacienteController extends Controller
             ->orderBy('hora', 'asc')
             ->get();
 
-        // 2. Historial: Estado diferente a pendiente, o citas que ya pasaron
+        // Pagina el historial para acotar el renderizado conservando acceso a constancias anteriores
         $historialCitas = Cita::with('medico.especialidad')
             ->where('user_id', $usuarioId)
-            ->where(function($query) {
+            ->where(function ($query) {
                 $query->where('estado', '!=', 'Pendiente')
-                      ->orWhere('fecha', '<', now()->toDateString());
+                    ->orWhere('fecha', '<', now()->toDateString());
             })
             ->orderBy('fecha', 'desc')
-            ->get();
+            ->orderBy('hora', 'desc')
+            ->paginate(10);
 
         return view('paciente.dashboard', compact('citasActivas', 'historialCitas'));
     }

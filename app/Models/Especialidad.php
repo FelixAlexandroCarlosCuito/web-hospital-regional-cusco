@@ -4,13 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Representa una especialidad clínica de consulta externa y su relación con médicos y citas.
+ */
 class Especialidad extends Model
 {
-    protected $table = 'especialidades'; 
+    protected $table = 'especialidades';
+
     protected $fillable = [
         'nombre',
         'descripcion',
-        'activo'
+        'imagen',
+        'activo',
     ];
 
     public function medicos()

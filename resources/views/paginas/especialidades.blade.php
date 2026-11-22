@@ -8,7 +8,7 @@
         $totalEspecialidades = $especialidades->count();
         $totalHabilitadas = $especialidades->where('tiene_turnos', true)->count();
 
-        // Asigna iconos vectoriales por palabra clave para soportar altas dinámicas desde administración
+        // Asigna iconos vectoriales por palabra clave como respaldo cuando no hay fotografía cargada
         $obtenerIcono = function (string $nombre): string {
             $clave = mb_strtolower($nombre, 'UTF-8');
             if (str_contains($clave, 'cardio')) return 'bi-heart-pulse-fill';
@@ -93,42 +93,52 @@
                         <div class="col-md-6 col-lg-4 item-especialidad"
                              data-busqueda="{{ $indiceBusqueda }}"
                              data-disponible="{{ $disponible ? '1' : '0' }}">
-                            <div class="card border-0 h-100 p-4 tarjeta-mate text-start {{ $disponible ? 'tarjeta-interactiva' : 'tarjeta-especialidad-pausa' }}">
-                                <div class="d-flex justify-content-between align-items-start gap-2 mb-3">
-                                    <div class="icono-interactivo {{ $disponible ? '' : 'icono-interactivo-pausa' }}">
-                                        <i class="bi {{ $obtenerIcono($esp->nombre) }}"></i>
-                                    </div>
-
-                                    @if ($disponible)
-                                        <span class="etiqueta-medicos-mate">Turnos habilitados</span>
+                            <article class="card border-0 h-100 overflow-hidden tarjeta-mate text-start {{ $disponible ? 'tarjeta-interactiva' : 'tarjeta-especialidad-pausa' }}">
+                                {{-- Cabecera multimedia con respaldo vectorial cuando no existe imagen cargada --}}
+                                <div class="esp-card-media position-relative">
+                                    @if ($esp->imagen)
+                                        <img src="{{ asset('storage/' . $esp->imagen) }}"
+                                             alt="Especialidad de {{ $esp->nombre }}"
+                                             class="esp-card-img"
+                                             loading="lazy">
                                     @else
-                                        <span class="etiqueta-sin-cupos-mate">Sin turnos activos</span>
+                                        <div class="esp-card-placeholder d-flex align-items-center justify-content-center">
+                                            <div class="icono-interactivo {{ $disponible ? '' : 'icono-interactivo-pausa' }}">
+                                                <i class="bi {{ $obtenerIcono($esp->nombre) }}"></i>
+                                            </div>
+                                        </div>
                                     @endif
+
+                                    <span class="esp-card-badge {{ $disponible ? 'etiqueta-medicos-mate' : 'etiqueta-sin-cupos-mate' }}">
+                                        {{ $disponible ? 'Turnos habilitados' : 'Sin turnos activos' }}
+                                    </span>
                                 </div>
 
-                                <h5 class="fw-bold text-hrc-primario mb-2">{{ $esp->nombre }}</h5>
+                                <div class="card-body p-4 d-flex flex-column">
+                                    <h5 class="fw-bold text-hrc-primario mb-2">{{ $esp->nombre }}</h5>
 
-                                <p class="text-muted small mb-4 flex-grow-1">
-                                    {{ $esp->descripcion ?: 'Atención ambulatoria especializada en consulta externa previa reserva de cita.' }}
-                                </p>
+                                    <p class="text-muted small mb-4 flex-grow-1">
+                                        {{ $esp->descripcion ?: 'Atención ambulatoria especializada en consulta externa previa reserva de cita.' }}
+                                    </p>
 
-                                <div class="pie-tarjeta-especialidad pt-3 mt-auto">
-                                    <div class="texto-xs text-muted mb-2">
-                                        <i class="bi bi-shield-check me-1 text-hrc-salvia"></i>
-                                        Asignación automática de médico y consultorio
+                                    <div class="pie-tarjeta-especialidad pt-3 mt-auto">
+                                        <div class="texto-xs text-muted mb-2">
+                                            <i class="bi bi-shield-check me-1 text-hrc-salvia"></i>
+                                            Asignación automática de médico y consultorio
+                                        </div>
+
+                                        @if ($disponible)
+                                            <a href="{{ route('reservar_cita', ['especialidad' => $esp->id]) }}" class="enlace-mate fw-bold small text-decoration-none stretched-link">
+                                                Reservar en esta especialidad <i class="bi bi-arrow-right ms-1"></i>
+                                            </a>
+                                        @else
+                                            <span class="small fw-semibold text-muted">
+                                                No disponible temporalmente
+                                            </span>
+                                        @endif
                                     </div>
-
-                                    @if ($disponible)
-                                        <a href="{{ route('reservar_cita', ['especialidad' => $esp->id]) }}" class="enlace-mate fw-bold small text-decoration-none stretched-link">
-                                            Reservar en esta especialidad <i class="bi bi-arrow-right ms-1"></i>
-                                        </a>
-                                    @else
-                                        <span class="small fw-semibold text-muted">
-                                            No disponible temporalmente
-                                        </span>
-                                    @endif
                                 </div>
-                            </div>
+                            </article>
                         </div>
                     @endforeach
                 </div>

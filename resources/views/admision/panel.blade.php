@@ -25,13 +25,17 @@
                 </div>
 
                 @if ($medicoSeleccionado)
-                    <div class="text-md-end small text-muted">
-                        <div class="fw-bold text-hrc-primario">
+                    <div class="pill-fecha-panel align-self-start align-self-md-center">
+                        <i class="bi bi-person-badge me-2 text-hrc-acento"></i>
+                        <span>
                             Dr. {{ $medicoSeleccionado->apellidos }} {{ $medicoSeleccionado->nombres }}
-                        </div>
-                        <div>
-                            {{ $medicoSeleccionado->especialidad->nombre }} &middot; {{ $medicoSeleccionado->consultorio }}
-                        </div>
+                            &middot; {{ $medicoSeleccionado->consultorio }}
+                        </span>
+                    </div>
+                @else
+                    <div class="pill-fecha-panel align-self-start align-self-md-center">
+                        <i class="bi bi-calendar3 me-2 text-hrc-acento"></i>
+                        <span>Hoy: {{ now()->format('d/m/Y') }}</span>
                     </div>
                 @endif
             </div>
@@ -55,8 +59,18 @@
                 </div>
             @endif
 
-            {{-- Barra de consulta por médico y fecha --}}
-            <div class="tarjeta-panel-mate p-4 mb-4">
+            {{-- Bloque de consulta de agenda por médico y fecha --}}
+            <div class="panel-card-elevada p-4 mb-4">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                    <div>
+                        <h2 class="h6 fw-bold titulo-panel-acento mb-0">Consulta de Agenda</h2>
+                        <span class="texto-xs text-muted">Seleccione especialista y día de atención para cargar la programación</span>
+                    </div>
+                    @if ($medicoSeleccionado)
+                        <span class="pill-periodo-panel">{{ $medicoSeleccionado->especialidad->nombre }}</span>
+                    @endif
+                </div>
+
                 <form action="{{ route('admision.panel') }}" method="GET" class="row g-3 align-items-end">
                     <div class="col-lg-6">
                         <label for="medico_id" class="form-label small fw-bold text-hrc-primario">
@@ -102,45 +116,96 @@
                     $canceladasAgenda = $citas->where('estado', 'Cancelado')->count();
                 @endphp
 
-                {{-- Resumen numérico de la agenda consultada --}}
-                <div class="row g-3 mb-4">
-                    <div class="col-6 col-md-3">
-                        <div class="kpi-panel-mate p-3 h-100">
-                            <span class="kpi-etiqueta d-block mb-1">Total turnos</span>
-                            <div class="h3 fw-bold text-hrc-primario mb-0">{{ $totalAgenda }}</div>
+                {{-- Resumen agrupado de indicadores de la agenda consultada --}}
+                <div class="panel-card-elevada p-4 mb-4">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                        <div>
+                            <h2 class="h6 fw-bold titulo-panel-acento mb-0">Resumen de la Jornada</h2>
+                            <span class="texto-xs text-muted">
+                                @if ($medicoSeleccionado)
+                                    Dr. {{ $medicoSeleccionado->apellidos }} {{ $medicoSeleccionado->nombres }} &middot; {{ $medicoSeleccionado->consultorio }}
+                                @else
+                                    Estado actual de los turnos asignados
+                                @endif
+                            </span>
                         </div>
+                        <span class="pill-periodo-panel">{{ $fechaFormateada }}</span>
                     </div>
-                    <div class="col-6 col-md-3">
-                        <div class="kpi-panel-mate p-3 h-100">
-                            <span class="kpi-etiqueta d-block mb-1">Pendientes</span>
-                            <div class="h3 fw-bold text-hrc-ocre mb-0">{{ $pendientesAgenda }}</div>
+
+                    <div class="row g-3">
+                        <div class="col-6 col-lg-3">
+                            <div class="kpi-bloque-interno p-3 h-100">
+                                <div class="d-flex align-items-center gap-3 mb-2">
+                                    <div class="kpi-icono-cuadro kpi-icono-azul">
+                                        <i class="bi bi-calendar2-week"></i>
+                                    </div>
+                                    <div class="small fw-bold text-hrc-primario lh-sm">Total Turnos</div>
+                                </div>
+                                <div class="d-flex align-items-baseline gap-2">
+                                    <span class="h3 fw-bold text-hrc-primario mb-0">{{ $totalAgenda }}</span>
+                                    <span class="texto-xs text-muted">programados</span>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-6 col-md-3">
-                        <div class="kpi-panel-mate p-3 h-100">
-                            <span class="kpi-etiqueta d-block mb-1">Atendidas</span>
-                            <div class="h3 fw-bold text-hrc-salvia mb-0">{{ $atendidasAgenda }}</div>
+
+                        <div class="col-6 col-lg-3">
+                            <div class="kpi-bloque-interno p-3 h-100">
+                                <div class="d-flex align-items-center gap-3 mb-2">
+                                    <div class="kpi-icono-cuadro kpi-icono-ocre">
+                                        <i class="bi bi-hourglass-split"></i>
+                                    </div>
+                                    <div class="small fw-bold text-hrc-primario lh-sm">Pendientes</div>
+                                </div>
+                                <div class="d-flex align-items-baseline gap-2">
+                                    <span class="h3 fw-bold text-hrc-primario mb-0">{{ $pendientesAgenda }}</span>
+                                    <span class="texto-xs text-muted">en espera</span>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-6 col-md-3">
-                        <div class="kpi-panel-mate p-3 h-100">
-                            <span class="kpi-etiqueta d-block mb-1">Canceladas</span>
-                            <div class="h3 fw-bold text-muted mb-0">{{ $canceladasAgenda }}</div>
+
+                        <div class="col-6 col-lg-3">
+                            <div class="kpi-bloque-interno p-3 h-100">
+                                <div class="d-flex align-items-center gap-3 mb-2">
+                                    <div class="kpi-icono-cuadro kpi-icono-salvia">
+                                        <i class="bi bi-check2-circle"></i>
+                                    </div>
+                                    <div class="small fw-bold text-hrc-primario lh-sm">Atendidas</div>
+                                </div>
+                                <div class="d-flex align-items-baseline gap-2">
+                                    <span class="h3 fw-bold text-hrc-primario mb-0">{{ $atendidasAgenda }}</span>
+                                    <span class="texto-xs text-muted">completadas</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-6 col-lg-3">
+                            <div class="kpi-bloque-interno p-3 h-100">
+                                <div class="d-flex align-items-center gap-3 mb-2">
+                                    <div class="kpi-icono-cuadro kpi-icono-terracota">
+                                        <i class="bi bi-x-circle"></i>
+                                    </div>
+                                    <div class="small fw-bold text-hrc-primario lh-sm">Canceladas</div>
+                                </div>
+                                <div class="d-flex align-items-baseline gap-2">
+                                    <span class="h3 fw-bold text-hrc-primario mb-0">{{ $canceladasAgenda }}</span>
+                                    <span class="texto-xs text-muted">cupos liberados</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                {{-- Tabla operativa de citas --}}
-                <div class="tarjeta-panel-mate overflow-hidden">
-                    <div class="panel-cabecera-tabla px-4 py-3 d-flex flex-column gap-3">
+                {{-- Tabla operativa de citas con búsqueda y pestañas locales --}}
+                <div class="panel-card-elevada overflow-hidden">
+                    <div class="px-4 pt-4 pb-3 border-bottom d-flex flex-column gap-3">
                         <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
                             <div>
-                                <h2 class="h5 fw-bold text-hrc-primario mb-0">
-                                    Pacientes programados &middot; {{ $fechaFormateada }}
+                                <h2 class="h6 fw-bold titulo-panel-acento mb-0">
+                                    Pacientes Programados &middot; {{ $fechaFormateada }}
                                 </h2>
                                 @if ($medicoSeleccionado)
                                     <span class="texto-xs text-muted">
-                                        Consultorio: {{ $medicoSeleccionado->consultorio }}
+                                        {{ $medicoSeleccionado->especialidad->nombre }} &middot; {{ $medicoSeleccionado->consultorio }}
                                     </span>
                                 @endif
                             </div>
@@ -176,21 +241,26 @@
                     </div>
 
                     <div class="table-responsive">
-                        <table class="table tabla-mate align-middle mb-0" id="tabla-agenda-admision">
+                        <table class="table tabla-panel-suave align-middle mb-0 small" id="tabla-agenda-admision">
                             <thead>
                                 <tr>
-                                    <th class="ps-4 py-3">Orden</th>
-                                    <th class="py-3">Hora</th>
-                                    <th class="py-3">Paciente</th>
-                                    <th class="py-3">Modalidad</th>
-                                    <th class="py-3">Estado</th>
-                                    <th class="pe-4 py-3 text-end">Gestión operativa</th>
+                                    <th class="ps-4">Orden</th>
+                                    <th>Hora</th>
+                                    <th>Paciente</th>
+                                    <th>Modalidad</th>
+                                    <th>Estado</th>
+                                    <th class="pe-4 text-end">Gestión operativa</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse($citas as $index => $cita)
                                     @php
                                         $nombreCompleto = strtoupper($cita->paciente->apellido_paterno . ' ' . $cita->paciente->apellido_materno) . ', ' . $cita->paciente->nombres;
+                                        $inicialesPac = mb_strtoupper(
+                                            mb_substr(trim($cita->paciente->nombres), 0, 1, 'UTF-8') .
+                                            mb_substr(trim($cita->paciente->apellido_paterno), 0, 1, 'UTF-8'),
+                                            'UTF-8'
+                                        );
                                         $horaTexto = \Carbon\Carbon::parse($cita->hora)->format('h:i A');
                                         $claseEstado = match ($cita->estado) {
                                             'Pendiente' => 'badge-agenda-pendiente',
@@ -203,25 +273,30 @@
                                     <tr class="fila-agenda-admision {{ $cita->estado === 'Cancelado' ? 'fila-cita-inactiva' : '' }}"
                                         data-estado="{{ $cita->estado }}"
                                         data-busqueda="{{ $indiceBusqueda }}">
-                                        <td class="ps-4 py-3 small fw-bold text-muted text-nowrap">
+                                        <td class="ps-4 fw-bold text-muted text-nowrap">
                                             #{{ $index + 1 }}
                                         </td>
 
-                                        <td class="py-3 text-nowrap">
+                                        <td class="text-nowrap">
                                             <span class="hora-agenda-mate">{{ $horaTexto }}</span>
                                         </td>
 
-                                        <td class="py-3">
-                                            <div class="fw-bold text-hrc-primario small">
-                                                {{ strtoupper($cita->paciente->apellido_paterno . ' ' . $cita->paciente->apellido_materno) }},
-                                                <span class="fw-semibold text-dark">{{ $cita->paciente->nombres }}</span>
-                                            </div>
-                                            <div class="texto-xs text-muted">
-                                                {{ $cita->paciente->tipo_documento ?? 'DNI' }}: {{ $cita->paciente->numero_documento }}
+                                        <td>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="avatar-mini-panel flex-shrink-0">{{ $inicialesPac }}</div>
+                                                <div class="min-w-0">
+                                                    <div class="fw-bold text-hrc-primario">
+                                                        {{ strtoupper($cita->paciente->apellido_paterno . ' ' . $cita->paciente->apellido_materno) }},
+                                                        <span class="fw-semibold text-dark">{{ $cita->paciente->nombres }}</span>
+                                                    </div>
+                                                    <div class="texto-xs text-muted">
+                                                        {{ $cita->paciente->tipo_documento ?? 'DNI' }}: {{ $cita->paciente->numero_documento }}
+                                                    </div>
+                                                </div>
                                             </div>
                                         </td>
 
-                                        <td class="py-3">
+                                        <td>
                                             @if($cita->codigo_referencia_sis)
                                                 <span class="badge-sis-mate">SIS</span>
                                                 <div class="texto-xs text-muted mt-1">Ref: {{ $cita->codigo_referencia_sis }}</div>
@@ -230,13 +305,13 @@
                                             @endif
                                         </td>
 
-                                        <td class="py-3">
-                                            <span class="ticket-pill-estado {{ $claseEstado }}">
+                                        <td>
+                                            <span class="ticket-pill-estado {{ $claseEstado }} py-1 px-2 texto-xs">
                                                 {{ $cita->estado }}
                                             </span>
                                         </td>
 
-                                        <td class="pe-4 py-3 text-end text-nowrap">
+                                        <td class="pe-4 text-end text-nowrap">
                                             <div class="d-inline-flex align-items-center gap-2">
                                                 <a href="{{ route('ticket', $cita->id) }}"
                                                    target="_blank"
@@ -284,7 +359,7 @@
                     </div>
                 </div>
             @else
-                <div class="tarjeta-panel-mate text-center py-5 px-4">
+                <div class="panel-card-elevada text-center py-5 px-4">
                     <div class="icono-vacio-mate mx-auto mb-3">
                         <i class="bi bi-clipboard2-pulse"></i>
                     </div>

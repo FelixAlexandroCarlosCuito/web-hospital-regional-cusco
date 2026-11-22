@@ -1,237 +1,349 @@
 @extends('layouts.main')
 
 @section('titulo', 'Panel de Administración')
+@section('clase_main', 'p-0')
 
 @section('contenido')
-<div class="container">
+    @php
+        $nivelCumplimiento = $tasaCumplimiento >= 80
+            ? ['texto' => 'Óptimo', 'clase' => 'badge-agenda-atendido']
+            : ($tasaCumplimiento >= 50
+                ? ['texto' => 'En seguimiento', 'clase' => 'badge-agenda-pendiente']
+                : ['texto' => 'Por mejorar', 'clase' => 'badge-agenda-cancelado']);
+    @endphp
 
-    {{-- Encabezado y Sub-navegación del Módulo Admin --}}
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
-        <div>
-            <h2 class="fw-bold text-hrc-primario mb-1">Panel de Administración</h2>
-            <p class="text-muted mb-0">Monitoreo operativo y gestión integral — Hospital Regional del Cusco</p>
+    <section class="cabecera-interna-mate seccion-pizarra py-4">
+        <div class="container py-2">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
+                <div>
+                    <span class="sobretitulo-mate d-block mb-1">Gestión institucional</span>
+                    <h1 class="h3 fw-bold text-hrc-primario mb-1">Panel de Administración</h1>
+                    <p class="text-muted small mb-0">
+                        Monitoreo operativo y control de demanda — Hospital Regional del Cusco
+                    </p>
+                </div>
+
+                <div class="pill-fecha-panel align-self-start align-self-md-center">
+                    <i class="bi bi-clock me-1 text-hrc-acento"></i>
+                    Actualizado: {{ now()->format('d/m/Y h:i A') }}
+                </div>
+            </div>
+
+            {{-- Navegación horizontal entre módulos administrativos --}}
+            @include('admin._nav')
         </div>
-        <div class="text-md-end">
-            <span class="badge bg-light text-dark border px-3 py-2">
-                Actualizado: {{ now()->format('d/m/Y h:i A') }}
-            </span>
-        </div>
-    </div>
+    </section>
 
-    {{-- Barra de módulos internos del Admin --}}
-    @include('admin._nav')
+    <section class="py-4 py-md-5">
+        <div class="container">
 
-    {{-- FILA 1: TARJETAS KPI --}}
-    <div class="row g-3 mb-4">
-        <div class="col-12 col-sm-6 col-xl-3">
-            <div class="card border-0 shadow-sm h-100 border-start border-4 border-primary">
-                <div class="card-body">
-                    <div class="text-muted small fw-bold text-uppercase mb-1">Citas para Hoy</div>
-                    <div class="h2 fw-bold text-hrc-primario mb-2">{{ $citasHoyTotal }}</div>
-                    <div class="small text-muted">
-                        <span class="text-warning fw-bold">{{ $citasHoyPendientes }}</span> pend. &middot;
-                        <span class="text-success fw-bold">{{ $citasHoyAtendidas }}</span> atend. &middot;
-                        <span class="text-danger fw-bold">{{ $citasHoyCanceladas }}</span> canc.
+            {{-- Bloque agrupado de indicadores operativos --}}
+            <div class="panel-card-elevada p-4 mb-4">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                    <div>
+                        <h2 class="h5 fw-bold titulo-panel-acento mb-0">Resumen Operativo</h2>
+                        <span class="texto-xs text-muted">Indicadores consolidados de consulta externa</span>
+                    </div>
+                    <span class="pill-periodo-panel">{{ now()->format('d/m/Y') }}</span>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-12 col-sm-6 col-xl-3">
+                        <div class="kpi-bloque-interno p-3 h-100 d-flex flex-column justify-content-between">
+                            <div class="d-flex align-items-center gap-3 mb-3">
+                                <div class="kpi-icono-cuadro kpi-icono-azul">
+                                    <i class="bi bi-calendar2-week"></i>
+                                </div>
+                                <div class="small fw-bold text-hrc-primario lh-sm">Citas para Hoy</div>
+                            </div>
+
+                            <div class="mb-2">
+                                <span class="h2 fw-bold text-hrc-primario mb-0">{{ $citasHoyTotal }}</span>
+                                <span class="texto-xs text-muted ms-1">turnos</span>
+                            </div>
+
+                            <div class="texto-xs text-muted d-flex flex-wrap gap-2">
+                                <span><strong class="text-hrc-ocre">{{ $citasHoyPendientes }}</strong> pend.</span>
+                                <span>&middot;</span>
+                                <span><strong class="text-hrc-salvia">{{ $citasHoyAtendidas }}</strong> atend.</span>
+                                <span>&middot;</span>
+                                <span><strong class="text-hrc-acento">{{ $citasHoyCanceladas }}</strong> canc.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-sm-6 col-xl-3">
+                        <div class="kpi-bloque-interno p-3 h-100 d-flex flex-column justify-content-between">
+                            <div class="d-flex align-items-center gap-3 mb-3">
+                                <div class="kpi-icono-cuadro kpi-icono-salvia">
+                                    <i class="bi bi-check2-circle"></i>
+                                </div>
+                                <div class="small fw-bold text-hrc-primario lh-sm">Cumplimiento (Mes)</div>
+                            </div>
+
+                            <div class="mb-2">
+                                <span class="h2 fw-bold text-hrc-primario mb-0">{{ $tasaCumplimiento }}%</span>
+                            </div>
+
+                            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+                                <span class="ticket-pill-estado {{ $nivelCumplimiento['clase'] }} py-1 px-2 texto-xs">
+                                    {{ $nivelCumplimiento['texto'] }}
+                                </span>
+                                <span class="texto-xs text-muted">
+                                    {{ $citasMesAtendidas }} / {{ $citasMesTotal }} citas
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-sm-6 col-xl-3">
+                        <div class="kpi-bloque-interno p-3 h-100 d-flex flex-column justify-content-between">
+                            <div class="d-flex align-items-center gap-3 mb-3">
+                                <div class="kpi-icono-cuadro kpi-icono-terracota">
+                                    <i class="bi bi-people"></i>
+                                </div>
+                                <div class="small fw-bold text-hrc-primario lh-sm">Pacientes Registrados</div>
+                            </div>
+
+                            <div class="mb-2">
+                                <span class="h2 fw-bold text-hrc-primario mb-0">{{ $totalPacientes }}</span>
+                                <span class="texto-xs text-muted ms-1">cuentas</span>
+                            </div>
+
+                            <div>
+                                <span class="ticket-pill-estado badge-agenda-atendido py-1 px-2 texto-xs">
+                                    +{{ $pacientesNuevosMes }} nuevos este mes
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-sm-6 col-xl-3">
+                        <div class="kpi-bloque-interno p-3 h-100 d-flex flex-column justify-content-between">
+                            <div class="d-flex align-items-center gap-3 mb-3">
+                                <div class="kpi-icono-cuadro kpi-icono-ocre">
+                                    <i class="bi bi-hospital"></i>
+                                </div>
+                                <div class="small fw-bold text-hrc-primario lh-sm">Capacidad Operativa</div>
+                            </div>
+
+                            <div class="mb-2">
+                                <span class="h2 fw-bold text-hrc-primario mb-0">{{ $medicosActivos }}</span>
+                                <span class="texto-xs text-muted">/ {{ $medicosTotal }} médicos activos</span>
+                            </div>
+
+                            <div class="texto-xs text-muted">
+                                <strong class="text-hrc-primario">{{ $especialidadesActivas }}</strong> de {{ $especialidadesTotal }} especialidades activas
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="col-12 col-sm-6 col-xl-3">
-            <div class="card border-0 shadow-sm h-100 border-start border-4 border-success">
-                <div class="card-body">
-                    <div class="text-muted small fw-bold text-uppercase mb-1">Cumplimiento (Mes)</div>
-                    <div class="h2 fw-bold text-success mb-2">{{ $tasaCumplimiento }}%</div>
-                    <div class="small text-muted">
-                        {{ $citasMesAtendidas }} atendidas de {{ $citasMesTotal }} programadas
+            {{-- Gráficos principales de demanda y agenda semanal --}}
+            <div class="row g-4 mb-4">
+                <div class="col-lg-6">
+                    <div class="panel-card-elevada p-4 h-100">
+                        <div class="d-flex justify-content-between align-items-start gap-2 mb-3">
+                            <div>
+                                <h2 class="h6 fw-bold titulo-panel-acento mb-0">Demanda por Especialidad</h2>
+                                <span class="texto-xs text-muted">Histórico acumulado de citas registradas</span>
+                            </div>
+                            <span class="pill-periodo-panel">Histórico</span>
+                        </div>
+                        <div class="contenedor-canvas-barras">
+                            <canvas id="graficoEspecialidades"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="panel-card-elevada p-4 h-100">
+                        <div class="d-flex justify-content-between align-items-start gap-2 mb-3">
+                            <div>
+                                <h2 class="h6 fw-bold titulo-panel-acento mb-0">Agenda Programada</h2>
+                                <span class="texto-xs text-muted">Proyección de demanda en consultorios externos</span>
+                            </div>
+                            <span class="pill-periodo-panel">Próximos 7 días</span>
+                        </div>
+                        <div class="contenedor-canvas-barras">
+                            <canvas id="graficoTendencia"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="col-12 col-sm-6 col-xl-3">
-            <div class="card border-0 shadow-sm h-100 border-start border-4 border-info">
-                <div class="card-body">
-                    <div class="text-muted small fw-bold text-uppercase mb-1">Pacientes Registrados</div>
-                    <div class="h2 fw-bold text-hrc-primario mb-2">{{ $totalPacientes }}</div>
-                    <div class="small text-muted">
-                        +{{ $pacientesNuevosMes }} nuevos este mes
+            {{-- Gráficos de distribución porcentual --}}
+            <div class="row g-4 mb-4">
+                <div class="col-lg-6">
+                    <div class="panel-card-elevada p-4 h-100">
+                        <div class="mb-3">
+                            <h2 class="h6 fw-bold titulo-panel-acento mb-0">Distribución Global por Estado</h2>
+                            <span class="texto-xs text-muted">Proporción de citas pendientes, atendidas y canceladas</span>
+                        </div>
+                        <div class="d-flex justify-content-center align-items-center">
+                            <div class="contenedor-canvas-dona">
+                                <canvas id="graficoEstados"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="panel-card-elevada p-4 h-100">
+                        <div class="mb-3">
+                            <h2 class="h6 fw-bold titulo-panel-acento mb-0">Modalidad de Atención</h2>
+                            <span class="texto-xs text-muted">Comparativa entre pacientes con referencia SIS y regulares</span>
+                        </div>
+                        <div class="d-flex justify-content-center align-items-center">
+                            <div class="contenedor-canvas-dona">
+                                <canvas id="graficoSis"></canvas>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="col-12 col-sm-6 col-xl-3">
-            <div class="card border-0 shadow-sm h-100 border-start border-4 border-warning">
-                <div class="card-body">
-                    <div class="text-muted small fw-bold text-uppercase mb-1">Capacidad Operativa</div>
-                    <div class="h2 fw-bold text-hrc-primario mb-2">{{ $medicosActivos }} <span class="fs-6 fw-normal text-muted">/ {{ $medicosTotal }} médicos</span></div>
-                    <div class="small text-muted">
-                        {{ $especialidadesActivas }} de {{ $especialidadesTotal }} especialidades activas
+            {{-- Tablas de supervisión operativa --}}
+            <div class="row g-4">
+                <div class="col-lg-5">
+                    <div class="panel-card-elevada overflow-hidden h-100">
+                        <div class="px-4 pt-4 pb-3 d-flex justify-content-between align-items-center gap-2">
+                            <div>
+                                <h2 class="h6 fw-bold titulo-panel-acento mb-0">Carga por Médico</h2>
+                                <span class="texto-xs text-muted">Distribución actual por profesional</span>
+                            </div>
+                            <span class="pill-periodo-panel">{{ $cargaMedicos->count() }} reg.</span>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table tabla-panel-suave align-middle mb-0 small">
+                                <thead>
+                                    <tr>
+                                        <th class="ps-4">Médico</th>
+                                        <th class="text-center">Pend.</th>
+                                        <th class="text-center">Atend.</th>
+                                        <th class="text-end pe-4">Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($cargaMedicos as $medico)
+                                        @php
+                                            $inicialesMed = mb_strtoupper(
+                                                mb_substr(trim($medico->nombres), 0, 1, 'UTF-8') .
+                                                mb_substr(trim($medico->apellidos), 0, 1, 'UTF-8'),
+                                                'UTF-8'
+                                            );
+                                        @endphp
+                                        <tr>
+                                            <td class="ps-4">
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <div class="avatar-mini-panel flex-shrink-0">{{ $inicialesMed }}</div>
+                                                    <div class="min-w-0">
+                                                        <div class="fw-bold text-hrc-primario text-truncate">
+                                                            Dr. {{ $medico->nombres }} {{ $medico->apellidos }}
+                                                        </div>
+                                                        <div class="texto-xs text-muted text-truncate">
+                                                            {{ $medico->especialidad->nombre ?? 'Sin asignar' }} &middot; {{ $medico->consultorio }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="text-center fw-bold text-hrc-ocre">{{ $medico->pendientes_count }}</td>
+                                            <td class="text-center fw-bold text-hrc-salvia">{{ $medico->atendidas_count }}</td>
+                                            <td class="text-end pe-4">
+                                                @if($medico->activo)
+                                                    <span class="ticket-pill-estado badge-agenda-atendido py-1 px-2 texto-xs">Activo</span>
+                                                @else
+                                                    <span class="etiqueta-sin-cupos-mate py-1 px-2 texto-xs">Inactivo</span>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="4" class="text-center py-4 text-muted">No hay médicos registrados.</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-7">
+                    <div class="panel-card-elevada overflow-hidden h-100">
+                        <div class="px-4 pt-4 pb-3 d-flex justify-content-between align-items-center gap-2">
+                            <div>
+                                <h2 class="h6 fw-bold titulo-panel-acento mb-0">Actividad Reciente</h2>
+                                <span class="texto-xs text-muted">Últimas 8 reservas registradas en el portal</span>
+                            </div>
+                            <span class="pill-periodo-panel">En tiempo real</span>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table tabla-panel-suave align-middle mb-0 small">
+                                <thead>
+                                    <tr>
+                                        <th class="ps-4">Paciente</th>
+                                        <th>Especialidad / Médico</th>
+                                        <th>Fecha y Hora</th>
+                                        <th class="text-end pe-4">Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($ultimasCitas as $cita)
+                                        @php
+                                            $claseEstado = match ($cita->estado) {
+                                                'Atendido' => 'badge-agenda-atendido',
+                                                'Cancelado' => 'badge-agenda-cancelado',
+                                                default => 'badge-agenda-pendiente',
+                                            };
+                                        @endphp
+                                        <tr>
+                                            <td class="ps-4">
+                                                <div class="fw-bold text-dark">
+                                                    {{ $cita->paciente->nombres ?? 'N/A' }} {{ $cita->paciente->apellido_paterno ?? '' }}
+                                                </div>
+                                                <div class="texto-xs text-muted">
+                                                    {{ $cita->paciente->numero_documento ?? '' }}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="fw-bold text-hrc-primario">
+                                                    {{ $cita->medico->especialidad->nombre ?? 'N/A' }}
+                                                </div>
+                                                <div class="texto-xs text-muted">
+                                                    Dr. {{ $cita->medico->apellidos ?? '' }}
+                                                </div>
+                                            </td>
+                                            <td class="text-nowrap">
+                                                <div class="fw-semibold text-dark">
+                                                    {{ \Carbon\Carbon::parse($cita->fecha)->format('d/m/Y') }}
+                                                </div>
+                                                <div class="texto-xs text-muted">
+                                                    {{ \Carbon\Carbon::parse($cita->hora)->format('h:i A') }}
+                                                </div>
+                                            </td>
+                                            <td class="text-end pe-4">
+                                                <span class="ticket-pill-estado {{ $claseEstado }} py-1 px-2 texto-xs">
+                                                    {{ $cita->estado }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="4" class="text-center py-4 text-muted">Aún no se han registrado citas.</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    {{-- FILA 2: GRÁFICOS PRINCIPALES (Barras + Línea) --}}
-    <div class="row g-4 mb-4">
-        <div class="col-lg-6">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-white border-bottom py-3">
-                    <h6 class="fw-bold text-hrc-primario mb-0">Demanda Histórica por Especialidad</h6>
-                </div>
-                <div class="card-body">
-                    <div style="height: 280px;">
-                        <canvas id="graficoEspecialidades"></canvas>
-                    </div>
-                </div>
-            </div>
         </div>
-
-        <div class="col-lg-6">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-white border-bottom py-3">
-                    <h6 class="fw-bold text-hrc-primario mb-0">Agenda Programada (Próximos 7 días)</h6>
-                </div>
-                <div class="card-body">
-                    <div style="height: 280px;">
-                        <canvas id="graficoTendencia"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {{-- FILA 3: GRÁFICOS DE DISTRIBUCIÓN (Donas) --}}
-    <div class="row g-4 mb-4">
-        <div class="col-lg-6">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-white border-bottom py-3">
-                    <h6 class="fw-bold text-hrc-primario mb-0">Distribución Global por Estado</h6>
-                </div>
-                <div class="card-body d-flex justify-content-center align-items-center">
-                    <div style="height: 250px; width: 100%; max-width: 340px;">
-                        <canvas id="graficoEstados"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-6">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-white border-bottom py-3">
-                    <h6 class="fw-bold text-hrc-primario mb-0">Origen de Atención: Referencia SIS vs. Regular</h6>
-                </div>
-                <div class="card-body d-flex justify-content-center align-items-center">
-                    <div style="height: 250px; width: 100%; max-width: 340px;">
-                        <canvas id="graficoSis"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {{-- FILA 4: TABLAS DE SUPERVISIÓN --}}
-    <div class="row g-4">
-        {{-- Carga por Médico --}}
-        <div class="col-lg-5">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-white border-bottom py-3">
-                    <h6 class="fw-bold text-hrc-primario mb-0">Carga Operativa por Médico</h6>
-                </div>
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0 small">
-                        <thead class="bg-light text-secondary">
-                            <tr>
-                                <th class="ps-3">Médico</th>
-                                <th class="text-center">Pend.</th>
-                                <th class="text-center">Atend.</th>
-                                <th class="text-center pe-3">Estado</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($cargaMedicos as $medico)
-                                <tr>
-                                    <td class="ps-3">
-                                        <div class="fw-bold text-dark">Dr. {{ $medico->nombres }} {{ $medico->apellidos }}</div>
-                                        <div class="text-muted">{{ $medico->especialidad->nombre ?? 'Sin asignar' }} &middot; {{ $medico->consultorio }}</div>
-                                    </td>
-                                    <td class="text-center fw-bold text-warning">{{ $medico->pendientes_count }}</td>
-                                    <td class="text-center fw-bold text-success">{{ $medico->atendidas_count }}</td>
-                                    <td class="text-center pe-3">
-                                        @if($medico->activo)
-                                            <span class="badge bg-success">Activo</span>
-                                        @else
-                                            <span class="badge bg-secondary">Inactivo</span>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="4" class="text-center py-4 text-muted">No hay médicos registrados.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        {{-- Monitor de Últimas Citas --}}
-        <div class="col-lg-7">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-white border-bottom py-3">
-                    <h6 class="fw-bold text-hrc-primario mb-0">Actividad Reciente (Últimas 8 reservas)</h6>
-                </div>
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0 small">
-                        <thead class="bg-light text-secondary">
-                            <tr>
-                                <th class="ps-3">Paciente</th>
-                                <th>Especialidad / Médico</th>
-                                <th>Fecha y Hora</th>
-                                <th class="pe-3">Estado</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($ultimasCitas as $cita)
-                                <tr>
-                                    <td class="ps-3">
-                                        <div class="fw-bold">{{ $cita->paciente->nombres ?? 'N/A' }} {{ $cita->paciente->apellido_paterno ?? '' }}</div>
-                                        <div class="text-muted">{{ $cita->paciente->numero_documento ?? '' }}</div>
-                                    </td>
-                                    <td>
-                                        <div class="fw-bold text-hrc-primario">{{ $cita->medico->especialidad->nombre ?? 'N/A' }}</div>
-                                        <div class="text-muted">Dr. {{ $cita->medico->apellidos ?? '' }}</div>
-                                    </td>
-                                    <td>
-                                        <div>{{ \Carbon\Carbon::parse($cita->fecha)->format('d/m/Y') }}</div>
-                                        <div class="text-muted">{{ \Carbon\Carbon::parse($cita->hora)->format('h:i A') }}</div>
-                                    </td>
-                                    <td class="pe-3">
-                                        @if($cita->estado === 'Atendido')
-                                            <span class="badge bg-success">Atendido</span>
-                                        @elseif($cita->estado === 'Cancelado')
-                                            <span class="badge bg-danger">Cancelado</span>
-                                        @else
-                                            <span class="badge bg-warning text-dark">Pendiente</span>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="4" class="text-center py-4 text-muted">Aún no se han registrado citas.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-
-</div>
+    </section>
 @endsection
 
 @section('js')
