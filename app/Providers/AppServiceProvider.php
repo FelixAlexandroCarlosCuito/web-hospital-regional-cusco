@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\URL;
 
 /**
  * Configura la paginación con Bootstrap 5 y reglas de auditoría de Eloquent contra N+1 y asignación masiva.
@@ -33,5 +34,9 @@ class AppServiceProvider extends ServiceProvider
 
         // Rechaza silencios al intentar asignar masivamente atributos excluidos de $fillable (ej. rol o activo)
         Model::preventSilentlyDiscardingAttributes($enDesarrollo);
+
+        if ($this->app->isProduction()) {
+            URL::forceScheme('https');
+        }
     }
 }

@@ -7,37 +7,49 @@ use App\Models\Especialidad;
 use App\Models\Medico;
 use App\Models\Novedad;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 /**
- * Atiende las vistas públicas del portal institucional con selección acotada de columnas.
+ * Atiende las vistas públicas del portal institucional usando selección acotada de columnas
+ * y caché de lectura corta con invalidación explícita ante cambios administrativos.
  */
 class PaginasController extends Controller
 {
+    public const CACHE_INICIO = 'hrc_portal_inicio';
+    public const CACHE_ESPECIALIDADES = 'hrc_portal_especialidades';
+    private const CACHE_TTL_SEGUNDOS = 300;
+
+    /**
+     * Invalida las claves públicas en caché cuando administración modifica el catálogo o novedades.
+     */
+    public static function limpiarCachePublico(): void
+    {
+        Cache::forget(self::CACHE_INICIO);
+        Cache::forget(self::CACHE_ESPECIALIDADES);
+    }
+
     public function inicio()
     {
-        $totalEspecialidades = Especialidad::where('activo', true)->count();
-        $totalMedicos = Medico::where('activo', true)->count();
+        $datosInicio = Cache::remember(self::CACHE_INICIO, self::CACHE_TTL_SEGUNDOS, function () {
+            return [
+                'totalEspecialidades' => Especialidad::where('activo', true)->count(),
+                'totalMedicos' => Medico::where('activo', true)->count(),
+                'especialidadesDestacadas' => Especialidad::select(['id', 'nombre', 'descripcion', 'imagen'])
+                    ->where('activo', true)
+                    ->withCount(['medicos as medicos_activos_count' => fn ($q) => $q->where('activo', true)])
+                    ->orderByDesc('medicos_activos_count')
+                    ->orderBy('nombre')
+                    ->take(6)
+                    ->get(),
+                // Excluye el campo texto largo 'contenido' en listados para reducir transferencia desde MySQL
+                'ultimasNovedades' => Novedad::publicadas()
+                    ->select(['id', 'titulo', 'slug', 'categoria', 'resumen', 'imagen', 'fecha_publicacion'])
+                    ->take(3)
+                    ->get(),
+            ];
+        });
 
-        $especialidadesDestacadas = Especialidad::select(['id', 'nombre', 'descripcion', 'imagen'])
-            ->where('activo', true)
-            ->withCount(['medicos as medicos_activos_count' => fn ($q) => $q->where('activo', true)])
-            ->orderByDesc('medicos_activos_count')
-            ->orderBy('nombre')
-            ->take(6)
-            ->get();
-
-        // Excluye el campo texto largo 'contenido' en listados para reducir transferencia desde MySQL
-        $ultimasNovedades = Novedad::publicadas()
-            ->select(['id', 'titulo', 'slug', 'categoria', 'resumen', 'imagen', 'fecha_publicacion'])
-            ->take(3)
-            ->get();
-
-        return view('inicio', compact(
-            'totalEspecialidades',
-            'totalMedicos',
-            'especialidadesDestacadas',
-            'ultimasNovedades'
-        ));
+        return view('inicio', $datosInicio);
     }
 
     public function novedades(Request $request)
@@ -80,13 +92,15 @@ class PaginasController extends Controller
 
     public function especialidades()
     {
-        $especialidades = Especialidad::select(['id', 'nombre', 'descripcion', 'imagen'])
-            ->where('activo', true)
-            ->withExists([
-                'medicos as tiene_turnos' => fn ($query) => $query->where('activo', true),
-            ])
-            ->orderBy('nombre')
-            ->get();
+        $especialidades = Cache::remember(self::CACHE_ESPECIALIDADES, self::CACHE_TTL_SEGUNDOS, function () {
+            return Especialidad::select(['id', 'nombre', 'descripcion', 'imagen'])
+                ->where('activo', true)
+                ->withExists([
+                    'medicos as tiene_turnos' => fn ($query) => $query->where('activo', true),
+                ])
+                ->orderBy('nombre')
+                ->get();
+        });
 
         return view('paginas.especialidades', compact('especialidades'));
     }

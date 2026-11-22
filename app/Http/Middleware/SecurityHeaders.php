@@ -21,5 +21,10 @@ class SecurityHeaders
         $response->headers->set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
 
         return $response;
+
+        // Activa HSTS únicamente cuando la petición entra sobre HTTPS para no bloquear entornos locales HTTP
+        if ($request->isSecure()) {
+            $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+        }
     }
 }

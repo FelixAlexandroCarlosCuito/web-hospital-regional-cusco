@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Novedad;
+use App\Http\Controllers\PaginasController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -67,6 +68,7 @@ class NovedadController extends Controller
             'fecha_publicacion' => $publicado ? now() : null,
         ]);
 
+        PaginasController::limpiarCachePublico();
         return redirect()
             ->route('admin.novedades.index')
             ->with('success', $publicado ? 'Novedad publicada correctamente.' : 'Borrador guardado correctamente.');
@@ -125,6 +127,7 @@ class NovedadController extends Controller
             'fecha_publicacion' => $fechaPublicacion,
         ]);
 
+        PaginasController::limpiarCachePublico();
         return redirect()
             ->route('admin.novedades.index')
             ->with('success', 'Novedad actualizada correctamente.');
@@ -143,6 +146,7 @@ class NovedadController extends Controller
             ? "La novedad \"{$novedad->titulo}\" ahora es visible en el portal."
             : "La novedad \"{$novedad->titulo}\" pasó a estado borrador (oculta al público).";
 
+        PaginasController::limpiarCachePublico();
         return redirect()
             ->route('admin.novedades.index')
             ->with('success', $mensaje);
@@ -156,6 +160,7 @@ class NovedadController extends Controller
 
         $novedad->delete();
 
+        PaginasController::limpiarCachePublico();
         return redirect()
             ->route('admin.novedades.index')
             ->with('warning', 'Novedad eliminada definitivamente.');

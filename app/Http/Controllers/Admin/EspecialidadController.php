@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Especialidad;
+use App\Http\Controllers\PaginasController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -61,6 +62,7 @@ class EspecialidadController extends Controller
             'activo' => true,
         ]);
 
+        PaginasController::limpiarCachePublico();
         return redirect()
             ->route('admin.especialidades.index')
             ->with('success', 'Especialidad registrada correctamente.');
@@ -108,6 +110,7 @@ class EspecialidadController extends Controller
             'imagen' => $rutaImagen,
         ]);
 
+        PaginasController::limpiarCachePublico();
         return redirect()
             ->route('admin.especialidades.index')
             ->with('success', 'Especialidad actualizada correctamente.');
@@ -129,11 +132,13 @@ class EspecialidadController extends Controller
                 $mensaje .= " Aviso: mantiene {$pendientes} cita(s) pendiente(s) ya agendada(s) que seguirán visibles para Admisión y sus médicos.";
             }
 
+            PaginasController::limpiarCachePublico();
             return redirect()
                 ->route('admin.especialidades.index')
                 ->with('warning', $mensaje);
         }
 
+        PaginasController::limpiarCachePublico();
         return redirect()
             ->route('admin.especialidades.index')
             ->with('success', "Especialidad \"{$especialidad->nombre}\" activada nuevamente.");

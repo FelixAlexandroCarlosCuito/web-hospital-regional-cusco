@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Especialidad;
 use App\Models\Medico;
 use App\Models\User;
+use App\Http\Controllers\PaginasController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -113,7 +114,8 @@ class PersonalController extends Controller
 
         $etiquetaRol = $datos['rol'] === 'medico' ? 'Médico' : 'Personal de Admisión';
         $avisoClave = empty($datos['password']) ? ' Clave inicial asignada: número de documento.' : '';
-
+        
+        PaginasController::limpiarCachePublico();
         return redirect()
             ->route('admin.personal.index')
             ->with('success', "{$etiquetaRol} registrado correctamente.{$avisoClave}");
@@ -185,6 +187,7 @@ class PersonalController extends Controller
             }
         });
 
+        PaginasController::limpiarCachePublico();
         return redirect()
             ->route('admin.personal.index')
             ->with('success', 'Datos del personal actualizados correctamente.');
@@ -215,6 +218,7 @@ class PersonalController extends Controller
 
         $nombreCompleto = "{$user->nombres} {$user->apellido_paterno}";
 
+        PaginasController::limpiarCachePublico();
         if (!$nuevoEstado) {
             $mensaje = "Cuenta de {$nombreCompleto} desactivada. Se ha bloqueado su acceso al sistema.";
 
@@ -228,12 +232,12 @@ class PersonalController extends Controller
                     $mensaje .= " Aviso: mantiene {$pendientes} cita(s) pendiente(s) que deben coordinarse con Admisión.";
                 }
             }
-
+            
             return redirect()
                 ->route('admin.personal.index')
                 ->with('warning', $mensaje);
         }
-
+        
         return redirect()
             ->route('admin.personal.index')
             ->with('success', "Cuenta de {$nombreCompleto} reactivada correctamente.");
