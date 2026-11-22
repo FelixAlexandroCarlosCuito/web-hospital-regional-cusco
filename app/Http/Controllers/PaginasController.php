@@ -2,30 +2,33 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Novedad;
 use App\Models\Cita;
 use App\Models\Especialidad;
 use App\Models\Medico;
+use App\Models\Novedad;
+use Illuminate\Http\Request;
 
+/**
+ * Atiende las vistas públicas del portal institucional con selección acotada de columnas.
+ */
 class PaginasController extends Controller
 {
-    /**
-     * Renderiza la portada institucional con indicadores reales, especialidades activas y últimas novedades.
-     */
     public function inicio()
     {
         $totalEspecialidades = Especialidad::where('activo', true)->count();
         $totalMedicos = Medico::where('activo', true)->count();
 
-        $especialidadesDestacadas = Especialidad::where('activo', true)
+        $especialidadesDestacadas = Especialidad::select(['id', 'nombre', 'descripcion', 'imagen'])
+            ->where('activo', true)
             ->withCount(['medicos as medicos_activos_count' => fn ($q) => $q->where('activo', true)])
             ->orderByDesc('medicos_activos_count')
             ->orderBy('nombre')
             ->take(6)
             ->get();
 
+        // Excluye el campo texto largo 'contenido' en listados para reducir transferencia desde MySQL
         $ultimasNovedades = Novedad::publicadas()
+            ->select(['id', 'titulo', 'slug', 'categoria', 'resumen', 'imagen', 'fecha_publicacion'])
             ->take(3)
             ->get();
 
@@ -37,15 +40,13 @@ class PaginasController extends Controller
         ));
     }
 
-    /**
-     * Muestra el portal público de novedades con filtro opcional por categoría y paginación.
-     */
     public function novedades(Request $request)
     {
         $categoriaActual = $request->query('categoria');
         $categorias = Novedad::CATEGORIAS;
 
-        $consulta = Novedad::publicadas();
+        $consulta = Novedad::publicadas()
+            ->select(['id', 'titulo', 'slug', 'categoria', 'resumen', 'imagen', 'fecha_publicacion']);
 
         if ($categoriaActual && in_array($categoriaActual, $categorias, true)) {
             $consulta->where('categoria', $categoriaActual);
@@ -58,17 +59,18 @@ class PaginasController extends Controller
         return view('novedades.index', compact('novedades', 'categorias', 'categoriaActual'));
     }
 
-    /**
-     * Muestra el contenido completo de una novedad publicada y sugerencias recientes.
-     */
     public function verNovedad(string $slug)
     {
-        $novedad = Novedad::with('autor')
+        $novedad = Novedad::select([
+            'id', 'user_id', 'titulo', 'slug', 'categoria', 'resumen', 'contenido', 'imagen', 'fecha_publicacion',
+        ])
+            ->with('autor:id,nombres,apellido_paterno')
             ->where('slug', $slug)
             ->where('publicado', true)
             ->firstOrFail();
 
         $recientes = Novedad::publicadas()
+            ->select(['id', 'titulo', 'slug', 'categoria', 'imagen', 'fecha_publicacion'])
             ->where('id', '!=', $novedad->id)
             ->take(3)
             ->get();
@@ -76,12 +78,10 @@ class PaginasController extends Controller
         return view('novedades.show', compact('novedad', 'recientes'));
     }
 
-    /**
-     * Muestra la cartera pública de especialidades activas y su disponibilidad operativa
-     */
     public function especialidades()
     {
-        $especialidades = Especialidad::where('activo', true)
+        $especialidades = Especialidad::select(['id', 'nombre', 'descripcion', 'imagen'])
+            ->where('activo', true)
             ->withExists([
                 'medicos as tiene_turnos' => fn ($query) => $query->where('activo', true),
             ])
@@ -91,15 +91,10 @@ class PaginasController extends Controller
         return view('paginas.especialidades', compact('especialidades'));
     }
 
-    /**
-     * Renderiza la guía operativa de atención, preguntas frecuentes y canales de contacto.
-     */
     public function guiaContacto()
     {
-        // Se lee desde el modelo para mantener una única fuente de verdad sobre la regla de cancelación
         $horasCancelacion = Cita::HORAS_MINIMAS_CANCELACION;
 
         return view('paginas.guia-contacto', compact('horasCancelacion'));
     }
-    
 }

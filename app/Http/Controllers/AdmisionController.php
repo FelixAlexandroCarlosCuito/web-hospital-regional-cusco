@@ -2,48 +2,68 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Cita;
 use App\Models\Medico;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 
+/**
+ * Gestiona la consulta de agendas por médico y cancelaciones administrativas en ventanilla.
+ */
 class AdmisionController extends Controller
 {
     public function panel(Request $request)
     {
-        // Traemos todos los médicos (con su especialidad) para el menú desplegable
-        $medicos = Medico::with('especialidad')->get();
+        $medicos = Medico::select(['id', 'especialidad_id', 'nombres', 'apellidos', 'consultorio', 'activo'])
+            ->with('especialidad:id,nombre')
+            ->orderByDesc('activo')
+            ->orderBy('apellidos')
+            ->get();
 
-        // Parámetros de búsqueda enviados por el personal de ventanilla
-        $medicoFiltro = $request->input('medico_id');
-        $fechaFiltro = $request->input('fecha', now()->toDateString()); // Hoy por defecto
+        $medicoId = $request->integer('medico_id');
+        $medicoFiltro = $medicoId > 0 ? $medicoId : null;
+        $fechaFiltro = $this->resolverFechaValida($request->query('fecha'));
 
-        // Si seleccionaron un médico, buscamos su agenda. Si no, devolvemos una colección vacía.
         if ($medicoFiltro) {
-            $citas = Cita::with(['paciente', 'medico.especialidad'])
-                        ->where('medico_id', $medicoFiltro)
-                        ->where('fecha', $fechaFiltro)
-                        ->orderBy('hora', 'asc')
-                        ->get();
+            $citas = Cita::select(['id', 'user_id', 'medico_id', 'fecha', 'hora', 'estado', 'codigo_referencia_sis'])
+                ->with([
+                    'paciente:id,tipo_documento,numero_documento,nombres,apellido_paterno,apellido_materno,telefono,fecha_nacimiento',
+                    'medico:id,especialidad_id,nombres,apellidos,consultorio',
+                    'medico.especialidad:id,nombre',
+                ])
+                ->where('medico_id', $medicoFiltro)
+                ->enFecha($fechaFiltro)
+                ->orderBy('hora', 'asc')
+                ->get();
         } else {
-            $citas = collect(); // Vacío inicial
+            $citas = collect();
         }
 
         return view('admision.panel', compact('medicos', 'citas', 'medicoFiltro', 'fechaFiltro'));
     }
 
-    /**
-     * Permite a Admisión cancelar una cita presencial o telefónicamente.
-     */
     public function cancelarCita($id)
     {
-        $cita = Cita::findOrFail($id);
-        
-        // Admisión tiene el poder de cancelar cualquier cita que esté pendiente
-        if ($cita->estado === 'Pendiente') {
-            $cita->update(['estado' => 'Cancelado']);
+        $cita = Cita::select(['id', 'estado'])->findOrFail($id);
+
+        if ($cita->estado !== 'Pendiente') {
+            return back()->with('error', 'Solo es posible cancelar citas que se encuentren en estado Pendiente.');
         }
 
-        // Recarga el panel manteniendo los filtros de fecha y médico que ya estaban aplicados
-        return back();
+        $cita->update(['estado' => 'Cancelado']);
+
+        return back()->with('success', 'La cita fue cancelada y el cupo quedó liberado.');
+    }
+
+    private function resolverFechaValida(mixed $entrada): string
+    {
+        if (is_string($entrada) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $entrada)) {
+            $fecha = Carbon::createFromFormat('Y-m-d', $entrada);
+            if ($fecha && $fecha->format('Y-m-d') === $entrada) {
+                return $entrada;
+            }
+        }
+
+        return now()->toDateString();
     }
 }

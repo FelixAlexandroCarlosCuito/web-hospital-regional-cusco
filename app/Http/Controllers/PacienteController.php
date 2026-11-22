@@ -3,30 +3,38 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cita;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * Renderiza el portal del paciente con sus citas activas e historial paginado.
+ */
 class PacienteController extends Controller
 {
     public function dashboard()
     {
         $usuarioId = Auth::id();
+        $hoy = now()->toDateString();
 
-        // 1. Citas Activas: Estado pendiente y fecha igual o mayor a hoy
-        $citasActivas = Cita::with('medico.especialidad')
+        $relaciones = [
+            'medico:id,especialidad_id,nombres,apellidos,consultorio',
+            'medico.especialidad:id,nombre',
+        ];
+
+        $citasActivas = Cita::select(['id', 'user_id', 'medico_id', 'fecha', 'hora', 'estado', 'codigo_referencia_sis'])
+            ->with($relaciones)
             ->where('user_id', $usuarioId)
             ->where('estado', 'Pendiente')
-            ->where('fecha', '>=', now()->toDateString())
+            ->where('fecha', '>=', $hoy)
             ->orderBy('fecha', 'asc')
             ->orderBy('hora', 'asc')
             ->get();
 
-        // Pagina el historial para acotar el renderizado conservando acceso a constancias anteriores
-        $historialCitas = Cita::with('medico.especialidad')
+        $historialCitas = Cita::select(['id', 'user_id', 'medico_id', 'fecha', 'hora', 'estado', 'codigo_referencia_sis'])
+            ->with($relaciones)
             ->where('user_id', $usuarioId)
-            ->where(function ($query) {
+            ->where(function ($query) use ($hoy) {
                 $query->where('estado', '!=', 'Pendiente')
-                    ->orWhere('fecha', '<', now()->toDateString());
+                    ->orWhere('fecha', '<', $hoy);
             })
             ->orderBy('fecha', 'desc')
             ->orderBy('hora', 'desc')

@@ -2,93 +2,100 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use App\Models\ReniecSimulacion;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
+/**
+ * Gestiona el registro con validación RENIEC, inicio de sesión y cierre seguro de sesiones.
+ */
 class AuthController extends Controller
 {
-    /**
-     * Renderiza la vista de inicio de sesión.
-     */
     public function index()
     {
         return view('auth.inicio-sesion');
     }
 
-    /**
-     * Renderiza la vista de registro de pacientes.
-     */
     public function registro()
     {
         return view('auth.registro');
     }
 
-    /**
-     * Procesa el registro de un nuevo paciente en el sistema.
-     */
     public function registrar(Request $request)
     {
-        // 1. Validamos los inputs con mensajes claros en español
-        $request->validate([
-            'tipo_documento'     => 'required|string|in:DNI,CE',
-            'numero_documento'   => 'required|string|unique:users,numero_documento',
+        $datos = $request->validate([
+            'tipo_documento' => 'required|string|in:DNI,CE',
+            'numero_documento' => 'required|string|max:20|unique:users,numero_documento',
             'digito_verificador' => 'required|string|size:1',
-            'fecha_emision'      => 'required|date',
-            'correo'             => 'nullable|email|max:255|unique:users,correo',
-            'password'           => 'required|string|min:6|confirmed',
+            'fecha_emision' => 'required|date',
+            'correo' => 'nullable|email|max:255|unique:users,correo',
+            'password' => 'required|string|min:6|max:100|confirmed',
         ], [
             'numero_documento.required' => 'Debe ingresar su número de documento.',
-            'numero_documento.unique'   => 'Ya existe una cuenta registrada con este número de documento. Intente iniciar sesión.',
-            'digito_verificador.size'   => 'El dígito verificador debe tener exactamente 1 carácter.',
-            'fecha_emision.date'        => 'Ingrese una fecha de emisión válida.',
-            'correo.email'              => 'Ingrese un correo electrónico válido.',
-            'correo.unique'             => 'Este correo electrónico ya está asociado a otra cuenta.',
-            'password.min'              => 'La contraseña debe tener al menos 6 caracteres.',
-            'password.confirmed'        => 'Las contraseñas no coinciden.',
+            'numero_documento.unique' => 'Ya existe una cuenta registrada con este número de documento. Intente iniciar sesión.',
+            'digito_verificador.size' => 'El dígito verificador debe tener exactamente 1 carácter.',
+            'fecha_emision.date' => 'Ingrese una fecha de emisión válida.',
+            'correo.email' => 'Ingrese un correo electrónico válido.',
+            'correo.unique' => 'Este correo electrónico ya está asociado a otra cuenta.',
+            'password.min' => 'La contraseña debe tener al menos 6 caracteres.',
+            'password.confirmed' => 'Las contraseñas no coinciden.',
         ]);
 
-        // 2. Cruzamos los datos con la base oficial (tabla simulada)
-        $ciudadano = ReniecSimulacion::where('dni', $request->numero_documento)
-                        ->where('digito_verificador', $request->digito_verificador)
-                        ->where('fecha_emision', $request->fecha_emision)
-                        ->first();
+        $numeroDocumento = trim($datos['numero_documento']);
+
+        $ciudadano = ReniecSimulacion::select([
+            'id', 'nombres', 'apellido_paterno', 'apellido_materno', 'fecha_nacimiento', 'direccion',
+        ])
+            ->where('dni', $numeroDocumento)
+            ->where('digito_verificador', $datos['digito_verificador'])
+            ->where('fecha_emision', $datos['fecha_emision'])
+            ->first();
 
         if (!$ciudadano) {
             return back()->withErrors([
-                'numero_documento' => 'Los datos de validación no coinciden con los registros oficiales de RENIEC.'
+                'numero_documento' => 'Los datos de validación no coinciden con los registros oficiales de RENIEC.',
             ])->withInput($request->except('password', 'password_confirmation'));
         }
 
-        $usuario = User::create([
-            'tipo_documento'   => $request->tipo_documento,
-            'numero_documento' => $request->numero_documento,
-            'nombres'          => $ciudadano->nombres,
+        // Asigna rol y estado fuera de $fillable para garantizar el principio de mínimo privilegio
+        $usuario = new User([
+            'tipo_documento' => $datos['tipo_documento'],
+            'numero_documento' => $numeroDocumento,
+            'nombres' => $ciudadano->nombres,
             'apellido_paterno' => $ciudadano->apellido_paterno,
             'apellido_materno' => $ciudadano->apellido_materno,
             'fecha_nacimiento' => $ciudadano->fecha_nacimiento,
-            'direccion'        => $ciudadano->direccion,
-            'correo'           => $request->correo,
-            'password'         => Hash::make($request->password),
+            'direccion' => $ciudadano->direccion,
+            'correo' => isset($datos['correo']) ? trim($datos['correo']) : null,
+            'password' => Hash::make($datos['password']),
         ]);
+
+        $usuario->rol = 'paciente';
+        $usuario->activo = true;
+        $usuario->save();
 
         Auth::login($usuario);
+        // Regenera el identificador de sesión para mitigar ataques de fijación de sesión
+        $request->session()->regenerate();
+
         return redirect()->route('dashboard');
     }
-    /**
-     * Procesa las credenciales para el inicio de sesión.
-     */
+
     public function autenticar(Request $request)
     {
-        $credenciales = $request->validate([
-            'numero_documento' => 'required|string',
-            'password'         => 'required|string',
+        $datos = $request->validate([
+            'numero_documento' => 'required|string|max:20',
+            'password' => 'required|string|max:100',
         ]);
 
+        $credenciales = [
+            'numero_documento' => trim($datos['numero_documento']),
+            'password' => $datos['password'],
+        ];
+
         if (Auth::attempt($credenciales)) {
-            // Si la cuenta fue dada de baja lógicamente, cerramos sesión de inmediato
             if (!Auth::user()->activo) {
                 Auth::logout();
                 $request->session()->invalidate();
@@ -100,17 +107,13 @@ class AuthController extends Controller
             }
 
             $request->session()->regenerate();
-            $rol = Auth::user()->rol;
 
-            if ($rol === 'admin') {
-                return redirect()->route('admin.panel');
-            } elseif ($rol === 'medico') {
-                return redirect()->route('medico.panel');
-            } elseif ($rol === 'admision') {
-                return redirect()->route('admision.panel');
-            }
-
-            return redirect()->route('dashboard');
+            return match (Auth::user()->rol) {
+                'admin' => redirect()->route('admin.panel'),
+                'medico' => redirect()->route('medico.panel'),
+                'admision' => redirect()->route('admision.panel'),
+                default => redirect()->route('dashboard'),
+            };
         }
 
         return back()->withErrors([
@@ -118,60 +121,50 @@ class AuthController extends Controller
         ]);
     }
 
-    /**
-     * Cierra la sesión del usuario y limpia los tokens.
-     */
     public function logout(Request $request)
     {
-        // 1. Cierra la sesión en el framework
         Auth::logout();
-
-        // 2. Invalida la sesión actual para borrar los datos en memoria
         $request->session()->invalidate();
-
-        // 3. Regenera el token CSRF para evitar ataques de fijación de sesión
         $request->session()->regenerateToken();
 
-        // 4. Redirige a la pantalla de inicio de sesión
         return redirect()->route('login');
     }
 
     public function verificarReniec(Request $request)
     {
-        $request->validate([
-            'numero_documento'   => 'required|string',
+        $datos = $request->validate([
+            'numero_documento' => 'required|string|max:20',
             'digito_verificador' => 'required|string|size:1',
-            'fecha_emision'      => 'required|date',
+            'fecha_emision' => 'required|date',
         ]);
 
-        // 1. Primero probamos identidad física contra RENIEC (evita enumeración de pacientes)
-        $ciudadano = ReniecSimulacion::where('dni', $request->numero_documento)
-            ->where('digito_verificador', $request->digito_verificador)
-            ->where('fecha_emision', $request->fecha_emision)
+        $numeroDocumento = trim($datos['numero_documento']);
+
+        // Valida identidad física antes de comprobar existencia en users para prevenir enumeración de cuentas
+        $ciudadano = ReniecSimulacion::select(['id', 'nombres', 'apellido_paterno', 'apellido_materno'])
+            ->where('dni', $numeroDocumento)
+            ->where('digito_verificador', $datos['digito_verificador'])
+            ->where('fecha_emision', $datos['fecha_emision'])
             ->first();
 
         if (!$ciudadano) {
             return response()->json([
                 'success' => false,
-                'message' => 'Los datos no coinciden con los registros oficiales de RENIEC.'
+                'message' => 'Los datos no coinciden con los registros oficiales de RENIEC.',
             ], 404);
         }
 
-        // 2. Ahora que validó su DNI, verificamos si ya tiene cuenta creada
-        $yaRegistrado = User::where('numero_documento', $request->numero_documento)->exists();
-
-        if ($yaRegistrado) {
+        if (User::where('numero_documento', $numeroDocumento)->exists()) {
             return response()->json([
-                'success'       => false,
+                'success' => false,
                 'ya_registrado' => true,
-                'message'       => 'Ya existe una cuenta registrada con este DNI. Por favor, inicia sesión.'
+                'message' => 'Ya existe una cuenta registrada con este DNI. Por favor, inicia sesión.',
             ], 409);
         }
 
-        // 3. Todo limpio: devolvemos los datos para habilitar la Fase 2
         return response()->json([
-            'success'          => true,
-            'nombres'          => $ciudadano->nombres,
+            'success' => true,
+            'nombres' => $ciudadano->nombres,
             'apellido_paterno' => $ciudadano->apellido_paterno,
             'apellido_materno' => $ciudadano->apellido_materno,
         ]);

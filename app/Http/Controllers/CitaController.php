@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Cita;
 use App\Models\Especialidad;
 use App\Models\Medico;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,29 +18,24 @@ use Illuminate\Support\Facades\URL;
  */
 class CitaController extends Controller
 {
-    /**
-     * Bloques horarios habilitados para consulta externa (lunes a viernes, intervalos de 30 minutos).
-     */
     private const BLOQUES_HORARIOS = [
         '08:00', '08:30', '09:00', '09:30', '10:00',
         '10:30', '11:00', '11:30', '12:00', '12:30',
     ];
 
-    /**
-     * Muestra el asistente de reserva sin exponer selección manual de médico.
-     */
     public function create(Request $request)
     {
         $usuario = Auth::user();
 
         $especialidades = Especialidad::where('activo', true)
+            ->select(['id', 'nombre', 'descripcion'])
             ->withExists([
                 'medicos as tiene_turnos' => fn ($q) => $q->where('activo', true),
             ])
             ->orderBy('nombre')
             ->get();
 
-        // La especialidad se obtiene vía medico porque citas no almacena especialidad_id (3NF)
+        // La especialidad se resuelve por relación porque citas no almacena especialidad_id (3NF)
         $citasPendientes = Cita::where('user_id', $usuario->id)
             ->where('estado', 'Pendiente')
             ->with('medico:id,especialidad_id')
@@ -79,9 +75,6 @@ class CitaController extends Controller
         ));
     }
 
-    /**
-     * Devuelve los bloques horarios con al menos un médico activo disponible para la especialidad y fecha.
-     */
     public function horariosDisponibles(Request $request)
     {
         $datos = $request->validate([
@@ -90,6 +83,7 @@ class CitaController extends Controller
         ]);
 
         $fecha = Carbon::parse($datos['fecha']);
+        $fechaIso = $fecha->toDateString();
 
         if ($fecha->isWeekend()) {
             return response()->json([
@@ -111,12 +105,12 @@ class CitaController extends Controller
 
         $totalMedicos = $medicosIds->count();
 
-        // Normaliza TIME de MySQL (HH:MM:SS) a HH:MM para comparar con BLOQUES_HORARIOS
+        // Usa pluck sobre índice cubriente sin hidratar modelos Cita completos
         $ocupacionPorHora = Cita::whereIn('medico_id', $medicosIds)
-            ->whereDate('fecha', $datos['fecha'])
-            ->where('estado', '!=', 'Cancelado')
-            ->get(['hora'])
-            ->map(fn ($cita) => substr((string) $cita->hora, 0, 5))
+            ->enFecha($fechaIso)
+            ->noCanceladas()
+            ->pluck('hora')
+            ->map(fn ($hora) => substr((string) $hora, 0, 5))
             ->countBy();
 
         $esHoy = $fecha->isToday();
@@ -128,8 +122,7 @@ class CitaController extends Controller
                 continue;
             }
 
-            $ocupados = $ocupacionPorHora->get($bloque, 0);
-            if ($ocupados < $totalMedicos) {
+            if ($ocupacionPorHora->get($bloque, 0) < $totalMedicos) {
                 $horariosDisponibles[] = $bloque;
             }
         }
@@ -142,9 +135,6 @@ class CitaController extends Controller
         ]);
     }
 
-    /**
-     * Registra la cita asignando automáticamente al médico activo con menor carga diaria en ese horario.
-     */
     public function store(Request $request)
     {
         $datos = $request->validate([
@@ -161,6 +151,8 @@ class CitaController extends Controller
         ]);
 
         $fecha = Carbon::parse($datos['fecha']);
+        $fechaIso = $fecha->toDateString();
+
         if ($fecha->isWeekend()) {
             return back()->withInput()->withErrors(['fecha' => 'Solo se programan citas de lunes a viernes.']);
         }
@@ -172,7 +164,9 @@ class CitaController extends Controller
         $usuario = Auth::user();
         $horaSql = $datos['hora'] . ':00';
 
-        $resultado = DB::transaction(function () use ($usuario, $datos, $horaSql) {
+        $resultado = DB::transaction(function () use ($usuario, $datos, $fechaIso, $horaSql) {
+            // Serializa solicitudes concurrentes del mismo paciente para impedir evasión de límites de reserva
+            User::whereKey($usuario->id)->lockForUpdate()->first(['id']);
             $pendientesTotal = Cita::where('user_id', $usuario->id)
                 ->where('estado', 'Pendiente')
                 ->count();
@@ -191,31 +185,31 @@ class CitaController extends Controller
             }
 
             $crucePaciente = Cita::where('user_id', $usuario->id)
-                ->whereDate('fecha', $datos['fecha'])
+                ->enFecha($fechaIso)
                 ->where('hora', $horaSql)
-                ->where('estado', '!=', 'Cancelado')
+                ->noCanceladas()
                 ->exists();
 
             if ($crucePaciente) {
                 return ['error' => 'Ya tienes otra cita programada en esa misma fecha y hora.'];
             }
 
-            // Selecciona al médico activo libre en el bloque con menor carga en la jornada usando bloqueo pesimista
+            // Bloqueo pesimista apoyado en índices compuestos para evitar sobreventa de cupos por concurrencia
             $medicoAsignado = Medico::where('especialidad_id', $datos['especialidad_id'])
                 ->where('activo', true)
-                ->whereDoesntHave('citas', function ($q) use ($datos, $horaSql) {
-                    $q->whereDate('fecha', $datos['fecha'])
+                ->whereDoesntHave('citas', function ($q) use ($fechaIso, $horaSql) {
+                    $q->where('fecha', $fechaIso)
                         ->where('hora', $horaSql)
                         ->where('estado', '!=', 'Cancelado');
                 })
-                ->withCount(['citas as carga_dia' => function ($q) use ($datos) {
-                    $q->whereDate('fecha', $datos['fecha'])
+                ->withCount(['citas as carga_dia' => function ($q) use ($fechaIso) {
+                    $q->where('fecha', $fechaIso)
                         ->where('estado', '!=', 'Cancelado');
                 }])
                 ->orderBy('carga_dia')
                 ->orderBy('id')
                 ->lockForUpdate()
-                ->first();
+                ->first(['id', 'especialidad_id']);
 
             if (!$medicoAsignado) {
                 return ['error' => 'El cupo para ese horario acaba de ocuparse. Seleccione otra hora disponible.'];
@@ -228,7 +222,7 @@ class CitaController extends Controller
             $cita = Cita::create([
                 'user_id' => $usuario->id,
                 'medico_id' => $medicoAsignado->id,
-                'fecha' => $datos['fecha'],
+                'fecha' => $fechaIso,
                 'hora' => $horaSql,
                 'estado' => 'Pendiente',
                 'codigo_referencia_sis' => !empty($datos['codigo_referencia_sis'])
@@ -248,38 +242,37 @@ class CitaController extends Controller
             ->with('success', 'Cita reservada correctamente. Se asignó automáticamente al especialista disponible.');
     }
 
-    /**
-     * Muestra la constancia oficial de la cita e incluye la URL firmada para el código QR.
-     */
     public function showTicket($id)
     {
-        $cita = Cita::with(['medico.especialidad', 'paciente'])->findOrFail($id);
+        $cita = Cita::with([
+            'medico:id,especialidad_id,nombres,apellidos,consultorio',
+            'medico.especialidad:id,nombre',
+            'paciente:id,tipo_documento,numero_documento,nombres,apellido_paterno,apellido_materno',
+        ])->findOrFail($id);
 
-        // Restringe a pacientes a consultar solo sus propias citas; roles internos mantienen acceso
         $usuarioActual = Auth::user();
         if ($usuarioActual->rol === 'paciente' && (int) $cita->user_id !== (int) $usuarioActual->id) {
             abort(403, 'Acceso denegado: No tiene permisos para visualizar este ticket.');
         }
 
         [$ordenAtencion, $totalCitasDia] = $this->calcularOrdenJornada($cita);
-
-        // Firma criptográfica para impedir enumeración de citas ajenas en la verificación por QR
         $urlVerificacion = URL::signedRoute('citas.verificar', ['cita' => $cita->id]);
 
         return view('citas.ticket', compact('cita', 'ordenAtencion', 'totalCitasDia', 'urlVerificacion'));
     }
 
-    /**
-     * Valida en tiempo real la autenticidad y vigencia de una constancia escaneada por QR.
-     */
     public function verificarTicket($cita)
     {
-        $registro = Cita::with(['medico.especialidad', 'paciente'])->findOrFail($cita);
+        $registro = Cita::with([
+            'medico:id,especialidad_id,nombres,apellidos,consultorio',
+            'medico.especialidad:id,nombre',
+            'paciente:id,tipo_documento,numero_documento,nombres,apellido_paterno,apellido_materno',
+        ])->findOrFail($cita);
+
         [$ordenAtencion, $totalCitasDia] = $this->calcularOrdenJornada($registro);
 
-        // Enmascara el documento para consultas externas; el personal autenticado ve el número completo
         $documento = (string) ($registro->paciente->numero_documento ?? '');
-        $esPersonalInterno = Auth::check() && in_array(Auth::user()->rol, ['admin', 'admision', 'medico'], true);
+        $esPersonalInterno = Auth::check() && Auth::user()->activo && in_array(Auth::user()->rol, ['admin', 'admision', 'medico'], true);
         $documentoVisible = $esPersonalInterno || strlen($documento) <= 4
             ? $documento
             : str_repeat('•', strlen($documento) - 4) . substr($documento, -4);
@@ -293,9 +286,6 @@ class CitaController extends Controller
         ]);
     }
 
-    /**
-     * Realiza la baja lógica de una cita pendiente cumpliendo la anticipación mínima operativa.
-     */
     public function cancelar($id)
     {
         $cita = Cita::findOrFail($id);
@@ -319,27 +309,19 @@ class CitaController extends Controller
     }
 
     /**
-     * Calcula el orden de atención dentro de la jornada del médico excluyendo citas canceladas.
+     * Calcula orden de atención y total diario del médico en una sola consulta parametrizada.
      */
     private function calcularOrdenJornada(Cita $cita): array
     {
-        $ordenAtencion = Cita::where('medico_id', $cita->medico_id)
-            ->whereDate('fecha', $cita->fecha)
-            ->where('estado', '!=', 'Cancelado')
-            ->where(function ($q) use ($cita) {
-                $q->where('hora', '<', $cita->hora)
-                    ->orWhere(function ($q2) use ($cita) {
-                        $q2->where('hora', $cita->hora)
-                            ->where('id', '<=', $cita->id);
-                    });
-            })
-            ->count();
+        $resumen = Cita::where('medico_id', $cita->medico_id)
+            ->enFecha($cita->fecha)
+            ->noCanceladas()
+            ->selectRaw(
+                'COUNT(*) as total, SUM(CASE WHEN hora < ? OR (hora = ? AND id <= ?) THEN 1 ELSE 0 END) as orden',
+                [$cita->hora, $cita->hora, $cita->id]
+            )
+            ->first();
 
-        $totalCitasDia = Cita::where('medico_id', $cita->medico_id)
-            ->whereDate('fecha', $cita->fecha)
-            ->where('estado', '!=', 'Cancelado')
-            ->count();
-
-        return [$ordenAtencion, $totalCitasDia];
+        return [(int) ($resumen->orden ?? 0), (int) ($resumen->total ?? 0)];
     }
 }

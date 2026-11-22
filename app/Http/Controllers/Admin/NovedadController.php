@@ -16,7 +16,11 @@ class NovedadController extends Controller
 {
     public function index()
     {
-        $novedades = Novedad::with('autor')
+        $novedades = Novedad::select([
+            'id', 'user_id', 'titulo', 'slug', 'categoria',
+            'resumen', 'contenido', 'imagen', 'publicado', 'fecha_publicacion', 'created_at',
+        ])
+            ->with('autor:id,nombres,apellido_paterno')
             ->orderByDesc('created_at')
             ->get();
 
@@ -31,13 +35,14 @@ class NovedadController extends Controller
             'titulo' => ['required', 'string', 'max:180'],
             'categoria' => ['required', Rule::in(Novedad::CATEGORIAS)],
             'resumen' => ['required', 'string', 'max:300'],
-            'contenido' => ['required', 'string'],
+            'contenido' => ['required', 'string', 'max:20000'],
             'imagen' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ], [
             'titulo.required' => 'El título es obligatorio.',
             'categoria.in' => 'Seleccione una categoría válida.',
             'resumen.required' => 'Debe ingresar un resumen breve para la vista previa.',
             'contenido.required' => 'El contenido de la novedad es obligatorio.',
+            'contenido.max' => 'El contenido supera la extensión máxima permitida.',
             'imagen.image' => 'El archivo adjunto debe ser una imagen válida.',
             'imagen.mimes' => 'Solo se permiten imágenes en formato JPG, PNG o WEBP.',
             'imagen.max' => 'La imagen no debe superar los 2 MB.',
@@ -73,13 +78,14 @@ class NovedadController extends Controller
             'titulo' => ['required', 'string', 'max:180'],
             'categoria' => ['required', Rule::in(Novedad::CATEGORIAS)],
             'resumen' => ['required', 'string', 'max:300'],
-            'contenido' => ['required', 'string'],
+            'contenido' => ['required', 'string', 'max:20000'],
             'imagen' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ], [
             'titulo.required' => 'El título es obligatorio.',
             'categoria.in' => 'Seleccione una categoría válida.',
             'resumen.required' => 'Debe ingresar un resumen breve para la vista previa.',
             'contenido.required' => 'El contenido de la novedad es obligatorio.',
+            'contenido.max' => 'El contenido supera la extensión máxima permitida.',
             'imagen.image' => 'El archivo adjunto debe ser una imagen válida.',
             'imagen.mimes' => 'Solo se permiten imágenes en formato JPG, PNG o WEBP.',
             'imagen.max' => 'La imagen no debe superar los 2 MB.',
@@ -87,7 +93,6 @@ class NovedadController extends Controller
 
         $rutaImagen = $novedad->imagen;
 
-        // Elimina el archivo anterior del disco al reemplazar o quitar la portada para evitar archivos huérfanos
         if ($request->hasFile('imagen')) {
             if ($novedad->imagen) {
                 Storage::disk('public')->delete($novedad->imagen);

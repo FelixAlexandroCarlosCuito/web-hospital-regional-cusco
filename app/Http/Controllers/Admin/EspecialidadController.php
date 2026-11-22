@@ -18,14 +18,17 @@ class EspecialidadController extends Controller
     {
         $hoy = now()->toDateString();
 
-        $especialidades = Especialidad::withCount([
-            'medicos',
-            'medicos as medicos_activos_count' => fn ($q) => $q->where('activo', true),
-            'citas as citas_pendientes_count' => fn ($q) => $q->where('citas.estado', 'Pendiente')->whereDate('citas.fecha', '>=', $hoy),
-        ])
-        ->orderByDesc('activo')
-        ->orderBy('nombre')
-        ->get();
+        $especialidades = Especialidad::select(['id', 'nombre', 'descripcion', 'imagen', 'activo'])
+            ->withCount([
+                'medicos',
+                'medicos as medicos_activos_count' => fn ($q) => $q->where('activo', true),
+                'citas as citas_pendientes_count' => fn ($q) => $q
+                    ->where('citas.estado', 'Pendiente')
+                    ->where('citas.fecha', '>=', $hoy),
+            ])
+            ->orderByDesc('activo')
+            ->orderBy('nombre')
+            ->get();
 
         return view('admin.especialidades', compact('especialidades'));
     }
@@ -87,7 +90,6 @@ class EspecialidadController extends Controller
 
         $rutaImagen = $especialidad->imagen;
 
-        // Prioriza el reemplazo directo cuando se sube una nueva foto; elimina el archivo previo para evitar huérfanos
         if ($request->hasFile('imagen')) {
             if ($rutaImagen && Storage::disk('public')->exists($rutaImagen)) {
                 Storage::disk('public')->delete($rutaImagen);
@@ -119,7 +121,7 @@ class EspecialidadController extends Controller
         if (!$nuevoEstado) {
             $pendientes = $especialidad->citas()
                 ->where('citas.estado', 'Pendiente')
-                ->whereDate('citas.fecha', '>=', now()->toDateString())
+                ->where('citas.fecha', '>=', now()->toDateString())
                 ->count();
 
             $mensaje = "Especialidad \"{$especialidad->nombre}\" desactivada. Ya no aparecerá en nuevas reservas.";

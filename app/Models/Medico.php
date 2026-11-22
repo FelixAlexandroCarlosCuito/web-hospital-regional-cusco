@@ -4,15 +4,22 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Representa el perfil clínico de un médico vinculado a su cuenta de usuario y especialidad.
+ */
 class Medico extends Model
 {
     protected $fillable = [
         'user_id',
-        'especialidad_id', 
-        'nombres', 
+        'especialidad_id',
+        'nombres',
         'apellidos',
         'consultorio',
-        'activo'
+        'activo',
+    ];
+
+    protected $casts = [
+        'activo' => 'boolean',
     ];
 
     public function especialidad()

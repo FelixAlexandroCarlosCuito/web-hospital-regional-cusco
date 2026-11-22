@@ -42,9 +42,6 @@ class Novedad extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    /**
-     * Filtra únicamente novedades visibles para el portal público ordenadas por fecha de publicación.
-     */
     public function scopePublicadas($query)
     {
         return $query->where('publicado', true)
@@ -53,21 +50,29 @@ class Novedad extends Model
     }
 
     /**
-     * Genera un slug único a partir del título para evitar colisiones de URL.
+     * Resuelve un slug único en una sola consulta SQL para evitar bucles de consultas ante colisiones.
      */
     public static function generarSlugUnico(string $titulo, ?int $ignorarId = null): string
     {
         $base = Str::slug($titulo) ?: 'novedad';
-        $slug = $base;
-        $contador = 2;
 
-        while (self::where('slug', $slug)
+        $existentes = self::where(function ($q) use ($base) {
+            $q->where('slug', $base)
+                ->orWhere('slug', 'like', "{$base}-%");
+        })
             ->when($ignorarId, fn ($q) => $q->where('id', '!=', $ignorarId))
-            ->exists()) {
-            $slug = "{$base}-{$contador}";
+            ->pluck('slug')
+            ->all();
+
+        if (!in_array($base, $existentes, true)) {
+            return $base;
+        }
+
+        $contador = 2;
+        while (in_array("{$base}-{$contador}", $existentes, true)) {
             $contador++;
         }
 
-        return $slug;
+        return "{$base}-{$contador}";
     }
 }
