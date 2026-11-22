@@ -1,119 +1,239 @@
 @extends('layouts.main')
 
 @section('titulo', 'Panel Clínico')
+@section('clase_main', 'p-0')
 
 @section('contenido')
-    <div class="container py-5">
-        
-        <div class="card border-0 shadow-sm mb-4" style="background-color: var(--hrc-azul-primario);">
-            <div class="card-body p-4 p-md-5 text-white">
-                <h2 class="fw-bold mb-2">Panel Clínico - Hospital Regional del Cusco</h2>
-                <p class="mb-0 fs-5 opacity-75">
-                    Dr. {{ $medico->nombres }} {{ $medico->apellidos }} | {{ $medico->especialidad->nombre }} | Consultorio: {{ $medico->consultorio }}
-                </p>
-            </div>
-        </div>
+    @php
+        $totalDia = $citasHoy->count();
+        $pendientesDia = $citasHoy->where('estado', 'Pendiente')->count();
+        $atendidasDia = $citasHoy->where('estado', 'Atendido')->count();
+        $canceladasDia = $citasHoy->where('estado', 'Cancelado')->count();
+        $fechaHoy = now()->toDateString();
+        $fechaFormateada = \Carbon\Carbon::parse($fechaFiltro)->format('d/m/Y');
+    @endphp
 
-        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-            
-            <div class="card-header bg-white border-bottom p-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-                <h3 class="fw-bold text-hrc-primario mb-0">Agenda Clínica</h3>
-                
-                <form action="{{ route('medico.panel') }}" method="GET" class="d-flex align-items-center gap-2">
-                    <label for="fecha" class="fw-bold text-secondary text-nowrap mb-0">Fecha a consultar:</label>
-                    <input type="date" id="fecha" name="fecha" value="{{ $fechaFiltro }}" 
-                           class="form-control form-control-sm border-secondary" 
-                           onchange="this.form.submit()">
+    <section class="cabecera-interna-mate seccion-pizarra py-4">
+        <div class="container py-2">
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+                <div>
+                    <span class="sobretitulo-mate d-block mb-1">Agenda clínica diaria</span>
+                    <h1 class="h3 fw-bold text-hrc-primario mb-1">
+                        Dr. {{ $medico->nombres }} {{ $medico->apellidos }}
+                    </h1>
+                    <div class="d-flex flex-wrap align-items-center gap-3 small text-muted">
+                        <span>
+                            <i class="bi bi-heart-pulse me-1 text-hrc-acento"></i>{{ $medico->especialidad->nombre }}
+                        </span>
+                        <span>
+                            <i class="bi bi-door-open me-1 text-hrc-primario"></i>{{ $medico->consultorio }}
+                        </span>
+                    </div>
+                </div>
+
+                <form action="{{ route('medico.panel') }}"
+                      method="GET"
+                      id="form-filtro-fecha-medico"
+                      class="d-flex flex-wrap align-items-center gap-2">
+                    <label for="fecha" class="small fw-semibold text-hrc-primario text-nowrap mb-0">
+                        Fecha de consulta:
+                    </label>
+                    <input type="date"
+                           id="fecha"
+                           name="fecha"
+                           value="{{ $fechaFiltro }}"
+                           class="form-control form-control-sm input-fecha-panel">
+                    @if ($fechaFiltro !== $fechaHoy)
+                        <a href="{{ route('medico.panel') }}" class="btn btn-outline-hrc-primario btn-sm rounded-pill px-3">
+                            Hoy
+                        </a>
+                    @endif
                 </form>
             </div>
-
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="bg-light text-secondary">
-                        <tr>
-                            <th class="ps-4 py-3">Hora</th>
-                            <th class="py-3">Paciente</th>
-                            <th class="py-3">Edad</th>
-                            <th class="py-3">Condición</th>
-                            <th class="py-3">Estado</th>
-                            <th class="pe-4 py-3 text-center">Acción</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($citasHoy as $cita)
-                            <tr>
-                                <td class="ps-4 py-3 fw-bold text-hrc-primario">
-                                    {{ \Carbon\Carbon::parse($cita->hora)->format('h:i A') }}
-                                </td>
-                                
-                                <td class="py-3">
-                                    <span class="d-block text-dark">
-                                        <strong>{{ strtoupper($cita->paciente->apellido_paterno . ' ' . $cita->paciente->apellido_materno) }}</strong>, 
-                                        {{ $cita->paciente->nombres }}
-                                    </span>
-                                    <small class="text-muted">DNI: {{ $cita->paciente->numero_documento }}</small>
-                                </td>
-                                
-                                <td class="py-3 text-dark">
-                                    {{ \Carbon\Carbon::parse($cita->paciente->fecha_nacimiento)->age }} años
-                                </td>
-
-                                <td class="py-3">
-                                    @if($cita->codigo_referencia_sis)
-                                        <span class="badge bg-success">SIS - Ref: {{ $cita->codigo_referencia_sis }}</span>
-                                    @else
-                                        <span class="badge bg-secondary">Particular</span>
-                                    @endif
-                                </td>
-
-                                <td class="py-3">
-                                    @if($cita->estado === 'Pendiente')
-                                        <span class="badge bg-warning text-dark">Pendiente</span>
-                                    @elseif($cita->estado === 'Atendido')
-                                        <span class="badge bg-primary">Atendido</span>
-                                    @elseif($cita->estado === 'Cancelado')
-                                        <span class="badge bg-danger">Cancelado</span>
-                                    @else
-                                        <span class="badge bg-secondary">{{ $cita->estado }}</span>
-                                    @endif
-                                </td>
-
-                                <td class="pe-4 py-3 text-center">
-                                    @if($cita->estado === 'Pendiente')
-                                        <form action="{{ route('medico.citas.atender', $cita->id) }}" method="POST" class="m-0">
-                                            @csrf
-                                            @method('PATCH')
-                                            <button type="submit" class="btn btn-hrc-acento btn-sm px-3 fw-bold">
-                                                Atender
-                                            </button>
-                                        </form>
-                                    @else
-                                        <span class="text-success fw-bold small">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle-fill me-1" viewBox="0 0 16 16">
-                                              <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
-                                            </svg>
-                                            Completado
-                                        </span>
-                                    @endif
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6" class="text-center py-5 text-muted">
-                                    <div class="d-flex flex-column align-items-center">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-inbox opacity-50 mb-3" viewBox="0 0 16 16">                            
-                                        <path d="M4.98 4a.5.5 0 0 0-.39.188L1.54 8H6a.5.5 0 0 1 .5.5 1.5 1.5 0 1 0 3 0A.5.5 0 0 1 10 8h4.46l-3.05-3.812A.5.5 0 0 0 11.02 4zM3.81.563A1.5 1.5 0 0 1 4.98 0h6.04a1.5 1.5 0 0 1 1.17.563l3.7 4.625a.5.5 0 0 1 .106.374l-.39 3.124A1.5 1.5 0 0 1 14.117 10H1.883a1.5 1.5 0 0 1-1.489-1.314l-.39-3.124a.5.5 0 0 1 .106-.374zM.125 11.17A.5.5 0 0 1 .5 11H6a.5.5 0 0 1 .5.5 1.5 1.5 0 0 0 3 0 .5.5 0 0 1 .5-.5h5.5a.5.5 0 0 1 .496.562l-.39 3.124A1.5 1.5 0 0 1 14.117 16H1.883a1.5 1.5 0 0 1-1.489-1.314l-.39-3.124a.5.5 0 0 1 .121-.392z"/>
-                                        </svg>
-                                        <strong class="fs-5">Día libre o sin asignaciones</strong>
-                                        <p class="mb-0">No tiene pacientes programados para la fecha seleccionada.</p>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-            
         </div>
-    </div>
+    </section>
+
+    <section class="py-4 py-md-5">
+        <div class="container">
+
+            @if (session('success'))
+                <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                </div>
+            @endif
+
+            @if (session('error'))
+                <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
+                    <i class="bi bi-exclamation-circle-fill me-2"></i>{{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                </div>
+            @endif
+
+            {{-- Indicadores operativos de la jornada seleccionada --}}
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-3">
+                    <div class="kpi-panel-mate p-3 h-100">
+                        <span class="kpi-etiqueta d-block mb-1">Programadas</span>
+                        <div class="h3 fw-bold text-hrc-primario mb-0">{{ $totalDia }}</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="kpi-panel-mate p-3 h-100">
+                        <span class="kpi-etiqueta d-block mb-1">En espera</span>
+                        <div class="h3 fw-bold text-hrc-ocre mb-0">{{ $pendientesDia }}</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="kpi-panel-mate p-3 h-100">
+                        <span class="kpi-etiqueta d-block mb-1">Atendidas</span>
+                        <div class="h3 fw-bold text-hrc-salvia mb-0">{{ $atendidasDia }}</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="kpi-panel-mate p-3 h-100">
+                        <span class="kpi-etiqueta d-block mb-1">Canceladas</span>
+                        <div class="h3 fw-bold text-muted mb-0">{{ $canceladasDia }}</div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Listado principal de pacientes del día --}}
+            <div class="tarjeta-panel-mate overflow-hidden">
+                <div class="panel-cabecera-tabla px-4 py-3 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                    <div>
+                        <h2 class="h5 fw-bold text-hrc-primario mb-0">Pacientes del {{ $fechaFormateada }}</h2>
+                    </div>
+
+                    @if ($totalDia > 0)
+                        <div class="d-flex flex-wrap gap-2" role="group" aria-label="Filtrar citas por estado">
+                            <button type="button" class="tab-estado-panel activo" data-estado="todos">
+                                Todas ({{ $totalDia }})
+                            </button>
+                            <button type="button" class="tab-estado-panel" data-estado="Pendiente">
+                                Pendientes ({{ $pendientesDia }})
+                            </button>
+                            <button type="button" class="tab-estado-panel" data-estado="Atendido">
+                                Atendidas ({{ $atendidasDia }})
+                            </button>
+                        </div>
+                    @endif
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table tabla-mate align-middle mb-0" id="tabla-agenda-medico">
+                        <thead>
+                            <tr>
+                                <th class="ps-4 py-3">Hora</th>
+                                <th class="py-3">Paciente</th>
+                                <th class="py-3">Edad</th>
+                                <th class="py-3">Modalidad</th>
+                                <th class="py-3">Estado</th>
+                                <th class="pe-4 py-3 text-end">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($citasHoy as $cita)
+                                @php
+                                    $claseEstado = match ($cita->estado) {
+                                        'Pendiente' => 'badge-agenda-pendiente',
+                                        'Atendido' => 'badge-agenda-atendido',
+                                        'Cancelado' => 'badge-agenda-cancelado',
+                                        default => 'etiqueta-sin-cupos-mate',
+                                    };
+                                @endphp
+                                <tr class="fila-agenda-medico {{ $cita->estado === 'Cancelado' ? 'fila-cita-inactiva' : '' }}"
+                                    data-estado="{{ $cita->estado }}">
+                                    <td class="ps-4 py-3 text-nowrap">
+                                        <span class="hora-agenda-mate">
+                                            {{ \Carbon\Carbon::parse($cita->hora)->format('h:i A') }}
+                                        </span>
+                                    </td>
+
+                                    <td class="py-3">
+                                        <div class="fw-bold text-hrc-primario small">
+                                            {{ strtoupper($cita->paciente->apellido_paterno . ' ' . $cita->paciente->apellido_materno) }},
+                                            <span class="fw-semibold text-dark">{{ $cita->paciente->nombres }}</span>
+                                        </div>
+                                        <div class="texto-xs text-muted">
+                                            {{ $cita->paciente->tipo_documento ?? 'DNI' }}: {{ $cita->paciente->numero_documento }}
+                                        </div>
+                                    </td>
+
+                                    <td class="py-3 small text-dark text-nowrap">
+                                        {{ \Carbon\Carbon::parse($cita->paciente->fecha_nacimiento)->age }} años
+                                    </td>
+
+                                    <td class="py-3">
+                                        @if($cita->codigo_referencia_sis)
+                                            <span class="badge-sis-mate">SIS</span>
+                                            <div class="texto-xs text-muted mt-1">Ref: {{ $cita->codigo_referencia_sis }}</div>
+                                        @else
+                                            <span class="badge-particular-mate">Particular</span>
+                                        @endif
+                                    </td>
+
+                                    <td class="py-3">
+                                        <span class="ticket-pill-estado {{ $claseEstado }}">
+                                            {{ $cita->estado }}
+                                        </span>
+                                    </td>
+
+                                    <td class="pe-4 py-3 text-end text-nowrap">
+                                        <div class="d-inline-flex align-items-center gap-2">
+                                            <a href="{{ route('ticket', $cita->id) }}"
+                                               class="btn btn-icono-panel btn-sm"
+                                               title="Ver ticket de la cita"
+                                               aria-label="Ver ticket">
+                                                <i class="bi bi-ticket-detailed"></i>
+                                            </a>
+
+                                            @if($cita->estado === 'Pendiente')
+                                                <form action="{{ route('medico.citas.atender', $cita->id) }}"
+                                                      method="POST"
+                                                      class="m-0 form-atender-cita">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <button type="submit" class="btn btn-hrc-acento btn-sm rounded-pill px-3">
+                                                        Atender
+                                                    </button>
+                                                </form>
+                                            @elseif($cita->estado === 'Atendido')
+                                                <span class="small fw-semibold text-hrc-salvia">
+                                                    <i class="bi bi-check-circle-fill me-1"></i>Atendido
+                                                </span>
+                                            @else
+                                                <span class="small text-muted">Anulada</span>
+                                            @endif
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="text-center py-5">
+                                        <div class="icono-vacio-mate mx-auto mb-3">
+                                            <i class="bi bi-calendar2-check"></i>
+                                        </div>
+                                        <div class="fw-bold text-hrc-primario mb-1">Sin pacientes programados</div>
+                                        <p class="small text-muted mb-0">
+                                            No existen citas registradas para el {{ $fechaFormateada }}.
+                                        </p>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="sin-resultados-agenda" class="text-center py-4 text-muted small d-none">
+                    No hay citas en este estado para la fecha consultada.
+                </div>
+            </div>
+
+        </div>
+    </section>
+@endsection
+
+@section('js')
+    <script src="{{ asset('js/medico-panel.js') }}"></script>
 @endsection

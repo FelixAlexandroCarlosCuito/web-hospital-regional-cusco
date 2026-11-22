@@ -4,140 +4,199 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('titulo') - HRC</title>
-    <link rel="icon" type="image" href="{{ asset('img/logo-hospital.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('img/logo-hospital.png') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="{{ asset('css/estilos.css') }}">
     @yield('css')
 </head>
-<body class="d-flex flex-column min-vh-100 bg-light">
+<body class="d-flex flex-column min-vh-100">
 
-    <!-- Encabezado y Navegación Principal -->
-    <header class="oculta-impresion shadow-sm bg-white">
-        <nav class="navbar navbar-expand-lg navbar-light py-3">
+    <header class="oculta-impresion header-hrc sticky-top">
+        <nav class="navbar navbar-expand-lg navbar-light py-2 py-lg-3">
             <div class="container">
-                
-                <!-- Identidad Institucional -->
-                <a class="navbar-brand d-flex align-items-center" href="{{ route('inicio') }}">
-                    <img src="{{ asset('img/logo-hospital.png') }}" alt="Logo HRC" width="50" class="me-3">
-                    <span class="fw-bold h4 mb-0 text-hrc-primario">HRC</span>
+                <a class="navbar-brand d-flex align-items-center me-lg-4" href="{{ route('inicio') }}">
+                    <img src="{{ asset('img/logo-hospital.png') }}" alt="Logo Hospital Regional del Cusco" width="42" height="42" class="me-2">
+                    <div class="lh-1">
+                        <span class="fw-bold fs-5 d-block text-hrc-primario">HRC</span>
+                        <span class="d-none d-xl-block text-muted marca-subtitulo">Hospital Regional del Cusco</span>
+                    </div>
                 </a>
 
-                <!-- Botón de menú colapsable para dispositivos móviles -->
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarPrincipal" aria-controls="navbarPrincipal" aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarPrincipal" aria-controls="navbarPrincipal" aria-expanded="false" aria-label="Abrir menú de navegación">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                <!-- Menú de Enlaces -->
                 <div class="collapse navbar-collapse" id="navbarPrincipal">
-                    <ul class="navbar-nav ms-auto align-items-center gap-3">
+                    {{-- Navegación pública centrada en pantallas de escritorio --}}
+                    <ul class="navbar-nav mx-lg-auto my-3 my-lg-0 gap-1 gap-lg-2">
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('inicio') ? 'active fw-bold text-hrc-primario' : '' }}"
-                            href="{{ route('inicio') }}">
+                            <a class="nav-link nav-link-hrc {{ request()->routeIs('inicio') ? 'active' : '' }}" href="{{ route('inicio') }}">
                                 Inicio
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('especialidades') ? 'active fw-bold text-hrc-primario' : '' }}"
-                            href="{{ route('especialidades') }}">
+                            <a class="nav-link nav-link-hrc {{ request()->routeIs('especialidades') ? 'active' : '' }}" href="{{ route('especialidades') }}">
                                 Especialidades
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('novedades.*') ? 'active fw-bold text-hrc-primario' : '' }}"
-                            href="{{ route('novedades.index') }}">
+                            <a class="nav-link nav-link-hrc {{ request()->routeIs('novedades.*') ? 'active' : '' }}" href="{{ route('novedades.index') }}">
                                 Novedades
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('guia.contacto') ? 'active fw-bold text-hrc-primario' : '' }}"
-                            href="{{ route('guia.contacto') }}">
+                            <a class="nav-link nav-link-hrc {{ request()->routeIs('guia.contacto') ? 'active' : '' }}" href="{{ route('guia.contacto') }}">
                                 Guía y Contacto
                             </a>
                         </li>
-                        
-                        <!-- Control de Acceso Basado en Roles para el enrutamiento visual -->
+                    </ul>
+
+                    {{-- Acciones contextuales y control de sesión por rol --}}
+                    <div class="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-2 pb-2 pb-lg-0">
                         @auth
-                            @if(Auth::user()->rol === 'admin')
-                                <li class="nav-item"><span class="badge bg-dark text-white px-2 py-1">Admin</span></li>
-                                <li class="nav-item"><a href="{{ route('admin.panel') }}" class="nav-link fw-bold text-hrc-acento">Panel Admin</a></li>
-                            @elseif(Auth::user()->rol === 'admision')
-                                <li class="nav-item"><a href="{{ route('admision.panel') }}" class="nav-link fw-bold text-hrc-acento">Panel Admisión</a></li>
-                            @elseif(Auth::user()->rol === 'medico')
-                                <li class="nav-item"><span class="navbar-text fw-bold me-2">Dr. {{ Auth::user()->apellido_paterno }}</span></li>
-                                <li class="nav-item"><a href="{{ route('medico.panel') }}" class="nav-link fw-bold text-hrc-acento">Mi Agenda</a></li>
+                            @php
+                                $usuario = Auth::user();
+                                $etiquetaRol = match ($usuario->rol) {
+                                    'admin' => 'Administrador',
+                                    'admision' => 'Admisión',
+                                    'medico' => 'Médico',
+                                    default => 'Paciente',
+                                };
+                                $nombreCorto = $usuario->rol === 'medico'
+                                    ? 'Dr. ' . $usuario->apellido_paterno
+                                    : explode(' ', trim($usuario->nombres))[0];
+                            @endphp
+
+                            @if($usuario->rol === 'admin')
+                                <a href="{{ route('admin.panel') }}" class="btn btn-outline-hrc-primario btn-sm rounded-pill px-3 text-nowrap">
+                                    Panel Admin
+                                </a>
+                            @elseif($usuario->rol === 'admision')
+                                <a href="{{ route('admision.panel') }}" class="btn btn-outline-hrc-primario btn-sm rounded-pill px-3 text-nowrap">
+                                    Panel Admisión
+                                </a>
+                            @elseif($usuario->rol === 'medico')
+                                <a href="{{ route('medico.panel') }}" class="btn btn-outline-hrc-primario btn-sm rounded-pill px-3 text-nowrap">
+                                    Mi Agenda
+                                </a>
                             @else
-                                <li class="nav-item"><a href="{{ route('reservar_cita') }}" class="btn btn-hrc-acento">Reservar cita</a></li>
-                                <li class="nav-item"><a href="{{ route('dashboard') }}" class="nav-link fw-bold text-hrc-acento">Mis Citas</a></li>
-                                <li class="nav-item"><span class="navbar-text">Hola, {{ Auth::user()->nombres }}</span></li>
+                                <a href="{{ route('dashboard') }}" class="nav-link nav-link-hrc text-nowrap {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                                    Mis Citas
+                                </a>
+                                <a href="{{ route('reservar_cita') }}" class="btn btn-hrc-acento btn-sm rounded-pill px-3 text-nowrap">
+                                    Reservar cita
+                                </a>
                             @endif
 
-                            <li class="nav-item">
-                                <form action="{{ route('logout') }}" method="POST" class="m-0">
-                                    @csrf
-                                    <button type="submit" class="btn btn-outline-danger btn-sm">Cerrar Sesión</button>
-                                </form>
-                            </li>
+                            <div class="dropdown">
+                                <button class="btn btn-usuario-hrc btn-sm rounded-pill dropdown-toggle d-flex align-items-center justify-content-center gap-2 w-100"
+                                        type="button"
+                                        id="menuUsuario"
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false">
+                                    <i class="bi bi-person-circle"></i>
+                                    <span>{{ $nombreCorto }}</span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end border-0 shadow mt-2 menu-usuario-dropdown" aria-labelledby="menuUsuario">
+                                    <li class="px-3 py-2 border-bottom">
+                                        <div class="fw-bold text-hrc-primario small">{{ $usuario->nombres }} {{ $usuario->apellido_paterno }}</div>
+                                        <div class="text-muted texto-xs">{{ $etiquetaRol }} &middot; {{ $usuario->numero_documento }}</div>
+                                    </li>
+                                    <li>
+                                        <form action="{{ route('logout') }}" method="POST" class="m-0">
+                                            @csrf
+                                            <button type="submit" class="dropdown-item text-danger small py-2 d-flex align-items-center gap-2">
+                                                <i class="bi bi-box-arrow-right"></i>
+                                                <span>Cerrar Sesión</span>
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
                         @endauth
-                        
-                        <!-- Interfaz para usuarios no autenticados (Público general) -->
+
                         @guest
-                            <li class="nav-item">
-                                <a href="{{ route('reservar_cita') }}" class="btn btn-hrc-acento px-4">Reservar cita</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('login') }}" class="nav-link">Iniciar Sesión</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('registro') }}" class="btn btn-outline-hrc-primario px-4">Registrarse</a>
-                            </li>
+                            <a href="{{ route('login') }}" class="nav-link nav-link-hrc text-nowrap text-center">
+                                Iniciar Sesión
+                            </a>
+                            <a href="{{ route('registro') }}" class="btn btn-outline-hrc-primario btn-sm rounded-pill px-3 text-nowrap">
+                                Registrarse
+                            </a>
+                            <a href="{{ route('reservar_cita') }}" class="btn btn-hrc-acento btn-sm rounded-pill px-3 text-nowrap">
+                                Reservar cita
+                            </a>
                         @endguest
-                    </ul>
+                    </div>
                 </div>
             </div>
         </nav>
     </header>
 
-    <main class="flex-grow-1 py-5">
+    <main class="flex-grow-1 @yield('clase_main', 'py-5')">
         @yield('contenido')
     </main>
 
-    <!-- Pie de Página Institucional -->
     <footer class="footer-hrc mt-auto py-5 oculta-impresion text-white">
         <div class="container">
             <div class="row g-4">
-                <div class="col-md-5">
-                    <h5 class="fw-bold mb-3">Hospital Regional del Cusco</h5>
-                    <p class="mb-1">Avenida de La Cultura S/N, Cusco 08000</p>
-                    <p class="mb-1">Central Telefónica: +51 084 231131</p>
-                    <p class="mb-0">Atención de Emergencias: 24 horas</p>
-                </div>
-                
-                <div class="col-md-4">
-                    <h5 class="fw-bold mb-3">Enlaces de Interés</h5>
-                    <ul class="list-unstyled d-flex flex-column gap-2">
-                        <li><a href="#" class="text-white-50 text-decoration-none">Términos y Condiciones</a></li>
-                        <li><a href="#" class="text-white-50 text-decoration-none">Políticas de Privacidad</a></li>
-                        <li><a href="#" class="text-white-50 text-decoration-none">Libro de Reclamaciones</a></li>
+                <div class="col-lg-5">
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="{{ asset('img/logo-hospital.png') }}" alt="Logo HRC" width="38" height="38" class="me-2">
+                        <h5 class="fw-bold mb-0">Hospital Regional del Cusco</h5>
+                    </div>
+                    <p class="small texto-claro-mate mb-3">
+                        Plataforma digital orientada a reducir tiempos de espera y facilitar el acceso a consulta externa para pacientes de Cusco y provincias.
+                    </p>
+                    <ul class="list-unstyled small texto-claro-mate mb-0 d-flex flex-column gap-1">
+                        <li><i class="bi bi-geo-alt me-2"></i>Avenida de La Cultura S/N, Cusco 08000</li>
+                        <li><i class="bi bi-telephone me-2"></i>Central Telefónica: +51 084 231131</li>
+                        <li><i class="bi bi-hospital me-2"></i>Atención de Emergencias: 24 horas</li>
                     </ul>
                 </div>
-                
-                <div class="col-md-3">
-                    <h5 class="fw-bold mb-3">Canales Oficiales</h5>
-                    <ul class="list-unstyled d-flex flex-column gap-2">
-                        <li><a href="#" class="text-white-50 text-decoration-none">Facebook</a></li>
-                        <li><a href="#" class="text-white-50 text-decoration-none">Mesa de Partes Virtual</a></li>
+
+                <div class="col-6 col-lg-3">
+                    <h6 class="fw-bold mb-3">Navegación</h6>
+                    <ul class="list-unstyled small d-flex flex-column gap-2 mb-0">
+                        <li><a href="{{ route('inicio') }}" class="enlace-footer">Inicio</a></li>
+                        <li><a href="{{ route('especialidades') }}" class="enlace-footer">Cartera de Especialidades</a></li>
+                        <li><a href="{{ route('novedades.index') }}" class="enlace-footer">Novedades y Campañas</a></li>
+                        <li><a href="{{ route('guia.contacto') }}" class="enlace-footer">Guía de Atención y Contacto</a></li>
                     </ul>
+                </div>
+
+                <div class="col-6 col-lg-4">
+                    <h6 class="fw-bold mb-3">Atención al Paciente</h6>
+                    <ul class="list-unstyled small d-flex flex-column gap-2 mb-3">
+                        <li><a href="{{ route('reservar_cita') }}" class="enlace-footer">Reservar Cita en Línea</a></li>
+                        @guest
+                            <li><a href="{{ route('login') }}" class="enlace-footer">Iniciar Sesión</a></li>
+                            <li><a href="{{ route('registro') }}" class="enlace-footer">Registro de Pacientes</a></li>
+                        @else
+                            @if(Auth::user()->rol === 'paciente')
+                                <li><a href="{{ route('dashboard') }}" class="enlace-footer">Consultar Mis Citas</a></li>
+                            @endif
+                        @endguest
+                    </ul>
+                    <div class="small texto-claro-mate">
+                        <strong class="text-white d-block">Consultorios Externos</strong>
+                        Lunes a viernes &middot; 8:00 a. m. a 1:00 p. m.
+                    </div>
                 </div>
             </div>
-            
-            <hr class="my-4 border-light">
-            
-            <div class="text-center text-white-50 small">
-                <p class="mb-0">&copy; {{ date('Y') }} Proyecto académico - Sistema de Gestión Hospitalaria. Uso simulado con fines educativos.</p>
+
+            <hr class="my-4 footer-divisor">
+
+            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2 texto-claro-mate texto-xs">
+                <p class="mb-0">&copy; {{ date('Y') }} Hospital Regional del Cusco &middot; Sistema de Gestión de Citas.</p>
+                <p class="mb-0">Proyecto académico con fines educativos.</p>
             </div>
         </div>
     </footer>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <script src="{{ asset('js/password.js') }}"></script>
     @yield('js')

@@ -1,28 +1,47 @@
-document.addEventListener('DOMContentLoaded', function() {
+/**
+ * Valida el formato del documento de identidad y la presencia de contraseña
+ * antes de enviar la solicitud de autenticación al servidor.
+ */
+document.addEventListener('DOMContentLoaded', function () {
     const formularioLogin = document.getElementById('formulario-login');
+    const inputDocumento = document.getElementById('documento');
+    const inputPassword = document.getElementById('password');
+    const btnSubmit = document.getElementById('btn-submit-login');
+
+    if (!formularioLogin || !inputDocumento || !inputPassword) return;
 
     function mostrarError(idElemento, mensaje) {
-        document.getElementById(`error-${idElemento}`).textContent = mensaje;
-        document.getElementById(idElemento).classList.add('input-error');
+        const spanError = document.getElementById(`error-${idElemento}`);
+        const campo = document.getElementById(idElemento);
+        if (spanError) spanError.textContent = mensaje;
+        if (campo) campo.classList.add('is-invalid');
     }
 
-    function limpiarErrores() {
-        const mensajes = document.querySelectorAll('.mensaje-error');
-        const inputs = document.querySelectorAll('.input-error');
-        
-        mensajes.forEach(msg => msg.textContent = '');
-        inputs.forEach(input => input.classList.remove('input-error'));
+    function limpiarErrorCampo(idElemento) {
+        const spanError = document.getElementById(`error-${idElemento}`);
+        const campo = document.getElementById(idElemento);
+        if (spanError) spanError.textContent = '';
+        if (campo) campo.classList.remove('is-invalid');
     }
 
-    formularioLogin.addEventListener('submit', function(e) {
-        // Interceptamos el envío solo para auditar los datos localmente primero
+    inputDocumento.addEventListener('input', function () {
+        limpiarErrorCampo('documento');
+    });
+
+    inputPassword.addEventListener('input', function () {
+        limpiarErrorCampo('password');
+    });
+
+    formularioLogin.addEventListener('submit', function (e) {
         e.preventDefault();
-        limpiarErrores();
+        limpiarErrorCampo('documento');
+        limpiarErrorCampo('password');
 
-        const documento = document.getElementById('documento').value.trim();
-        const password = document.getElementById('password').value.trim();
+        const documento = inputDocumento.value.trim();
+        const password = inputPassword.value.trim();
         let esValido = true;
 
+        // Acepta DNI peruano (8 dígitos) o Carnet de Extranjería (9 caracteres alfanuméricos)
         if (!documento) {
             mostrarError('documento', 'Ingrese su número de documento.');
             esValido = false;
@@ -36,9 +55,13 @@ document.addEventListener('DOMContentLoaded', function() {
             esValido = false;
         }
 
-        // Si los datos tienen un formato válido, entregamos el control a Laravel
-        if (esValido) {
-            formularioLogin.submit(); // Esto dispara el POST hacia tu AuthController
+        if (!esValido) return;
+
+        if (btnSubmit) {
+            btnSubmit.disabled = true;
+            btnSubmit.textContent = 'Verificando...';
         }
+
+        formularioLogin.submit();
     });
 });

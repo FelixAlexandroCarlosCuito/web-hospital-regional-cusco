@@ -1,89 +1,600 @@
-/* === Paleta basado en la página oficial del Hospital Regional del Cusco === */
+/* Paleta sólida mate basada en el azul institucional del HRC y tonos arquitectónicos de Cusco */
 :root {
-    --hrc-azul-primario: #21325b; /* Azul marino profundo: Institucionalidad y confianza */
-    --hrc-purpura-acento: #7c3aed; /* Púrpura vibrante: Llamados a la acción (CTAs) */
-    --hrc-dorado-alerta: #d97706; /* Mostaza/Dorado: Alertas y estados pendientes */
-    --hrc-gris-fondo: #f8fafc; /* Gris nieve: Fondos generales para descanso visual */
+    --hrc-azul-primario: #21325b;
+    --hrc-azul-oscuro: #182647;
+    --hrc-azul-suave: #e7ecf4;
+    --hrc-terracota: #b5524c;
+    --hrc-terracota-hover: #9a403b;
+    --hrc-terracota-suave: #f6e7e5;
+    --hrc-salvia: #356a66;
+    --hrc-salvia-suave: #e4f0ee;
+    --hrc-ocre: #b88432;
+    --hrc-ocre-suave: #f7efe0;
+    --hrc-piedra-fondo: #f6f3ee;
+    --hrc-pizarra-fondo: #edf2f6;
+    --hrc-texto-principal: #1e293b;
+    --hrc-texto-secundario: #5b677a;
+    --hrc-borde-sutil: #e5e8ee;
 }
 
-/* === Clases Personalizadas ===*/
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: var(--hrc-piedra-fondo);
+    color: var(--hrc-texto-principal);
+}
 
-/* Colores de texto */
+h1, h2, h3, h4, h5, h6, .navbar-brand {
+    font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+    letter-spacing: -0.015em;
+}
+
 .text-hrc-primario {
     color: var(--hrc-azul-primario) !important;
 }
+
 .text-hrc-acento {
-    color: var(--hrc-purpura-acento) !important;
+    color: var(--hrc-terracota) !important;
 }
 
-/* Fondos */
+.text-hrc-salvia {
+    color: var(--hrc-salvia) !important;
+}
+
+.img-cover {
+    object-fit: cover;
+}
+
+.texto-xs {
+    font-size: 0.8rem;
+}
+
+.subtitulo-acotado {
+    max-width: 560px;
+}
+
+.header-hrc {
+    background-color: #ffffff;
+    border-bottom: 1px solid var(--hrc-borde-sutil);
+    transition: box-shadow 0.25s ease;
+    z-index: 1020;
+}
+
+.header-hrc.con-sombra {
+    box-shadow: 0 8px 24px rgba(33, 50, 91, 0.08);
+}
+
 .footer-hrc {
     background-color: var(--hrc-azul-primario);
 }
 
-/* Botón de Acción Principal (Reservar Cita) */
-.btn-hrc-acento {
-    background-color: var(--hrc-purpura-acento);
-    color: white;
-    border: none;
-    font-weight: 500;
-    transition: background-color 0.3s ease;
-}
-.btn-hrc-acento:hover {
-    background-color: #6d28d9; /* Púrpura más oscuro al pasar el mouse */
-    color: white;
-}
-
-/* Botón Secundario Outline (Registrarse) */
-.btn-outline-hrc-primario {
-    color: var(--hrc-azul-primario);
-    border: 2px solid var(--hrc-azul-primario);
-    font-weight: 500;
-    transition: all 0.3s ease;
-}
-.btn-outline-hrc-primario:hover {
-    background-color: var(--hrc-azul-primario);
-    color: white;
-}
-
-/* Efectos hover para enlaces del footer */
 .footer-hrc a:hover {
-    color: white !important;
+    color: #ffffff !important;
     text-decoration: underline !important;
 }
 
-/* Hero Banner de Inicio */
-.hero-hrc {
-    /* El degradado aplica una capa azul semi-transparente sobre la imagen para que el texto blanco sea legible */
-    background: linear-gradient(rgba(73, 87, 119, 0.8), rgba(73, 87, 119, 0.8)), url('../img/hospital-regional-foto.png') center/cover no-repeat;
-    min-height: 70vh; /* Ocupa el 70% del alto de la pantalla */
+/* Estilos del menú de navegación, selector de usuario y pie institucional */
+.marca-subtitulo {
+    font-size: 0.7rem;
+    font-weight: 500;
 }
 
-/* Efecto sutil al pasar el mouse por las tarjetas de especialidades */
-.card-especialidad {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+.nav-link-hrc {
+    color: var(--hrc-texto-secundario) !important;
+    font-weight: 500;
+    font-size: 0.94rem;
+    padding: 0.45rem 0.75rem !important;
+    border-radius: 999px;
+    transition: color 0.2s ease, background-color 0.2s ease;
 }
+
+.nav-link-hrc:hover {
+    color: var(--hrc-azul-primario) !important;
+    background-color: var(--hrc-piedra-fondo);
+}
+
+.nav-link-hrc.active {
+    color: var(--hrc-terracota) !important;
+    background-color: var(--hrc-terracota-suave);
+    font-weight: 600;
+}
+
+.btn-usuario-hrc {
+    background-color: var(--hrc-piedra-fondo);
+    color: var(--hrc-azul-primario);
+    border: 1px solid var(--hrc-borde-sutil);
+    font-weight: 600;
+    padding-left: 0.85rem;
+    padding-right: 0.85rem;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.btn-usuario-hrc:hover,
+.btn-usuario-hrc:focus {
+    background-color: var(--hrc-azul-suave);
+    border-color: var(--hrc-azul-suave);
+    color: var(--hrc-azul-primario);
+}
+
+.menu-usuario-dropdown {
+    min-width: 220px;
+    border-radius: 0.9rem;
+}
+
+.menu-usuario-dropdown {
+    min-width: 220px;
+    border-radius: 0.9rem;
+    padding: 0.35rem;
+}
+
+/* Sobrescribe el fondo azul de Bootstrap (.dropdown-item:active) y el contorno nativo al hacer clic */
+.menu-usuario-dropdown .dropdown-item {
+    border-radius: 0.6rem;
+    font-weight: 600;
+    color: var(--hrc-terracota) !important;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.menu-usuario-dropdown .dropdown-item:hover,
+.menu-usuario-dropdown .dropdown-item:focus {
+    background-color: var(--hrc-terracota-suave);
+    color: var(--hrc-terracota) !important;
+    outline: none;
+}
+
+.menu-usuario-dropdown .dropdown-item:active {
+    background-color: var(--hrc-terracota);
+    color: #ffffff !important;
+}
+
+.menu-usuario-dropdown .dropdown-item:focus-visible {
+    outline: 2px solid var(--hrc-terracota);
+    outline-offset: 2px;
+}
+
+.enlace-footer {
+    color: rgba(255, 255, 255, 0.74);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.enlace-footer:hover {
+    color: #ffffff;
+    text-decoration: underline;
+}
+
+.footer-divisor {
+    border-color: rgba(255, 255, 255, 0.16);
+    opacity: 1;
+}
+
+/* Botones sólidos mate sin degradados */
+.btn-hrc-acento {
+    background-color: var(--hrc-terracota);
+    color: #ffffff;
+    border: 2px solid var(--hrc-terracota);
+    font-weight: 600;
+    transition: background-color 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease, transform 0.22s ease;
+}
+
+.btn-hrc-acento:hover {
+    background-color: var(--hrc-terracota-hover);
+    border-color: var(--hrc-terracota-hover);
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(181, 82, 76, 0.26);
+}
+
+.btn-outline-hrc-primario {
+    background-color: transparent;
+    color: var(--hrc-azul-primario);
+    border: 2px solid var(--hrc-azul-primario);
+    font-weight: 600;
+    transition: background-color 0.22s ease, color 0.22s ease, transform 0.22s ease;
+}
+
+.btn-outline-hrc-primario:hover {
+    background-color: var(--hrc-azul-primario);
+    color: #ffffff;
+    transform: translateY(-2px);
+}
+
+/* Hero en tono piedra mate invertido a lectura LTR */
+.hero-cusco {
+    background-color: var(--hrc-piedra-fondo);
+    padding-top: 3.25rem;
+    padding-bottom: 3.5rem;
+}
+
+.sobretitulo-mate {
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--hrc-terracota);
+}
+
+.hero-titulo-mate {
+    font-size: clamp(2.1rem, 3.8vw, 3.15rem);
+    line-height: 1.18;
+    color: var(--hrc-azul-primario);
+}
+
+.hero-descripcion-mate {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--hrc-texto-secundario);
+    max-width: 520px;
+}
+
+.hero-foto-contenedor {
+    max-width: 520px;
+    padding-bottom: 1.25rem;
+}
+
+.hero-foto-marco {
+    height: 380px;
+    border-radius: 1.5rem;
+    overflow: hidden;
+    background-color: #ffffff;
+}
+
+.insignia-foto-flotante {
+    position: absolute;
+    bottom: 0;
+    left: -1rem;
+    background-color: #ffffff;
+    border-radius: 1rem;
+    padding: 0.9rem 1.25rem;
+    box-shadow: 0 14px 30px rgba(33, 50, 91, 0.14);
+    animation: balanceoSuave 6s ease-in-out infinite;
+}
+
+.insignia-icono-terracota {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background-color: var(--hrc-terracota);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+    flex-shrink: 0;
+}
+
+/* Barra unificada de métricas bajo el hero */
+.barra-metricas-mate {
+    border-radius: 1.35rem;
+    padding: 1.75rem 1.5rem;
+    box-shadow: 0 12px 32px rgba(33, 50, 91, 0.07);
+}
+
+.metrica-icono {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+.metrica-icono-azul {
+    background-color: var(--hrc-azul-suave);
+    color: var(--hrc-azul-primario);
+}
+
+.metrica-icono-terracota {
+    background-color: var(--hrc-terracota-suave);
+    color: var(--hrc-terracota);
+}
+
+.metrica-icono-salvia {
+    background-color: var(--hrc-salvia-suave);
+    color: var(--hrc-salvia);
+}
+
+.metrica-icono-ocre {
+    background-color: var(--hrc-ocre-suave);
+    color: var(--hrc-ocre);
+}
+
+/* Bandas cromáticas mate alternadas */
+.seccion-pizarra {
+    background-color: var(--hrc-pizarra-fondo);
+}
+
+.seccion-piedra {
+    background-color: var(--hrc-piedra-fondo);
+}
+
+/* Tarjetas con elevación */
+.tarjeta-mate,
+.card-especialidad {
+    background-color: #ffffff;
+    border-radius: 1.25rem;
+    box-shadow: 0 6px 20px rgba(33, 50, 91, 0.05);
+    transition: transform 0.35s ease, box-shadow 0.35s ease, background-color 0.35s ease;
+}
+
+.tarjeta-mate:hover,
 .card-especialidad:hover {
     transform: translateY(-5px);
-    box-shadow: 0 .5rem 1rem rgba(0,0,0,.15) !important;
+    box-shadow: 0 20px 38px rgba(33, 50, 91, 0.14);
 }
 
-/* Interacción del Stepper de Reservas (Estilo Bloque Institucional) */
+.tarjeta-paso-mate {
+    background-color: var(--hrc-piedra-fondo);
+}
+
+.tarjeta-paso-mate:hover {
+    background-color: #ffffff;
+}
+
+/* Inversión cromática e inclinación moderada sincronizadas con la elevación de la tarjeta */
+.icono-interactivo {
+    width: 56px;
+    height: 56px;
+    border-radius: 1rem;
+    background-color: var(--hrc-terracota-suave);
+    color: var(--hrc-terracota);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.45rem;
+    transition: background-color 0.38s ease, color 0.38s ease, transform 0.38s ease;
+}
+
+.tarjeta-interactiva:hover .icono-interactivo {
+    background-color: var(--hrc-terracota);
+    color: #ffffff;
+    transform: rotate(-5deg) scale(1.03);
+}
+
+.icono-interactivo-azul {
+    background-color: var(--hrc-azul-suave);
+    color: var(--hrc-azul-primario);
+}
+
+.tarjeta-interactiva:hover .icono-interactivo-azul {
+    background-color: var(--hrc-azul-primario);
+    color: #ffffff;
+}
+
+.icono-interactivo-salvia {
+    background-color: var(--hrc-salvia-suave);
+    color: var(--hrc-salvia);
+}
+
+.tarjeta-interactiva:hover .icono-interactivo-salvia {
+    background-color: var(--hrc-salvia);
+    color: #ffffff;
+}
+
+.etiqueta-medicos-mate {
+    display: inline-block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--hrc-salvia);
+    background-color: var(--hrc-salvia-suave);
+    padding: 0.28rem 0.75rem;
+    border-radius: 999px;
+}
+
+.paso-etiqueta {
+    display: block;
+    font-size: 0.76rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--hrc-terracota);
+}
+
+.enlace-mate {
+    color: var(--hrc-terracota);
+    transition: color 0.22s ease;
+}
+
+.enlace-mate i {
+    display: inline-block;
+    transition: transform 0.22s ease;
+}
+
+.tarjeta-mate:hover .enlace-mate {
+    color: var(--hrc-azul-primario);
+}
+
+.tarjeta-mate:hover .enlace-mate i {
+    transform: translateX(4px);
+}
+
+.badge-categoria-mate {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--hrc-azul-primario);
+    background-color: var(--hrc-azul-suave);
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+}
+
+/* Bloque dividido institucional al cierre de la portada */
+.bloque-dividido-mate {
+    border-radius: 1.5rem;
+    box-shadow: 0 18px 42px rgba(33, 50, 91, 0.11);
+}
+
+.panel-dividido-azul {
+    background-color: var(--hrc-azul-primario);
+}
+
+.etiqueta-panel-oscuro {
+    display: inline-block;
+    align-self: flex-start;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #f3d7d5;
+}
+
+.texto-claro-mate {
+    color: rgba(255, 255, 255, 0.76);
+}
+
+.icono-panel-oscuro {
+    color: #e4a39e;
+    font-size: 1.1rem;
+}
+
+.caja-requisito-mate {
+    background-color: var(--hrc-piedra-fondo);
+    border-radius: 1rem;
+}
+
+/* Símbolos decorativos pequeños con movimiento suave */
+.adorno-puntos {
+    position: absolute;
+    width: 96px;
+    height: 72px;
+    background-image: radial-gradient(rgba(181, 82, 76, 0.26) 2.5px, transparent 2.5px);
+    background-size: 18px 18px;
+    pointer-events: none;
+    animation: derivaSuave 8s ease-in-out infinite;
+}
+
+.adorno-hero-superior {
+    top: -0.75rem;
+    right: -1rem;
+}
+
+.adorno-esquina-izq {
+    top: 1rem;
+    left: -1.5rem;
+    background-image: radial-gradient(rgba(33, 50, 91, 0.18) 2.5px, transparent 2.5px);
+}
+
+.adorno-esquina-der {
+    top: 1.25rem;
+    right: -1rem;
+    background-image: radial-gradient(rgba(184, 132, 50, 0.28) 2.5px, transparent 2.5px);
+}
+
+.adorno-cruz {
+    position: absolute;
+    bottom: 8.5rem;
+    left: -1.75rem;
+    font-size: 1.4rem;
+    color: rgba(53, 106, 102, 0.32);
+    pointer-events: none;
+    animation: giroLento 14s linear infinite;
+}
+
+.adorno-anillo {
+    position: absolute;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 4px solid rgba(181, 82, 76, 0.16);
+    pointer-events: none;
+    animation: balanceoSuave 7s ease-in-out 1s infinite;
+}
+
+.adorno-pasos-izq {
+    bottom: 1.5rem;
+    left: 0.5rem;
+}
+
+/* Aparición progresiva controlada por IntersectionObserver */
+.revelar-scroll {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.55s ease, transform 0.55s ease;
+}
+
+.revelar-scroll.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@keyframes balanceoSuave {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-7px);
+    }
+}
+
+@keyframes derivaSuave {
+    0%, 100% {
+        transform: translate(0, 0);
+    }
+    50% {
+        transform: translate(6px, -6px);
+    }
+}
+
+@keyframes giroLento {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (max-width: 991.98px) {
+    .hero-foto-contenedor {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .insignia-foto-flotante {
+        left: 0.75rem;
+        bottom: 0.25rem;
+    }
+
+    .adorno-puntos,
+    .adorno-cruz,
+    .adorno-anillo {
+        display: none;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .hero-foto-marco {
+        height: 280px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .revelar-scroll {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+
+    .insignia-foto-flotante,
+    .adorno-puntos,
+    .adorno-cruz,
+    .adorno-anillo {
+        animation: none;
+    }
+}
+
+/* Stepper del flujo de reserva de citas */
 .barra-pasos li {
     transition: all 0.3s ease;
 }
 
-/* Estado Activo: Fondo azul marino, texto blanco */
 .barra-pasos .activo {
     background-color: var(--hrc-azul-primario) !important;
     border-color: var(--hrc-azul-primario) !important;
-    color: white !important;
-    transform: translateY(-2px); /* Pequeño realce visual */
+    color: #ffffff !important;
+    transform: translateY(-2px);
 }
 
-/* Círculo numérico del estado activo: Fondo blanco, texto azul marino */
 .barra-pasos .activo .badge-paso {
-    background-color: white !important;
+    background-color: #ffffff !important;
     color: var(--hrc-azul-primario) !important;
 }
 
@@ -93,64 +604,1120 @@ input[type="password"]::-ms-clear {
     display: none;
 }
 
-/* === Impresión para el Ticket Físico === */
+/* Estilos del portal de novedades, filtros y lectura de comunicados */
+.cabecera-interna-mate {
+    border-bottom: 1px solid var(--hrc-borde-sutil);
+}
+
+.filtro-pildora-mate {
+    display: inline-block;
+    padding: 0.45rem 1rem;
+    border-radius: 999px;
+    background-color: #ffffff;
+    color: var(--hrc-texto-secundario);
+    font-size: 0.86rem;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(33, 50, 91, 0.05);
+    transition: background-color 0.25s ease, color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.filtro-pildora-mate:hover {
+    color: var(--hrc-azul-primario);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(33, 50, 91, 0.1);
+}
+
+.filtro-pildora-mate.activo {
+    background-color: var(--hrc-terracota);
+    color: #ffffff;
+    box-shadow: 0 6px 16px rgba(181, 82, 76, 0.25);
+}
+
+.badge-destacada-mate {
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: var(--hrc-terracota);
+    background-color: var(--hrc-terracota-suave);
+    padding: 0.25rem 0.7rem;
+    border-radius: 999px;
+}
+
+.novedad-destacada-wrap {
+    min-height: 280px;
+    overflow: hidden;
+}
+
+.icono-vacio-mate {
+    width: 60px;
+    height: 60px;
+    border-radius: 1rem;
+    background-color: var(--hrc-azul-suave);
+    color: var(--hrc-azul-primario);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+}
+
+.enlace-volver-mate {
+    color: var(--hrc-azul-primario);
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.enlace-volver-mate:hover {
+    color: var(--hrc-terracota);
+    transform: translateX(-3px);
+}
+
+.tarjeta-articulo-mate {
+    background-color: #ffffff;
+    border-radius: 1.25rem;
+    box-shadow: 0 8px 24px rgba(33, 50, 91, 0.06);
+}
+
+.articulo-portada-wrap {
+    max-height: 400px;
+    overflow: hidden;
+}
+
+.articulo-resumen-mate {
+    background-color: var(--hrc-piedra-fondo);
+    border-left: 4px solid var(--hrc-terracota);
+    border-radius: 0.75rem;
+    font-weight: 500;
+    line-height: 1.65;
+}
+
+.articulo-cuerpo-mate {
+    color: var(--hrc-texto-principal);
+    font-size: 1rem;
+    line-height: 1.85;
+}
+
+.sidebar-pegajoso-hrc {
+    position: sticky;
+    top: 6rem;
+}
+
+.item-reciente-mate {
+    border-color: var(--hrc-borde-sutil);
+    transition: background-color 0.2s ease;
+}
+
+.item-reciente-mate:hover {
+    background-color: var(--hrc-piedra-fondo);
+}
+
+.miniatura-reciente {
+    width: 62px;
+    height: 52px;
+    border-radius: 0.65rem;
+}
+
+.miniatura-placeholder {
+    background-color: var(--hrc-azul-suave);
+    font-size: 1.15rem;
+}
+
+.tarjeta-cta-lateral {
+    border-radius: 1.25rem;
+    box-shadow: 0 12px 28px rgba(33, 50, 91, 0.14);
+}
+
+/* Paginación integrada a la paleta institucional */
+.paginacion-hrc .page-link {
+    color: var(--hrc-azul-primario);
+    border: none;
+    border-radius: 0.6rem;
+    margin: 0 0.2rem;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(33, 50, 91, 0.06);
+}
+
+.paginacion-hrc .page-link:hover {
+    background-color: var(--hrc-azul-suave);
+    color: var(--hrc-azul-primario);
+}
+
+.paginacion-hrc .page-item.active .page-link {
+    background-color: var(--hrc-azul-primario);
+    color: #ffffff;
+}
+
+.paginacion-hrc .page-item.disabled .page-link {
+    background-color: transparent;
+    box-shadow: none;
+}
+
+/* Estilos de la página Guía de Atención y Contacto */
+#modalidades,
+#preguntas-frecuentes,
+#ubicacion-contacto {
+    scroll-margin-top: 5.5rem;
+}
+
+.cabecera-foto-guia {
+    height: 250px;
+    border-radius: 1.25rem;
+    overflow: hidden;
+    background-color: var(--hrc-azul-suave);
+}
+
+.tarjeta-guia-mate {
+    background-color: var(--hrc-piedra-fondo);
+}
+
+.tarjeta-guia-mate:hover {
+    background-color: #ffffff;
+}
+
+.lista-requisitos-mate li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    line-height: 1.5;
+}
+
+.lista-requisitos-mate i {
+    margin-top: 0.15rem;
+    flex-shrink: 0;
+}
+
+.item-horario-mate {
+    border-bottom: 1px solid var(--hrc-borde-sutil);
+}
+
+/* Acordeón en formato de tarjetas blancas independientes */
+.acordeon-mate .accordion-item {
+    border: none;
+    border-radius: 1rem !important;
+    background-color: #ffffff;
+    box-shadow: 0 6px 18px rgba(33, 50, 91, 0.05);
+    overflow: hidden;
+    transition: box-shadow 0.25s ease;
+}
+
+.acordeon-mate .accordion-item:hover {
+    box-shadow: 0 12px 26px rgba(33, 50, 91, 0.09);
+}
+
+.acordeon-mate .accordion-button {
+    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--hrc-azul-primario);
+    background-color: #ffffff;
+    padding: 1.2rem 1.5rem;
+    box-shadow: none;
+}
+
+.acordeon-mate .accordion-button:not(.collapsed) {
+    color: var(--hrc-terracota);
+    background-color: #ffffff;
+    box-shadow: none;
+}
+
+.acordeon-mate .accordion-button:focus {
+    box-shadow: none;
+    border-color: transparent;
+}
+
+.acordeon-mate .accordion-body {
+    padding: 0 1.5rem 1.35rem;
+    font-size: 0.94rem;
+    line-height: 1.7;
+    color: var(--hrc-texto-secundario);
+}
+
+.border-contacto-claro {
+    border-color: rgba(255, 255, 255, 0.16) !important;
+}
+
+.mapa-contacto-contenedor {
+    min-height: 380px;
+}
+
+@media (max-width: 767.98px) {
+    .cabecera-foto-guia {
+        height: 210px;
+    }
+
+    .mapa-contacto-contenedor {
+        min-height: 300px;
+    }
+}
+
+/* Tarjetas de información relevante con insignia de fecha y panel deslizante */
+.tarjeta-relevante {
+    position: relative;
+    height: 385px;
+    border-radius: 1.15rem;
+    overflow: hidden;
+    background-color: #ffffff;
+    box-shadow: 0 8px 24px rgba(33, 50, 91, 0.07);
+    transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.tarjeta-relevante:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 22px 42px rgba(33, 50, 91, 0.17);
+}
+
+.enlace-cobertura-tarjeta {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+}
+
+.enlace-cobertura-tarjeta:focus-visible {
+    outline: 3px solid var(--hrc-terracota);
+    outline-offset: -3px;
+    border-radius: 1.15rem;
+}
+
+.relevante-media {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    background-color: var(--hrc-azul-primario);
+    overflow: hidden;
+}
+
+.relevante-media::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-color: rgba(24, 38, 71, 0.14);
+    transition: background-color 0.35s ease;
+    pointer-events: none;
+}
+
+.tarjeta-relevante:hover .relevante-media::after {
+    background-color: rgba(24, 38, 71, 0.45);
+}
+
+.relevante-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.tarjeta-relevante:hover .relevante-img {
+    transform: scale(1.06);
+}
+
+.relevante-placeholder {
+    width: 100%;
+    height: 70%;
+    background-color: var(--hrc-azul-primario);
+}
+
+.relevante-fecha-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 3;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background-color: var(--hrc-terracota);
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.05;
+    box-shadow: 0 6px 14px rgba(24, 38, 71, 0.22);
+}
+
+.relevante-dia {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 800;
+}
+
+.relevante-mes {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+}
+
+.relevante-cuerpo {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 2;
+    background-color: #ffffff;
+    padding: 1.35rem 1.5rem 1.4rem;
+}
+
+.relevante-categoria {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    background-color: var(--hrc-terracota);
+    color: #ffffff;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 0.42rem 0.95rem;
+}
+
+.relevante-titulo {
+    line-height: 1.3;
+}
+
+.relevante-subtitulo {
+    color: var(--hrc-terracota);
+}
+
+.relevante-desplegable {
+    display: grid;
+    grid-template-rows: 1fr;
+    opacity: 1;
+    transition: grid-template-rows 0.38s ease, opacity 0.35s ease;
+}
+
+.relevante-desplegable-interior {
+    overflow: hidden;
+    padding-top: 0.75rem;
+}
+
+.relevante-resumen {
+    line-height: 1.6;
+}
+
+.relevante-cta {
+    color: var(--hrc-azul-primario);
+}
+
+/* El despliegue oculto por defecto solo se aplica en dispositivos con puntero hover real */
+@media (hover: hover) and (pointer: fine) {
+    .relevante-desplegable {
+        grid-template-rows: 0fr;
+        opacity: 0;
+    }
+
+    .relevante-desplegable-interior {
+        padding-top: 0;
+        transition: padding-top 0.35s ease;
+    }
+
+    .tarjeta-relevante:hover .relevante-desplegable {
+        grid-template-rows: 1fr;
+        opacity: 1;
+    }
+
+    .tarjeta-relevante:hover .relevante-desplegable-interior {
+        padding-top: 0.75rem;
+    }
+}
+
+/* Estilos del catálogo público de especialidades */
+.buscador-mate {
+    background-color: #ffffff;
+    border-radius: 999px;
+    padding: 0.25rem 0.35rem;
+    box-shadow: 0 6px 18px rgba(33, 50, 91, 0.07);
+    transition: box-shadow 0.25s ease;
+}
+
+.buscador-mate:focus-within {
+    box-shadow: 0 10px 26px rgba(33, 50, 91, 0.14);
+}
+
+.etiqueta-sin-cupos-mate {
+    display: inline-block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--hrc-texto-secundario);
+    background-color: var(--hrc-piedra-fondo);
+    padding: 0.28rem 0.75rem;
+    border-radius: 999px;
+}
+
+.pie-tarjeta-especialidad {
+    border-top: 1px solid var(--hrc-borde-sutil);
+}
+
+.tarjeta-especialidad-pausa {
+    background-color: #faf9f6;
+}
+
+.tarjeta-especialidad-pausa:hover {
+    transform: none;
+    box-shadow: 0 6px 20px rgba(33, 50, 91, 0.05);
+}
+
+.icono-interactivo-pausa {
+    background-color: var(--hrc-piedra-fondo);
+    color: var(--hrc-texto-secundario);
+}
+
+.franja-asignacion-mate {
+    background-color: #ffffff;
+    border-radius: 1.25rem;
+    border-left: 4px solid var(--hrc-azul-primario);
+    box-shadow: 0 8px 24px rgba(33, 50, 91, 0.06);
+}
+
+/* Estilos del asistente de reserva de citas con diseño mate */
+.barra-pasos-mate li {
+    background-color: #ffffff;
+    color: var(--hrc-texto-secundario);
+    border: 1px solid var(--hrc-borde-sutil);
+    border-radius: 1rem;
+    box-shadow: 0 4px 14px rgba(33, 50, 91, 0.04);
+}
+
+.barra-pasos-mate .badge-paso {
+    width: 32px;
+    height: 32px;
+    background-color: var(--hrc-piedra-fondo);
+    color: var(--hrc-texto-secundario);
+}
+
+.barra-pasos-mate .completado {
+    background-color: var(--hrc-salvia-suave);
+    border-color: var(--hrc-salvia-suave);
+    color: var(--hrc-salvia);
+}
+
+.barra-pasos-mate .completado .badge-paso {
+    background-color: var(--hrc-salvia);
+    color: #ffffff;
+}
+
+.input-mate {
+    background-color: #ffffff;
+    border: 1px solid #d5dce6;
+    border-radius: 0.85rem;
+    font-size: 1rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input-mate:focus {
+    border-color: var(--hrc-azul-primario);
+    box-shadow: 0 0 0 0.2rem rgba(33, 50, 91, 0.12);
+}
+
+.ficha-especialidad-reserva {
+    background-color: var(--hrc-piedra-fondo);
+    border-radius: 1rem;
+    border-left: 4px solid var(--hrc-terracota);
+}
+
+.nota-asignacion-reserva {
+    background-color: var(--hrc-pizarra-fondo);
+    border-radius: 0.85rem;
+}
+
+.alerta-mate-aviso {
+    background-color: var(--hrc-ocre-suave);
+    color: #7c5616;
+    border-radius: 0.9rem;
+}
+
+.campo-lectura-mate {
+    background-color: var(--hrc-piedra-fondo);
+    border: 1px solid var(--hrc-borde-sutil);
+    border-radius: 0.85rem;
+    min-height: 48px;
+    padding: 0.5rem 1rem;
+}
+
+.caja-horarios-mate {
+    background-color: var(--hrc-piedra-fondo);
+    border-radius: 0.95rem;
+    min-height: 82px;
+    display: flex;
+    align-items: center;
+}
+
+.grilla-horarios-mate {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.65rem;
+    width: 100%;
+}
+
+@media (min-width: 768px) {
+    .grilla-horarios-mate {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}
+
+.btn-horario-mate {
+    background-color: #ffffff;
+    color: var(--hrc-azul-primario);
+    border: 1px solid #d5dce6;
+    border-radius: 0.75rem;
+    padding: 0.55rem 0.5rem;
+    font-size: 0.86rem;
+    font-weight: 600;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.btn-horario-mate:hover {
+    background-color: var(--hrc-azul-suave);
+    border-color: var(--hrc-azul-primario);
+    transform: translateY(-1px);
+}
+
+.btn-horario-mate.seleccionado {
+    background-color: var(--hrc-terracota);
+    border-color: var(--hrc-terracota);
+    color: #ffffff;
+    box-shadow: 0 6px 14px rgba(181, 82, 76, 0.26);
+}
+
+.resumen-reserva-mate {
+    background-color: var(--hrc-piedra-fondo);
+    border-radius: 1rem;
+}
+
+/* Estilos de la constancia digital de cita */
+.tarjeta-ticket {
+    border-radius: 1.35rem;
+    background-color: #ffffff;
+    box-shadow: 0 16px 38px rgba(33, 50, 91, 0.11);
+}
+
+.ticket-cabecera-confirmada {
+    background-color: var(--hrc-azul-primario);
+}
+
+.ticket-cabecera-atendida {
+    background-color: var(--hrc-salvia);
+}
+
+.ticket-cabecera-cancelada {
+    background-color: #64748b;
+}
+
+.icono-exito {
+    width: 56px;
+    height: 56px;
+    background-color: #ffffff;
+    color: var(--hrc-salvia);
+    font-size: 1.7rem;
+}
+
+.ticket-cabecera-cancelada .icono-exito {
+    color: var(--hrc-terracota);
+}
+
+.ticket-codigo-cabecera {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 1.05rem;
+    letter-spacing: 0.06em;
+}
+
+.ticket-franja-horario {
+    background-color: var(--hrc-piedra-fondo);
+    border-radius: 1rem;
+    border-left: 4px solid var(--hrc-terracota);
+}
+
+.ticket-etiqueta {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--hrc-texto-secundario);
+    margin-bottom: 0.2rem;
+}
+
+.ticket-pill-estado {
+    display: inline-block;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 0.28rem 0.8rem;
+    border-radius: 999px;
+}
+
+.badge-estado-pendiente {
+    background-color: var(--hrc-salvia-suave);
+    color: var(--hrc-salvia);
+}
+
+.badge-estado-atendido {
+    background-color: var(--hrc-azul-suave);
+    color: var(--hrc-azul-primario);
+}
+
+.badge-estado-cancelado {
+    background-color: var(--hrc-terracota-suave);
+    color: var(--hrc-terracota);
+}
+
+.ticket-advertencia {
+    background-color: var(--hrc-ocre-suave);
+    color: #7c5616;
+    border-left: 4px solid var(--hrc-ocre);
+    border-radius: 0.85rem;
+}
+
+/* Línea perforada con muescas laterales que adoptan el fondo piedra de la página */
+.ticket-perforacion {
+    position: relative;
+    height: 2px;
+    background-color: #ffffff;
+    border-top: 2px dashed #cbd5e1;
+}
+
+.ticket-perforacion::before,
+.ticket-perforacion::after {
+    content: "";
+    position: absolute;
+    top: -13px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: var(--hrc-piedra-fondo);
+}
+
+.ticket-perforacion::before {
+    left: -12px;
+}
+
+.ticket-perforacion::after {
+    right: -12px;
+}
+
+/* Estilos del panel del paciente */
+.avatar-paciente-mate {
+    width: 64px;
+    height: 64px;
+    background-color: var(--hrc-azul-primario);
+    color: #ffffff;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 1.45rem;
+    font-weight: 700;
+}
+
+.barra-cupo-mate {
+    width: 100%;
+    height: 8px;
+    border-radius: 999px;
+    background-color: var(--hrc-piedra-fondo);
+    overflow: hidden;
+}
+
+.barra-cupo-relleno {
+    height: 100%;
+    border-radius: 999px;
+    background-color: var(--hrc-salvia);
+    transition: width 0.35s ease;
+}
+
+.barra-cupo-relleno.al-limite {
+    background-color: var(--hrc-terracota);
+}
+
+.resumen-contador-mate {
+    background-color: var(--hrc-piedra-fondo);
+    border-radius: 0.9rem;
+}
+
+.caja-fecha-cita {
+    background-color: var(--hrc-piedra-fondo);
+    border-radius: 1rem;
+    border-top: 4px solid var(--hrc-terracota);
+}
+
+.cita-mes-mate {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--hrc-terracota);
+}
+
+.cita-dia-mate {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1.1;
+    color: var(--hrc-azul-primario);
+}
+
+.cita-hora-mate {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--hrc-texto-secundario);
+}
+
+.btn-cancelar-mate {
+    background-color: var(--hrc-terracota-suave);
+    color: var(--hrc-terracota);
+    border: 1px solid transparent;
+    font-weight: 600;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.btn-cancelar-mate:hover {
+    background-color: var(--hrc-terracota);
+    color: #ffffff;
+}
+
+.tabla-mate thead {
+    background-color: var(--hrc-pizarra-fondo);
+    color: var(--hrc-azul-primario);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.tabla-mate tbody tr {
+    border-color: var(--hrc-borde-sutil);
+    transition: background-color 0.2s ease;
+}
+
+.tabla-mate tbody tr:hover {
+    background-color: var(--hrc-piedra-fondo);
+}
+
+.modal-mate {
+    border-radius: 1.25rem;
+}
+
+/* Estilos compartidos para paneles operativos internos (Médico, Admisión y Admin) */
+.text-hrc-ocre {
+    color: var(--hrc-ocre) !important;
+}
+
+.input-fecha-panel {
+    width: auto;
+    border-radius: 0.65rem;
+    border: 1px solid #cbd5e1;
+    background-color: #ffffff;
+    font-size: 0.88rem;
+}
+
+.input-fecha-panel:focus {
+    border-color: var(--hrc-azul-primario);
+    box-shadow: 0 0 0 0.18rem rgba(33, 50, 91, 0.12);
+}
+
+.kpi-panel-mate {
+    background-color: #ffffff;
+    border: 1px solid var(--hrc-borde-sutil);
+    border-radius: 0.9rem;
+}
+
+.kpi-etiqueta {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--hrc-texto-secundario);
+}
+
+.tarjeta-panel-mate {
+    background-color: #ffffff;
+    border: 1px solid var(--hrc-borde-sutil);
+    border-radius: 1rem;
+    box-shadow: 0 4px 16px rgba(33, 50, 91, 0.04);
+}
+
+.panel-cabecera-tabla {
+    background-color: #ffffff;
+    border-bottom: 1px solid var(--hrc-borde-sutil);
+}
+
+.tab-estado-panel {
+    background-color: var(--hrc-piedra-fondo);
+    color: var(--hrc-texto-secundario);
+    border: 1px solid transparent;
+    border-radius: 999px;
+    padding: 0.32rem 0.85rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.tab-estado-panel:hover {
+    color: var(--hrc-azul-primario);
+    background-color: var(--hrc-azul-suave);
+}
+
+.tab-estado-panel.activo {
+    background-color: var(--hrc-azul-primario);
+    color: #ffffff;
+}
+
+.hora-agenda-mate {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.86rem;
+    font-weight: 700;
+    color: var(--hrc-azul-primario);
+    background-color: var(--hrc-piedra-fondo);
+    padding: 0.3rem 0.6rem;
+    border-radius: 0.5rem;
+}
+
+.badge-sis-mate {
+    display: inline-block;
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: var(--hrc-salvia);
+    background-color: var(--hrc-salvia-suave);
+    padding: 0.2rem 0.6rem;
+    border-radius: 0.45rem;
+}
+
+.badge-particular-mate {
+    display: inline-block;
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: var(--hrc-texto-secundario);
+    background-color: var(--hrc-piedra-fondo);
+    padding: 0.2rem 0.6rem;
+    border-radius: 0.45rem;
+}
+
+.badge-agenda-pendiente {
+    background-color: var(--hrc-ocre-suave);
+    color: #8a611a;
+}
+
+.badge-agenda-atendido {
+    background-color: var(--hrc-salvia-suave);
+    color: var(--hrc-salvia);
+}
+
+.badge-agenda-cancelado {
+    background-color: var(--hrc-terracota-suave);
+    color: var(--hrc-terracota);
+}
+
+.fila-cita-inactiva {
+    opacity: 0.65;
+}
+
+.btn-icono-panel {
+    background-color: var(--hrc-piedra-fondo);
+    color: var(--hrc-azul-primario);
+    border: 1px solid var(--hrc-borde-sutil);
+    border-radius: 0.55rem;
+    padding: 0.28rem 0.55rem;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.btn-icono-panel:hover {
+    background-color: var(--hrc-azul-primario);
+    color: #ffffff;
+}
+
+.input-panel-mate {
+    border-radius: 0.7rem;
+    border: 1px solid #cbd5e1;
+    background-color: #ffffff;
+    font-size: 0.92rem;
+    padding-top: 0.52rem;
+    padding-bottom: 0.52rem;
+}
+
+.input-panel-mate:focus {
+    border-color: var(--hrc-azul-primario);
+    box-shadow: 0 0 0 0.18rem rgba(33, 50, 91, 0.12);
+}
+
+.buscador-tabla-panel {
+    background-color: var(--hrc-piedra-fondo);
+    border: 1px solid var(--hrc-borde-sutil);
+    border-radius: 999px;
+    min-width: 240px;
+}
+
+.buscador-tabla-panel:focus-within {
+    background-color: #ffffff;
+    border-color: var(--hrc-azul-primario);
+}
+
+/* Estilos de inicio de sesión con fotografía a pantalla completa en main y tarjeta lateral */
+.auth-portada-completa {
+    min-height: 565px;
+    background-color: var(--hrc-azul-primario);
+}
+
+.auth-fondo-foto {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: right center;
+}
+
+/* Velo lateral ligero para dar contraste al borde de la tarjeta sin oscurecer el motivo derecho */
+.auth-fondo-velo {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        90deg,
+        rgba(24, 38, 71, 0.52) 0%,
+        rgba(24, 38, 71, 0.22) 55%,
+        rgba(24, 38, 71, 0.12) 100%
+    );
+}
+
+.tarjeta-login-editorial {
+    max-width: 490px;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 22px 48px rgba(15, 23, 42, 0.28);
+}
+
+.auth-pie-registro {
+    background-color: var(--hrc-piedra-fondo);
+    border-top: 1px solid var(--hrc-borde-sutil);
+}
+
+.input-password-mate {
+    padding-right: 3rem;
+}
+
+/* Evita que el icono nativo de validación de Bootstrap se solape con el botón de visibilidad */
+.input-password-mate.is-invalid {
+    background-image: none;
+    padding-right: 3rem;
+}
+
+.btn-ojo-interno {
+    position: absolute;
+    top: 50%;
+    right: 0.4rem;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: transparent;
+    color: var(--hrc-texto-secundario);
+    border-radius: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.btn-ojo-interno:hover {
+    color: var(--hrc-azul-primario);
+    background-color: var(--hrc-piedra-fondo);
+}
+
+.enlace-ayuda-auth:hover {
+    color: var(--hrc-azul-primario) !important;
+}
+
+/* Estilos del formulario de registro en dos fases */
+.tarjeta-registro-editorial {
+    max-width: 640px;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 22px 48px rgba(15, 23, 42, 0.28);
+}
+
+.paso-registro-chip {
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    font-weight: 600;
+    background-color: var(--hrc-piedra-fondo);
+    color: var(--hrc-texto-secundario);
+}
+
+.paso-registro-chip.activo {
+    background-color: var(--hrc-azul-primario);
+    color: #ffffff;
+}
+
+.paso-registro-chip.completado {
+    background-color: var(--hrc-salvia-suave);
+    color: var(--hrc-salvia);
+}
+
+.bloque-identidad-verificada {
+    background-color: var(--hrc-piedra-fondo);
+    border: 1px solid var(--hrc-borde-sutil);
+    border-radius: 0.85rem;
+}
+
+.input-verificado-mate {
+    background-color: #ffffff !important;
+    border: 1px solid var(--hrc-borde-sutil);
+    color: var(--hrc-azul-primario);
+    font-weight: 600;
+}
+
+.input-mate[readonly] {
+    background-color: var(--hrc-piedra-fondo);
+    color: var(--hrc-texto-secundario);
+}
+
+/* Reglas de impresión para comprobante físico del ticket */
 @media print {
     body {
-        background-color: white !important;
+        background-color: #ffffff !important;
     }
-    
+
     .oculta-impresion {
         display: none !important;
     }
 
-    /* Redimensionamiento para evitar cortes en el papel */
     .contenedor-ticket {
         margin: 0 !important;
         padding: 0 !important;
         max-width: 100% !important;
     }
 
-    /* Forzar bordes negros sólidos y eliminar sombras */
     .tarjeta-ticket {
         box-shadow: none !important;
-        border: 2px solid #000 !important;
+        border: 2px solid #000000 !important;
         border-radius: 0 !important;
     }
 
-    /* Forzar que el encabezado verde se imprima en blanco y negro */
     .ticket-cabecera {
-        background-color: white !important;
-        color: black !important;
-        border-bottom: 2px solid #000 !important;
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        border-bottom: 2px solid #000000 !important;
         padding: 20px !important;
     }
 
+    .ticket-cabecera .texto-claro-mate,
+    .ticket-cabecera .etiqueta-panel-oscuro {
+        color: #000000 !important;
+    }
+
     .icono-exito {
-        border: 2px solid #000 !important;
-        color: #000 !important;
+        border: 2px solid #000000 !important;
+        color: #000000 !important;
     }
 
-    /* Convertir el cuadro de advertencia a un cuadro de notas estándar */
-    .ticket-advertencia {
-        border: 2px solid #000 !important;
-        color: #000 !important;
-        background-color: white !important;
+    .ticket-franja-horario,
+    .ticket-advertencia,
+    .ticket-pill-estado,
+    .badge-categoria-mate {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        border: 1.5px solid #000000 !important;
+        border-radius: 0 !important;
     }
 
-    .ticket-cuerpo, .ticket-pie {
-        background-color: white !important;
+    .ticket-perforacion {
+        border-top: 1.5px dashed #000000 !important;
     }
-    
-    .ticket-pie {
-        border-top: none !important;
-    }
-}
 
-@media print {
-    .oculta-impresion {
+    .ticket-perforacion::before,
+    .ticket-perforacion::after {
         display: none !important;
     }
-    body {
-        background-color: white;
+
+    .ticket-cuerpo,
+    .ticket-pie {
+        background-color: #ffffff !important;
     }
 }

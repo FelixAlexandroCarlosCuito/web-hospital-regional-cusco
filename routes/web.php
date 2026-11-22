@@ -52,6 +52,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/ticket/{id}', [CitaController::class, 'showTicket'])->name('ticket');
     Route::patch('/citas/{id}/cancelar', [CitaController::class, 'cancelar'])->name('citas.cancelar');
     Route::get('/citas/horarios', [CitaController::class, 'getHorarios'])->name('citas.horarios');
+    Route::get('/api/horarios-disponibles', [CitaController::class, 'horariosDisponibles'])
+    ->name('api.horarios.disponibles');
 
     // Módulo Médico
     Route::middleware([CheckRolMedico::class])->group(function () {

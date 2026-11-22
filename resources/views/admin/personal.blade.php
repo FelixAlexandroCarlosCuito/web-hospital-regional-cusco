@@ -48,7 +48,7 @@
     {{-- Tabla de personal médico con conteo de citas pendientes vigentes --}}
     <div class="card border-0 shadow-sm rounded-3 overflow-hidden mb-4">
         <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
-            <h5 class="fw-bold text-hrc-primario mb-0">Staff Médico</h5>
+            <h5 class="fw-bold text-hrc-primario mb-0">Personal Médico</h5>
             <span class="badge bg-primary">{{ $medicos->where('activo', true)->count() }} activos / {{ $medicos->count() }} total</span>
         </div>
         <div class="table-responsive">
