@@ -15,7 +15,7 @@ class CheckRolMedico
     public function handle(Request $request, Closure $next): Response
     {
         // Verificamos que esté logueado y que su rol sea estrictamente 'medico'
-        if (Auth::check() && Auth::user()->rol === 'medico') {
+        if (Auth::check() && Auth::user()->rol === 'medico' && Auth::user()->activo) {
             return $next($request);
         }
 

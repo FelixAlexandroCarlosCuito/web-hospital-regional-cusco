@@ -11,7 +11,7 @@ class CheckRolAdmision
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::check() && Auth::user()->rol === 'admision') {
+        if (Auth::check() && Auth::user()->rol === 'admision' && Auth::user()->activo) {
             return $next($request);
         }
         abort(403, 'Acceso denegado. Área exclusiva para personal de Admisión.');

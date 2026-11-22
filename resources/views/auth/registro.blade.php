@@ -100,12 +100,22 @@
                                 <div class="row mb-4">
                                     <div class="col-md-6 mb-3 mb-md-0">
                                         <label for="password" class="form-label fw-bold text-secondary">Crear contraseña</label>
-                                        <input type="password" id="password" name="password" placeholder="Mínimo 6 caracteres" class="form-control form-control-lg @error('password') is-invalid @enderror">
+                                        <div class="input-group">
+                                            <input type="password" id="password" name="password" placeholder="Mínimo 6 caracteres" class="form-control form-control-lg @error('password') is-invalid @enderror">
+                                            <button type="button" class="btn btn-outline-secondary btn-toggle-password" data-target="password" aria-label="Mostrar contraseña" aria-pressed="false">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </div>
                                         <span class="mensaje-error d-block text-danger small mt-1" id="error-password">@error('password') {{ $message }} @enderror</span>
                                     </div>
                                     <div class="col-md-6">
                                         <label for="confirm_password" class="form-label fw-bold text-secondary">Confirmar Contraseña</label>
-                                        <input type="password" id="confirm_password" name="password_confirmation" class="form-control form-control-lg">
+                                        <div class="input-group">
+                                            <input type="password" id="confirm_password" name="password_confirmation" class="form-control form-control-lg">
+                                            <button type="button" class="btn btn-outline-secondary btn-toggle-password" data-target="confirm_password" aria-label="Mostrar contraseña" aria-pressed="false">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </div>
                                         <span class="mensaje-error d-block text-danger small mt-1" id="error-confirm_password"></span>
                                     </div>
                                 </div>

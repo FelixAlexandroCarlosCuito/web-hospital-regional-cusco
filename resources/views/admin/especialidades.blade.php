@@ -97,13 +97,12 @@
                                         Editar
                                     </button>
 
-                                    <form action="{{ route('admin.especialidades.toggle', $esp) }}" method="POST" class="m-0">
+                                    <form action="{{ route('admin.especialidades.toggle', $esp) }}" method="POST" class="form-toggle-estado" data-mensaje="{{ $esp->activo ? '¿Desactivar la especialidad ' . $esp->nombre . '? Dejará de mostrarse para nuevas citas.' : '' }}">
                                         @csrf
                                         @method('PATCH')
                                         @if ($esp->activo)
                                             <button type="submit"
-                                                    class="btn btn-outline-danger btn-sm"
-                                                    onclick="return confirm('¿Desactivar la especialidad {{ addslashes($esp->nombre) }}? Dejará de mostrarse para nuevas citas.');">
+                                                    class="btn btn-outline-danger btn-sm"                                                
                                                 Desactivar
                                             </button>
                                         @else
@@ -188,19 +187,5 @@
 @endsection
 
 @section('js')
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const formEditar = document.getElementById('formEditarEspecialidad');
-        const inputNombre = document.getElementById('editar_nombre');
-        const inputDescripcion = document.getElementById('editar_descripcion');
-
-        document.querySelectorAll('.btn-editar-especialidad').forEach(function (boton) {
-            boton.addEventListener('click', function () {
-                formEditar.action = this.dataset.action;
-                inputNombre.value = this.dataset.nombre || '';
-                inputDescripcion.value = this.dataset.descripcion || '';
-            });
-        });
-    });
-</script>
+    <script src="{{ asset('js/admin/especialidades.js') }}"></script>
 @endsection

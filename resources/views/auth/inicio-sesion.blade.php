@@ -29,7 +29,20 @@
                             
                             <div class="mb-4">
                                 <label for="password" class="form-label fw-bold text-secondary">Contraseña</label>
-                                <input type="password" id="password" name="password" class="form-control form-control-lg @error('password') is-invalid @enderror" placeholder="Ingrese su contraseña">
+                                <div class="input-group">
+                                    <input type="password"
+                                        id="password"
+                                        name="password"
+                                        class="form-control form-control-lg @error('password') is-invalid @enderror"
+                                        required>
+                                    <button type="button"
+                                            class="btn btn-outline-secondary btn-toggle-password"
+                                            data-target="password"
+                                            aria-label="Mostrar contraseña"
+                                            aria-pressed="false">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
                                        
                                 <span class="mensaje-error d-block text-danger small mt-1" id="error-password">
                                     @error('password') {{ $message }} @enderror

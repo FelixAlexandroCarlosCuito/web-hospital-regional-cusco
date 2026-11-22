@@ -98,6 +98,17 @@ class PanelController extends Controller
             ->take(8)
             ->get();
 
+        
+        // Agrupa las series de los gráficos en una sola estructura serializable para la vista
+        $metricasGraficos = [
+            'especialidadesLabels' => $demandaEspecialidades->pluck('nombre')->values(),
+            'especialidadesData' => $demandaEspecialidades->pluck('total')->values(),
+            'tendenciaLabels' => $tendenciaLabels,
+            'tendenciaValores' => $tendenciaValores,
+            'estadosData' => array_values($distribucionEstados),
+            'sisData' => [$citasSis, $citasRegulares],
+        ];
+
         return view('admin.panel', compact(
             'citasHoyTotal',
             'citasHoyPendientes',
@@ -112,14 +123,9 @@ class PanelController extends Controller
             'medicosTotal',
             'especialidadesActivas',
             'especialidadesTotal',
-            'demandaEspecialidades',
-            'tendenciaLabels',
-            'tendenciaValores',
-            'distribucionEstados',
-            'citasSis',
-            'citasRegulares',
             'cargaMedicos',
-            'ultimasCitas'
+            'ultimasCitas',
+            'metricasGraficos'
         ));
     }
 }

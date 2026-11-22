@@ -7,6 +7,4 @@ Actualización de Perfil (El eslabón débil): Si vamos a implementar la recuper
 
 Cambiar el diseño a uno más moderno
 Añadir páginas de relleno con información (aún no está definido)
-Añadir un pestaña de novedades del hospital
-Añadir el modulo entero para un admin
 Añadir el ojito en el inicio de sesión 

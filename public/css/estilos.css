@@ -87,6 +87,12 @@
     color: var(--hrc-azul-primario) !important;
 }
 
+/* Oculta el botón nativo de revelar contraseña en Edge/Chromium para evitar duplicidad */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+    display: none;
+}
+
 /* === Impresión para el Ticket Físico === */
 @media print {
     body {

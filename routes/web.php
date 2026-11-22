@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Admin\EspecialidadController as AdminEspecialidadController;
 use App\Http\Controllers\Admin\PanelController as AdminPanelController;
+use App\Http\Controllers\Admin\PersonalController as AdminPersonalController;
+use App\Http\Controllers\Admin\NovedadController as AdminNovedadController;
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdmisionController;
@@ -17,6 +19,8 @@ use App\Http\Middleware\CheckRolAdmin;
 //=== RUTAS PÚBLICAS ===
 Route::get('/', [PaginasController::class, 'inicio'])->name('inicio');
 Route::get('/inicio', [PaginasController::class, 'inicio']);
+Route::get('/novedades', [PaginasController::class, 'novedades'])->name('novedades.index');
+Route::get('/novedades/{slug}', [PaginasController::class, 'verNovedad'])->name('novedades.show');
 
 //=== RUTAS DE INVITADOS (NO AUTENTICADOS) ===
 Route::middleware('guest')->group(function () {
@@ -65,10 +69,20 @@ Route::middleware('auth')->group(function () {
         ->name('admin.')
         ->group(function () {
             Route::get('/', [AdminPanelController::class, 'panel'])->name('panel');
-
             Route::get('/especialidades', [AdminEspecialidadController::class, 'index'])->name('especialidades.index');
             Route::post('/especialidades', [AdminEspecialidadController::class, 'store'])->name('especialidades.store');
             Route::put('/especialidades/{especialidad}', [AdminEspecialidadController::class, 'update'])->name('especialidades.update');
             Route::patch('/especialidades/{especialidad}/estado', [AdminEspecialidadController::class, 'toggleEstado'])->name('especialidades.toggle');
+
+            Route::get('/personal', [AdminPersonalController::class, 'index'])->name('personal.index');
+            Route::post('/personal', [AdminPersonalController::class, 'store'])->name('personal.store');
+            Route::put('/personal/{user}', [AdminPersonalController::class, 'update'])->name('personal.update');
+            Route::patch('/personal/{user}/estado', [AdminPersonalController::class, 'toggleEstado'])->name('personal.toggle');
+
+            Route::get('/novedades', [AdminNovedadController::class, 'index'])->name('novedades.index');
+            Route::post('/novedades', [AdminNovedadController::class, 'store'])->name('novedades.store');
+            Route::put('/novedades/{novedad}', [AdminNovedadController::class, 'update'])->name('novedades.update');
+            Route::patch('/novedades/{novedad}/estado', [AdminNovedadController::class, 'togglePublicacion'])->name('novedades.toggle');
+            Route::delete('/novedades/{novedad}', [AdminNovedadController::class, 'destroy'])->name('novedades.destroy');
         });
 });

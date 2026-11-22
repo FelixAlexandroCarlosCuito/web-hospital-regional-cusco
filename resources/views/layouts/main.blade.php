@@ -6,6 +6,7 @@
     <title>@yield('titulo') - HRC</title>
     <link rel="icon" type="image" href="{{ asset('img/logo-hospital.png') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="{{ asset('css/estilos.css') }}">
     @yield('css')
 </head>
@@ -32,6 +33,13 @@
                     <ul class="navbar-nav ms-auto align-items-center gap-3">
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('inicio') }}">Inicio</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('novedades.*') ? 'active fw-bold text-hrc-primario' : '' }}"
+                            href="{{ route('novedades.index') }}">
+                                Novedades
+                            </a>
                         </li>
                         
                         <!-- Control de Acceso Basado en Roles para el enrutamiento visual -->
@@ -117,6 +125,7 @@
         </div>
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="{{ asset('js/password.js') }}"></script>
     @yield('js')
 </body>
 </html>

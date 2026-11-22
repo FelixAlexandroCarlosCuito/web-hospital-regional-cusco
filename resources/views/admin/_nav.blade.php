@@ -12,13 +12,14 @@
         </a>
     </li>
     <li class="nav-item">
-        <a class="nav-link text-secondary disabled" href="#" tabindex="-1" aria-disabled="true">
-            Médicos y Personal (Próximo)
+        <a class="nav-link fw-bold {{ request()->routeIs('admin.personal.*') ? 'active' : 'text-secondary' }}"
+        href="{{ route('admin.personal.index') }}">
+            Médicos y Personal
         </a>
-    </li>
     <li class="nav-item">
-        <a class="nav-link text-secondary disabled" href="#" tabindex="-1" aria-disabled="true">
-            Novedades (Próximo)
+        <a class="nav-link fw-bold {{ request()->routeIs('admin.novedades.*') ? 'active' : 'text-secondary' }}"
+        href="{{ route('admin.novedades.index') }}">
+            Novedades
         </a>
     </li>
 </ul>
