@@ -11,7 +11,7 @@
         <div class="auth-fondo-velo" aria-hidden="true"></div>
 
         <div class="container position-relative">
-            <div class="row justify-content-center justify-content-lg-start">
+            <div class="row align-items-center justify-content-center justify-content-lg-between g-4">
                 <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5">
                     <div class="tarjeta-login-editorial bg-white">
 
@@ -116,6 +116,82 @@
                         </div>
 
                     </div>
+                </div>
+
+                {{-- Panel estático temporal de credenciales ficticias para evaluación académica --}}
+                <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-6">
+                    <aside class="tarjeta-login-editorial bg-white" aria-label="Credenciales de prueba">
+                        <div class="p-4">
+                            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                                <span class="sobretitulo-mate">Acceso rápido para evaluación</span>
+                                <span class="badge-categoria-mate">Datos ficticios</span>
+                            </div>
+
+                            <h2 class="h5 fw-bold text-hrc-primario mb-1">Cuentas de prueba por rol</h2>
+                            <p class="text-muted texto-xs mb-3">
+                                Credenciales precargadas para verificar los paneles y controles de acceso del sistema.
+                            </p>
+
+                            <div class="table-responsive">
+                                <table class="table table-sm align-middle mb-0 small">
+                                    <thead class="text-muted texto-xs text-uppercase">
+                                        <tr>
+                                            <th class="ps-0">Rol / Perfil</th>
+                                            <th>DNI</th>
+                                            <th class="pe-0">Contraseña</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="ps-0">
+                                                <strong class="text-hrc-primario d-block">Administrador</strong>
+                                                <span class="texto-xs text-muted">KPIs, catálogo, personal y novedades</span>
+                                            </td>
+                                            <td><span class="doc-codigo-inline fw-semibold">76869228</span></td>
+                                            <td class="pe-0"><span class="doc-codigo-inline">admin1</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="ps-0">
+                                                <strong class="text-hrc-primario d-block">Admisión</strong>
+                                                <span class="texto-xs text-muted">Agenda por médico y cancelación</span>
+                                            </td>
+                                            <td><span class="doc-codigo-inline fw-semibold">11223344</span></td>
+                                            <td class="pe-0"><span class="doc-codigo-inline">11223344</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="ps-0">
+                                                <strong class="text-hrc-primario d-block">Médico activo</strong>
+                                                <span class="texto-xs text-muted">Dr. Sumaq Qori · Medicina General</span>
+                                            </td>
+                                            <td><span class="doc-codigo-inline fw-semibold">77665544</span></td>
+                                            <td class="pe-0"><span class="doc-codigo-inline">77665544</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="ps-0">
+                                                <strong class="text-hrc-primario d-block">Paciente</strong>
+                                                <span class="texto-xs text-muted">Luz Marina · 2/3 citas y candado 12h</span>
+                                            </td>
+                                            <td><span class="doc-codigo-inline fw-semibold">70112233</span></td>
+                                            <td class="pe-0"><span class="doc-codigo-inline">123456</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="ps-0 border-bottom-0">
+                                                <strong class="text-danger d-block">Médico inactivo</strong>
+                                                <span class="texto-xs text-muted">Prueba de bloqueo por baja lógica</span>
+                                            </td>
+                                            <td class="border-bottom-0"><span class="doc-codigo-inline fw-semibold">45556677</span></td>
+                                            <td class="pe-0 border-bottom-0"><span class="doc-codigo-inline">45556677</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="auth-pie-registro px-4 py-2 texto-xs text-muted">
+                            <i class="bi bi-info-circle me-1 text-hrc-primario"></i>
+                            Panel temporal habilitado únicamente para pruebas y demostración en aula.
+                        </div>
+                    </aside>
                 </div>
             </div>
         </div>

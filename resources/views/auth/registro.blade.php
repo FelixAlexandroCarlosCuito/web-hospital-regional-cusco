@@ -8,15 +8,15 @@
         $tieneErrorFase2 = $errors->hasAny(['correo', 'password']);
     @endphp
 
-    <section class="auth-portada-completa flex-grow-1 d-flex align-items-center position-relative overflow-hidden py-4">        
+    <section class="auth-portada-completa flex-grow-1 d-flex align-items-center position-relative overflow-hidden py-4">
         <img src="{{ asset('img/hospital-regional-foto.png') }}"
              alt="Hospital Regional del Cusco"
              class="auth-fondo-foto">
         <div class="auth-fondo-velo" aria-hidden="true"></div>
 
         <div class="container position-relative">
-            <div class="row justify-content-center justify-content-lg-start">
-                <div class="col-12 col-lg-8 col-xl-7">
+            <div class="row align-items-center justify-content-center g-4">
+                <div class="col-12 col-lg-7 col-xl-7">
                     <div class="tarjeta-registro-editorial bg-white">
 
                         <div class="p-4">
@@ -254,6 +254,79 @@
                         </div>
 
                     </div>
+                </div>
+
+                {{-- Panel estático temporal del padrón RENIEC simulado para pruebas de validación --}}
+                <div class="col-12 col-lg-5 col-xl-5">
+                    <aside class="tarjeta-registro-editorial bg-white" aria-label="Datos simulados de RENIEC para pruebas">
+                        <div class="p-4">
+                            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                                <span class="sobretitulo-mate">Padrón RENIEC simulado</span>
+                                <span class="badge-categoria-mate">Datos ficticios</span>
+                            </div>
+
+                            <h2 class="h5 fw-bold text-hrc-primario mb-1">Documentos para prueba</h2>
+                            <p class="text-muted texto-xs mb-3">
+                                Usa cualquiera de los documentos libres para validar la Fase 1 y completar un registro nuevo.
+                            </p>
+
+                            <div class="table-responsive">
+                                <table class="table table-sm align-middle mb-0 small">
+                                    <thead class="text-muted texto-xs text-uppercase">
+                                        <tr>
+                                            <th class="ps-0">DNI</th>
+                                            <th>DV</th>
+                                            <th>Emisión</th>
+                                            <th class="pe-0">Estado</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="ps-0">
+                                                <span class="doc-codigo-inline fw-semibold d-block">76543210</span>
+                                                <span class="texto-xs text-muted">Juan Pérez</span>
+                                            </td>
+                                            <td><span class="doc-codigo-inline fw-bold">4</span></td>
+                                            <td class="texto-xs text-nowrap">15/05/2020</td>
+                                            <td class="pe-0"><span class="texto-xs fw-semibold text-hrc-salvia">Libre</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="ps-0">
+                                                <span class="doc-codigo-inline fw-semibold d-block">71234568</span>
+                                                <span class="texto-xs text-muted">María Condori</span>
+                                            </td>
+                                            <td><span class="doc-codigo-inline fw-bold">7</span></td>
+                                            <td class="texto-xs text-nowrap">10/03/2021</td>
+                                            <td class="pe-0"><span class="texto-xs fw-semibold text-hrc-salvia">Libre</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="ps-0">
+                                                <span class="doc-codigo-inline fw-semibold d-block">74569812</span>
+                                                <span class="texto-xs text-muted">Diego Huamán</span>
+                                            </td>
+                                            <td><span class="doc-codigo-inline fw-bold">2</span></td>
+                                            <td class="texto-xs text-nowrap">22/11/2019</td>
+                                            <td class="pe-0"><span class="texto-xs fw-semibold text-hrc-salvia">Libre</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="ps-0 border-bottom-0">
+                                                <span class="doc-codigo-inline fw-semibold d-block">70112233</span>
+                                                <span class="texto-xs text-muted">Luz Quispe</span>
+                                            </td>
+                                            <td class="border-bottom-0"><span class="doc-codigo-inline fw-bold">9</span></td>
+                                            <td class="border-bottom-0 texto-xs text-nowrap">18/01/2022</td>
+                                            <td class="pe-0 border-bottom-0"><span class="texto-xs fw-semibold text-danger">Registrado</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="auth-pie-registro px-4 py-2 texto-xs text-muted">
+                            <i class="bi bi-info-circle me-1 text-hrc-primario"></i>
+                            El último DNI permite comprobar la alerta de cuenta ya existente en Fase 1.
+                        </div>
+                    </aside>
                 </div>
             </div>
         </div>
