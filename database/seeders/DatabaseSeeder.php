@@ -37,6 +37,16 @@ class DatabaseSeeder extends Seeder
         // Padrón simulado de RENIEC: tres ciudadanos disponibles y uno ya registrado para validar detección de duplicados
         $ciudadanosReniec = [
             [
+                'dni' => '60493679',
+                'digito_verificador' => '4',
+                'fecha_emision' => '2020-05-15',
+                'nombres' => 'Josue',
+                'apellido_paterno' => 'Vargas',
+                'apellido_materno' => 'Portilla',
+                'fecha_nacimiento' => '2007-05-04',
+                'direccion' => 'Saylla',
+            ],
+            [
                 'dni' => '76543210',
                 'digito_verificador' => '4',
                 'fecha_emision' => '2020-05-15',
